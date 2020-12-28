@@ -6,6 +6,7 @@ $ make
 
 # Builtin Words
 
-| char | semantics          |
-|:----:|:------------------:|
-| Q    | Exit the process   |
+| char | semantics                 |
+|:----:|:-------------------------:|
+| Q    | ( -- ) Exit the process   |
+| C    | ( -- n ) Size of Cells    |
