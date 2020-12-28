@@ -3,3 +3,9 @@
 ```
 $ make
 ```
+
+# Builtin Words
+
+| char | semantics          |
+|:----:|:------------------:|
+| Q    | Exit the process   |
