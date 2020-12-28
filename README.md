@@ -12,3 +12,5 @@ $ make
 | C    | ( -- n ) The size of Cells                |
 | h    | ( -- addr ) The address of 'here' cell    |
 | l    | ( -- addr ) The address of 'latest' cell  |
+| k    | ( -- n ) Read character                   |
+| t    | ( n -- ) Print character                  |

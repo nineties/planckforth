@@ -6,11 +6,11 @@
 00000028: 3400 2000 0100 0000   e_ehsize,e_phentsize,e_phnum,e_shentsize
 00000030: 0000 0000 0100 0000   e_shnum,e_shstrndx,<phdr> PT_LOAD
 00000038: 0000 0000 0080 0408   p_offset,p_vaddr=0x08048000
-00000040: 0000 0000 4001 0000   p_paddr,p_filesz
+00000040: 0000 0000 9001 0000   p_paddr,p_filesz
 00000048: 0000 0008 0700 0000   p_memsz(128MB),PF_X|PF_W|PF_R
 00000050: 0010 0000 0200 0000   p_align, <here>
-00000058: 0300 0000 3081 0408   <latest>, <interpreter>(5c: key)
-00000060: 8880 0408 0000 0000   (60: find) (64: execute)
+00000058: 0300 0000 4881 0408   <latest>, <interpreter>(5c: key)
+00000060: 7081 0408 8880 0408   (60: find) (64: execute)
 00000068: 0000 0000 f0ff ffff   (68: jump) (6c: -16)
 00000070: be5c 8004 08bd 0080   (70: movl $interpreter,%esi) (75: movl $0x10048000,%ebp)
 00000078: 0410 adff 2000 0000   (7a: next)
@@ -26,3 +26,13 @@
 00000128: 1081 0408 016c 0000   "l" latest
 00000130: 3481 0408 6858 8004   pushl $latest
 00000138: 08ad ff20 0000 0000   next
+00000140: 2881 0408 016b 0000   "k" key
+00000148: 4c81 0408 31c0 50ba   xorl %eax,%eax; pushl %eax; movl $1,%edx
+00000150: 0100 0000 89e1 31db   movl %esp,%ecx; xorl %ebx,%ebx (STDIN)
+00000158: b803 0000 00cd 80ad   movl $SYS_READ,%eax; int $0x80
+00000160: ff20 0000 0000 0000   next
+00000168: 4081 0408 0174 0000   "t" type
+00000170: 7481 0408 ba01 0000   movl $1,%edx
+00000178: 0089 e1bb 0100 0000   movl %esp,%ecx; movl $1,%ebx (STDOUT)
+00000180: b804 0000 00cd 8083   movl $SYS_WRITE,%eax; int $0x80
+00000188: c404 adff 2000 0000   addl $4,%esp; next
