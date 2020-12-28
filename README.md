@@ -1,1 +1,5 @@
-# PlanckForth: Forth Implementation By Bootstrapping from Handwritten Binary
+# PlanckForth: Bootstrapping Forth from Handwritten Binary
+
+```
+$ make
+```

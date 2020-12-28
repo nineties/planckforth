@@ -1,0 +1,12 @@
+00000000: 7f45 4c46 0101 0100   e_ident[0..7]
+00000008: 0000 0000 0000 0000   e_ident[8..15]
+00000010: 0200 0300 0100 0000   ET_EXEC,EM_386,EV_CURRENT
+00000018: 5480 0408 3400 0000   e_entry=0x08048054,e_phoff=<phdr>
+00000020: 0000 0000 0000 0000   e_shoff,e_flags
+00000028: 3400 2000 0100 0000   e_ehsize,e_phentsize,e_phnum,e_shentsize
+00000030: 0000 0000 0100 0000   e_shnum,e_shstrndx,<phdr> PT_LOAD
+00000038: 0000 0000 0080 0408   p_offset,p_vaddr=0x08048000
+00000040: 0000 0000 6000 0000   p_paddr,p_filesz
+00000048: 0000 0008 0700 0000   p_memsz(128MB),PF_X|PF_W|PF_R
+00000050: 0010 0000 bb00 0000   p_align, <segment>(54: mov ebx, 0)
+00000058: 00b8 0100 0000 cd80   (59: mov eax, 1) (5e: int 0x80)
