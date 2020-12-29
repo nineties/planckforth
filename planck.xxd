@@ -15,47 +15,48 @@
 00000070: be5c 8004 08bd 0080   (70: movl $interpreter,%esi) (75: movl $0x10048000,%ebp)
 00000078: 0410 adff 2000 0000   (7a: next)
 
-00000080: 0000 0000 0151 0000   "Q" quit
+00000080: 0000 0000 0151 0000   Q: quit
 00000088: 8c80 0408 31db b801   xorl %ebx,%ebx; mov $SYS_EXIT,%eax;
 00000090: 0000 00cd 8000 0000   int $0x80;
-00000098: 8080 0408 0143 0000   "C" cellsize
+
+00000098: 8080 0408 0143 0000   C: cellsize
 00000100: 0481 0408 6804 0000   pushl $4;
 00000108: 00ad ff20 0000 0000   next;
 
-00000110: 9880 0408 0168 0000   "h" here
+00000110: 9880 0408 0168 0000   h: here
 00000118: 1c81 0408 6854 8004   pushl $here;
 00000120: 08ad ff20 0000 0000   next;
 
-00000128: 1081 0408 016c 0000   "l" latest
+00000128: 1081 0408 016c 0000   l: latest
 00000130: 3481 0408 6858 8004   pushl $latest;
 00000138: 08ad ff20 0000 0000   next;
 
-00000140: 2881 0408 016b 0000   "k" key
+00000140: 2881 0408 016b 0000   k: key
 00000148: 4c81 0408 31c0 50ba   xorl %eax,%eax; pushl %eax; movl $1,%edx;
 00000150: 0100 0000 89e1 31db   movl %esp,%ecx; xorl %ebx,%ebx (STDIN);
 00000158: b803 0000 00cd 80ad   movl $SYS_READ,%eax; int $0x80;
 00000160: ff20 0000 0000 0000   next;
 
-00000168: 4081 0408 0174 0000   "t" type
+00000168: 4081 0408 0174 0000   t: type
 00000170: 7481 0408 ba01 0000   movl $1,%edx;
 00000178: 0089 e1bb 0100 0000   movl %esp,%ecx; movl $1,%ebx (STDOUT);
 00000180: b804 0000 00cd 8083   movl $SYS_WRITE,%eax; int $0x80;
 00000188: c404 adff 2000 0000   addl $4,%esp; next;
 
-00000190: 6881 0408 016a 0000   "j" jump
+00000190: 6881 0408 016a 0000   j: jump
 00000198: 9c81 0408 0336 adff   addl (%esi),%esi; next;
 000001a0: 2000 0000 0000 0000
 
-000001a8: 9081 0408 014a 0000   "J" jump if zero
+000001a8: 9081 0408 014a 0000   J: jump if zero
 000001b0: b481 0408 5885 c074   popl %eax; test %eax,%eax;je 19c(-29)
 000001b8: e3ad adff 2000 0000   lodsl; next;
 
-000001c0: a881 0408 0166 0000   "f" find
+000001c0: a881 0408 0166 0000   f: find
 000001c8: cc81 0408 8a24 24b0   movb (%esp),%ah;movb $1,%al;
 000001d0: 018b 0d58 8004 088b   movl latest,%ecx;<1>movl 4(%ecx),%ebx;
 000001d8: 5904 6639 c374 048b   cmpw %ax,%bx;je 2f;movl (%ecx),%ecx
 000001e0: 09eb f483 c108 890c   jmp 1b(-12);<2>addl $8,%ecx;movl %ecx,(%esp)
 000001e8: 24ad ff20 0000 0000   next;
 
-000001f0: c081 0408 0178 0000   "x" execute
+000001f0: c081 0408 0178 0000   x: execute
 000001f8: fc81 0408 58ff 2000   popl %eax; jmp *(%eax)
