@@ -27,3 +27,5 @@ $ cat helloworld.fs | ./plank
 | !    | store    | ( a addr -- ) Store value to addr         |
 | ?    | cfetch   | ( addr -- c ) Load byte from addr         |
 | $    | cstore   | ( c addr -- ) Store byte to addr          |
+| d    | dfetch   | ( -- addr ) Get data stack pointer        |
+| D    | dstore   | ( addr -- ) Set data stack pointer        |
