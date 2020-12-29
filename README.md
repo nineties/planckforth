@@ -4,6 +4,11 @@
 $ make
 ```
 
+
+```
+$ cat helloworld.fs | ./plank
+```
+
 # Builtin Words
 
 | code | name     | semantics                                 |
