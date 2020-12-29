@@ -12,7 +12,7 @@ $ cat helloworld.fs | ./plank
 # Builtin Words
 
 | code | name     | semantics                                 |
-|:----:|:--------:|:-----------------------------------------:|
+|:----:|:---------|:------------------------------------------|
 | Q    | quit     | ( -- ) Exit the process                   |
 | C    | cell     | ( -- n ) The size of Cells                |
 | h    | here     | ( -- addr ) The address of 'here' cell    |
