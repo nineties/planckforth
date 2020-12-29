@@ -14,3 +14,5 @@ $ make
 | l    | ( -- addr ) The address of 'latest' cell  |
 | k    | ( -- n ) Read character                   |
 | t    | ( n -- ) Print character                  |
+| j    | ( -- ) Unconditional branch.              |
+| J    | ( a -- ) Jump if a == 0.                  |
