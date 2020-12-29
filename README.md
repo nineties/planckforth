@@ -43,7 +43,7 @@ $ cat helloworld.fs | ./plank
 | /    | div      | ( a b -- c )   | c = (a / b)                  |
 | %    | mod      | ( a b -- c )   | c = (a % b)                  |
 | &    | and      | ( a b -- c )   | c = (a & b)                  |
-| |    | or       | ( a b -- c )   | c = (a | b)                  |
+| \|   | or       | ( a b -- c )   | c = (a \| b)                 |
 | ^    | xor      | ( a b -- c )   | c = (a ^ b)                  |
 | <    | less     | ( a b -- c )   | c = (a < b)                  |
 | =    | equal    | ( a b -- c )   | c = (a == b)                 |
