@@ -33,4 +33,4 @@ $ cat helloworld.fs | ./plank
 | R    | rstore   | ( addr -- )   | Set return stack pointer       |
 | {    | dtor     | ( a -- R:a )  | Push value to return stack     |
 | }    | rtod     | ( R: -- a )   | Pop value from return stack    |
-| i    | docol    | ( -- addr )   | Get execution token            |
+| i    | docol    | ( -- addr )   | Get the interpreter function   |
