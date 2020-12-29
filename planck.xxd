@@ -6,10 +6,10 @@
 00000028: 3400 2000 0100 0000   e_ehsize,e_phentsize,e_phnum,e_shentsize
 00000030: 0000 0000 0100 0000   e_shnum,e_shstrndx,<phdr> PT_LOAD
 00000038: 0000 0000 0080 0408   p_offset,p_vaddr=0x08048000
-00000040: 0000 0000 b002 0000   p_paddr,p_filesz
+00000040: 0000 0000 e002 0000   p_paddr,p_filesz
 00000048: 0000 0008 0700 0000   p_memsz(128MB),PF_X|PF_W|PF_R
 00000050: 0010 0000 0200 0000   p_align, <here>
-00000058: a082 0408 4881 0408   <latest:init="R">, <interpreter>(5c: key)
+00000058: c882 0408 4881 0408   <latest:init="}">, <interpreter>(5c: key)
 00000060: c881 0408 f881 0408   (60: find) (64: execute)
 00000068: 9881 0408 f0ff ffff   (68: jump) (6c: -16)
 00000070: be5c 8004 08bd 0080   (70: movl $interpreter,%esi) (75: movl $0x10048000,%ebp)
@@ -90,3 +90,11 @@
 
 000002a0: 9082 0408 0152 0000   R: rstore
 000002a8: ac82 0408 5dad ff20   popl %ebp; next;
+
+000002b0: a082 0408 017b 0000   {: dtor
+000002b8: bc82 0408 588d 6dfc   popl %eax;rpush %eax;
+000002c0: 8945 00ad ff20 0000   next;
+
+000002c8: b082 0408 017d 0000   }: rtod
+000002d0: d482 0408 8b45 008d   rpop %eax;
+000002d8: 6d04 50ad ff20 0000   pushl %eax; next;
