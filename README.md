@@ -16,4 +16,5 @@ $ make
 | t    | type     | ( n -- ) Print character                  |
 | j    | jump     | ( -- ) Unconditional branch.              |
 | J    | 0jump    | ( a -- ) Jump if a == 0.                  |
-| f    | find     | ( c -- ) Find CFA of word 'c'             |
+| f    | find     | ( c -- xt ) Get execution token of c      |
+| x    | execute  | ( xt -- ... ) Run the execution token     |
