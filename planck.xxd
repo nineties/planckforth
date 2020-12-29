@@ -6,10 +6,10 @@
 00000028: 3400 2000 0100 0000   e_ehsize,e_phentsize,e_phnum,e_shentsize
 00000030: 0000 0000 0100 0000   e_shnum,e_shstrndx,<phdr> PT_LOAD
 00000038: 0000 0000 0080 0408   p_offset,p_vaddr=0x08048000
-00000040: 0000 0000 c802 0000   p_paddr,p_filesz
+00000040: 0000 0000 0003 0000   p_paddr,p_filesz
 00000048: 0000 0008 0700 0000   p_memsz(128MB),PF_X|PF_W|PF_R
 00000050: 0010 0000 0200 0000   p_align, <here>
-00000058: b082 0408 e880 0408   <latest:init="e">, <interpreter>(5c: key)
+00000058: e082 0408 e880 0408   <latest:init="S">, <interpreter>(5c: key)
 00000060: 6881 0408 9881 0408   (60: find) (64: execute)
 00000068: 3881 0408 f0ff ffff   (68: jump) (6c: -16)
 00000070: be5c 8004 08bd 0080   (70: movl $interpreter,%esi) (75: movl $0x10048000,%ebp)
@@ -108,3 +108,12 @@
 000002b0: 8082 0408 0165 0000   e: exit
 000002b8: bc82 0408 8b75 008d   rpop %esi
 000002c0: 6d04 adff 2000 0000   next
+
+000002c8: b082 0408 014c 0000   L: lit
+000002d0: d482 0408 ad50 adff   lodsl; pushl %eax; next;
+000002d8: 2000 0000 0000 0000
+
+000002e0: c882 0408 0153 0000   S: string
+000002e8: ec82 0408 ad56 5001   lodsl; pushl %esi; pushl %eax
+000002f0: c683 c603 83e6 fcad   addl %eax,%esi; addl $3,%esi; andl $~3,%esi;next;
+000002f8: ff20 0000 0000 0000
