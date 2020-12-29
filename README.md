@@ -24,4 +24,6 @@ $ cat helloworld.fs | ./plank
 | f    | find     | ( c -- xt ) Get execution token of c      |
 | x    | execute  | ( xt -- ... ) Run the execution token     |
 | @    | fetch    | ( addr -- a ) Load value from addr        |
-| !    | store    | ( a addr -- ) Store a to addr             |
+| !    | store    | ( a addr -- ) Store value to addr         |
+| ?    | cfetch   | ( addr -- c ) Load byte from addr         |
+| $    | cstore   | ( c addr -- ) Store byte to addr          |
