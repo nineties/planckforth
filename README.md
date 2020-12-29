@@ -1,4 +1,4 @@
-# PlanckForth: Bootstrapping Forth from Handwritten Binary
+# PlanckForth: Bootstrapping Forth from Handwritten Executable
 
 ```
 $ make
