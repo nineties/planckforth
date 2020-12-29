@@ -37,3 +37,13 @@ $ cat helloworld.fs | ./plank
 | e    | exit     | ( -- )         | Exit current function        |
 | L    | lit      | ( -- a )       | Load immediate               |
 | S    | string   | ( -- addr len) | Load string literal          |
+| +    | add      | ( a b -- c )   | c = (a + b)                  |
+| -    | sub      | ( a b -- c )   | c = (a - b)                  |
+| *    | mul      | ( a b -- c )   | c = (a * b)                  |
+| /    | div      | ( a b -- c )   | c = (a / b)                  |
+| %    | mod      | ( a b -- c )   | c = (a % b)                  |
+| &    | and      | ( a b -- c )   | c = (a & b)                  |
+| |    | or       | ( a b -- c )   | c = (a | b)                  |
+| ^    | xor      | ( a b -- c )   | c = (a ^ b)                  |
+| <    | less     | ( a b -- c )   | c = (a < b)                  |
+| =    | equal    | ( a b -- c )   | c = (a == b)                 |
