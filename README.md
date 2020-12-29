@@ -31,8 +31,6 @@ $ cat helloworld.fs | ./plank
 | D    | dstore   | ( addr -- )    | Set data stack pointer       |
 | r    | rfetch   | ( -- addr )    | Get return stack pointer     |
 | R    | rstore   | ( addr -- )    | Set return stack pointer     |
-| {    | dtor     | ( a -- R:a )   | Push value to return stack   |
-| }    | rtod     | ( R: -- a )    | Pop value from return stack  |
 | i    | docol    | ( -- addr )    | Get the interpreter function |
 | e    | exit     | ( -- )         | Exit current function        |
 | L    | lit      | ( -- a )       | Load immediate               |
