@@ -34,3 +34,4 @@ $ cat helloworld.fs | ./plank
 | {    | dtor     | ( a -- R:a )  | Push value to return stack     |
 | }    | rtod     | ( R: -- a )   | Pop value from return stack    |
 | i    | docol    | ( -- addr )   | Get the interpreter function   |
+| e    | exit     | ( -- )        | Exit current function          |
