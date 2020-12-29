@@ -23,3 +23,5 @@ $ cat helloworld.fs | ./plank
 | J    | 0jump    | ( a -- ) Jump if a == 0.                  |
 | f    | find     | ( c -- xt ) Get execution token of c      |
 | x    | execute  | ( xt -- ... ) Run the execution token     |
+| @    | fetch    | ( addr -- a ) Load value from addr        |
+| !    | store    | ( a addr -- ) Store a to addr             |
