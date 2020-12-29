@@ -6,13 +6,14 @@ $ make
 
 # Builtin Words
 
-| char | semantics                                 |
-|:----:|:-----------------------------------------:|
-| Q    | ( -- ) Exit the process                   |
-| C    | ( -- n ) The size of Cells                |
-| h    | ( -- addr ) The address of 'here' cell    |
-| l    | ( -- addr ) The address of 'latest' cell  |
-| k    | ( -- n ) Read character                   |
-| t    | ( n -- ) Print character                  |
-| j    | ( -- ) Unconditional branch.              |
-| J    | ( a -- ) Jump if a == 0.                  |
+| code | name     | semantics                                 |
+|:----:|:--------:|:-----------------------------------------:|
+| Q    | quit     | ( -- ) Exit the process                   |
+| C    | cell     | ( -- n ) The size of Cells                |
+| h    | here     | ( -- addr ) The address of 'here' cell    |
+| l    | latest   | ( -- addr ) The address of 'latest' cell  |
+| k    | key      | ( -- n ) Read character                   |
+| t    | type     | ( n -- ) Print character                  |
+| j    | jump     | ( -- ) Unconditional branch.              |
+| J    | 0jump    | ( a -- ) Jump if a == 0.                  |
+| f    | find     | ( c -- ) Find CFA of word 'c'             |
