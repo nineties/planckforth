@@ -17,8 +17,8 @@ $ cat helloworld.fs | ./planck
 | l    | latest   | ( -- addr )    | The address of 'latest' cell |
 | k    | key      | ( -- c )       | Read character               |
 | t    | type     | ( c -- )       | Print character              |
-| j    | jump     | ( -- )         | Unconditional branch.        |
-| J    | 0jump    | ( a -- )       | Jump if a == 0.              |
+| j    | jump     | ( -- )         | Unconditional branch         |
+| J    | 0jump    | ( a -- )       | Jump if a == 0               |
 | f    | find     | ( c -- xt )    | Get execution token of c     |
 | x    | execute  | ( xt -- ... )  | Run the execution token      |
 | @    | fetch    | ( addr -- a )  | Load value from addr         |
