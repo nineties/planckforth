@@ -104,4 +104,21 @@ l!
 
 \ That's all for the brief explanation. Let's restart bootstrap!
 
+\ The COMMA operator
+\ ',' ( a -- )  Store a to 'here' and increment 'here' CELL bytes.
+h@l@h@! h@C+h!
+k1k0-h@$ k,h@k1k0-+$ h@C+h!
+    i   h@!h@C+h!   \ docol
+    khf h@!h@C+h!
+    k@f h@!h@C+h!
+    k!f h@!h@C+h!   \ store 'a' to here
+    khf h@!h@C+h!
+    k@f h@!h@C+h!
+    kCf h@!h@C+h!
+    k+f h@!h@C+h!   \ compute here + CELL
+    khf h@!h@C+h!
+    k!f h@!h@C+h!   \ here <- here + CELL
+    kef h@!h@C+h!   \ exit
+l!
+
 Q
