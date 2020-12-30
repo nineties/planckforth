@@ -142,4 +142,9 @@ h@l@, k1k0-h@$ kch@k1k0-+$ h@C+h!
     'h, '@, 'C, '+, 'h, '!, 'e,
 l!
 
+\ '_' ( a -- ) DROP
+c_ i, 'd, 'C, '+, 'D, 'e, l!
+
+\ Test
+kA kB _ t \ -> A
 Q
