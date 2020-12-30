@@ -90,7 +90,7 @@ l!
 \ --
 \ h@                            ( save addr of new entry )
 \ l@ h@!h@C+h!                  ( set link pointer. *here++ = latest )
-\ k1k0-h@$ k\h@k1k0-+! h@C+h!   ( write the name '\' and its length )
+\ k1k0-h@$ k\h@k1k0-+$ h@C+h!   ( write the name '\' and its length )
 \ i       h@!h@C+h!             ( docol )
 \ kkf     h@!h@C+h!             ( key )
 \ kLf     h@!h@C+h!             ( lit )
