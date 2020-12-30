@@ -177,10 +177,12 @@ c}  i,
     'e,
 l!
 
+\ 'o' ( a b -- a b a ) OVER
+co i, 'd, 'C, '+, '@, 'e, l!
 
 \ '~' ( a b -- b a ) SWAP
 c~ i,
-    'd, 'C, '+, '@, \ ( a b a )
+    'o,             \ ( a b a )
     '{,             \ ( a b , R:a )
     'd, 'C, '+,     \ ( a b sp+1 , R:a )
     '!,             \ ( b , R:a )
@@ -188,5 +190,12 @@ c~ i,
     'e,
 l!
 
+
 kA kB ~ t t \ AB
+k
+t
+
+kA kB o t t t
+k
+t
 Q
