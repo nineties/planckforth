@@ -139,8 +139,8 @@ h@l@, k1k0-h@$ kch@k1k0-+$ h@C+h!
     i, 'h, '@, 'l, '@, ',,
     'L, k1k0-, 'h, '@, '$,
     'k, 'h, '@, 'L, k1k0-, '+, '$,
-    'h, '@, 'C, '+, 'h, '!, 'e,
-l!
+    'h, '@, 'C, '+, 'h, '!,
+'e, l!
 
 \ '_' ( a -- ) DROP
 c_ i, 'd, 'C, '+, 'D, 'e, l!
@@ -157,25 +157,23 @@ c# i, 'd, '@, 'e, l!
 
 \ '{' ( a -- R:a ) TOR
 \ Move value from data stack to return stack.
-c{  i,
+c{ i,
     'r, 'r, '@,     \ ( a rsp ret )
     'r, 'C, '-, '#, \ ( a rsp ret rsp-1 rsp-1 )
     'R,             \ ( a rsp+1 ret rsp ) extend return stack
     '!,             \ ( a rsp+1 ) store return address to the top
     '!,             \ store a to the 2nd
-    'e,
-l!
+'e, l!
 
 \ '}' ( R:a -- a ) FROMR
 \ Move value from return stack to data stack.
-c}  i,
+c} i,
     'r, 'C, '+, '@, \ ( a ) load 2nd value
     'r, '@,         \ ( a ret ) load return addr
     'r, 'C, '+, '#, \ ( a ret rsp+1 rsp+1 )
     'R,             \ ( a ret rsp ) reduce return stack
     '!,             \ ( a , R:ret ) store return addr to top of return stack
-    'e,
-l!
+'e, l!
 
 \ 'o' ( a b -- a b a ) OVER
 co i, 'd, 'C, '+, '@, 'e, l!
@@ -187,8 +185,7 @@ c~ i,
     'd, 'C, '+,     \ ( a b sp+1 , R:a )
     '!,             \ ( b , R:a )
     '},             \ ( b a )
-    'e,
-l!
+'e, l!
 
 \ 'B' ( c -- ) C-COMMA
 \ Store byte 'c' to here and increment it
@@ -199,8 +196,8 @@ cB i, 'h, '@, '$, 'h, 'L, k1k0-, '+, 'h, '!, 'e, l!
 ca i,
     'L, Ck1k0--, '+,    \ ( a+CELL-1 )
     'L, k0k0-C-,        \ ( a+CELL-1 ~(CELL-1) )
-    '&, 'e,
-l!
+    '&,
+'e, l!
 
 \ 'A' ( -- ) ALIGN
 \ Round up 'here' to a multiple of CELL
