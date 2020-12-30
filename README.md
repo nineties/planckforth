@@ -1,12 +1,10 @@
 # PlanckForth: Bootstrapping Forth from Handwritten Executable
 
 ```
+$ git clone https://github.com/nineties/planckforth.git
+$ cd planckforth
 $ make
-```
-
-
-```
-$ cat helloworld.fs | ./plank
+$ cat helloworld.fs | ./planck
 ```
 
 # Builtin Words
