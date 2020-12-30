@@ -197,8 +197,8 @@ cB i, 'h, '@, '$, 'h, 'L, k1k0-, '+, 'h, '!, 'e, l!
 \ 'a' ( c-addr -- a-addr ) ALIGNED
 \ Round up 'a' to a multiple of CELL
 ca i,
-    'L, Ck1k0--, '+,        \ ( a+CELL-1 )
-    'L, Ck1k0-- k0k1- ^,    \ ( a+CELL-1 ~(CELL-1) )
+    'L, Ck1k0--, '+,    \ ( a+CELL-1 )
+    'L, k0k0-C-,        \ ( a+CELL-1 ~(CELL-1) )
     '&, 'e,
 l!
 
