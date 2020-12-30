@@ -145,6 +145,37 @@ l!
 \ '_' ( a -- ) DROP
 c_ i, 'd, 'C, '+, 'D, 'e, l!
 
-\ Test
-kA kB _ t \ -> A
+\ '#' ( a -- a a )  DUP
+c# i, 'd, '@, 'e, l!
+
+
+
+\ Implementations of TOR and FROMR are a bit tricky.
+\ Since return-address will be placed at the top of return stack,
+\ the code in the body of these function have to manipulate
+\ 2nd element of the stack.
+
+\ '{' ( a -- R:a ) TOR
+\ Move value from data stack to return stack.
+c{  i,
+    'r, 'r, '@,     \ ( a rsp ret )
+    'r, 'C, '-, '#, \ ( a rsp ret rsp-CELL rsp-CELL )
+    'R,             \ ( a rsp+CELL ret rsp ) extend return stack
+    '!,             \ ( a rsp+CELL ) store return address to the top
+    '!,             \ store a to the 2nd
+    'e,
+l!
+
+\ '}' ( R:a -- a ) FROMR
+\ Move value from return stack to data stack.
+c}  i,
+    'r, 'C, '+, '@, \ ( a ) load 2nd value
+    'r, '@,         \ ( a ret ) load return addr
+    'r, 'C, '+, '#, \ ( a ret rsp+CELL rsp+CELL )
+    'R,             \ ( a ret rsp ) reduce return stack
+    '!,             \ ( a , R:ret ) store return addr to top of return stack
+    'e,
+l!
+
+kA kB { t } t
 Q
