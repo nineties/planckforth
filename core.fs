@@ -177,5 +177,16 @@ c}  i,
     'e,
 l!
 
-kA kB { t } t
+
+\ '~' ( a b -- b a ) SWAP
+c~ i,
+    'd, 'C, '+, '@, \ ( a b a )
+    '{,             \ ( a b , R:a )
+    'd, 'C, '+,     \ ( a b sp+1 , R:a )
+    '!,             \ ( b , R:a )
+    '},             \ ( b a )
+    'e,
+l!
+
+kA kB ~ t t \ AB
 Q
