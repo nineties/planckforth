@@ -104,8 +104,6 @@ l!
 
 \ That's all for the brief explanation. Let's restart bootstrap!
 
-\ === COMMA and TICK ===
-
 \ The COMMA operator
 \ ',' ( a -- )  Store a to 'here' and increment 'here' CELL bytes.
 h@l@ h@!h@C+h!
