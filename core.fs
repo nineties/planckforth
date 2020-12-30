@@ -190,12 +190,9 @@ c~ i,
     'e,
 l!
 
+\ 'B' ( c -- ) C-COMMA
+\ Store byte 'c' to here and increment it
+cB i, 'h, '@, '$, 'h, 'L, k1k0-, '+, 'h, '!, 'e, l!
 
-kA kB ~ t t \ AB
-k
-t
-
-kA kB o t t t
-k
-t
+kA kB B t
 Q
