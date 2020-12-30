@@ -109,16 +109,19 @@ l!
 h@l@h@! h@C+h!
 k1k0-h@$ k,h@k1k0-+$ h@C+h!
     i   h@!h@C+h!   \ docol
+    \ store 'a' to here
     khf h@!h@C+h!
     k@f h@!h@C+h!
-    k!f h@!h@C+h!   \ store 'a' to here
+    k!f h@!h@C+h!
+    \ here <- here + CELL
     khf h@!h@C+h!
     k@f h@!h@C+h!
     kCf h@!h@C+h!
-    k+f h@!h@C+h!   \ compute here + CELL
+    k+f h@!h@C+h!
     khf h@!h@C+h!
-    k!f h@!h@C+h!   \ here <- here + CELL
-    kef h@!h@C+h!   \ exit
+    k!f h@!h@C+h!
+    \ exit
+    kef h@!h@C+h!
 l!
 
 Q
