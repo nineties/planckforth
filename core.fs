@@ -102,4 +102,6 @@ l!
 \ l!                            ( set latest to this new entry. )
 \ --
 
+\ That's all for the brief explanation. Let's restart bootstrap!
+
 Q
