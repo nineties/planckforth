@@ -104,9 +104,11 @@ l!
 
 \ That's all for the brief explanation. Let's restart bootstrap!
 
+\ === COMMA and TICK ===
+
 \ The COMMA operator
 \ ',' ( a -- )  Store a to 'here' and increment 'here' CELL bytes.
-h@l@h@! h@C+h!
+h@l@ h@!h@C+h!
 k1k0-h@$ k,h@k1k0-+$ h@C+h!
     i   h@!h@C+h!   \ docol
     \ store 'a' to here
@@ -122,6 +124,16 @@ k1k0-h@$ k,h@k1k0-+$ h@C+h!
     k!f h@!h@C+h!
     \ exit
     kef h@!h@C+h!
+l!
+
+\ TICK-like operator
+\ '\'' ( "c" -- xt )    Get execution token of following character
+\ NB: This definition is different from the usual definition of tick
+\ because it does not skip leading spaces and can read only a single
+\ character. It will be redefined in later stage.
+h@l@,
+k1k0-h@$ k'h@k1k0-+$ h@C+h!
+    i, kkf, kff, kef,
 l!
 
 Q
