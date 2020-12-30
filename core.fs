@@ -2,8 +2,7 @@ h@l@h@!h@C+h!k1k0-h@$k
 h@k1k0-+$h@C+h!ih@!h@C+h!kefh@!h@C+h!l!
 h@l@h@!h@C+h!k1k0-h@$k h@k1k0-+$h@C+h!ih@!h@C+h!kefh@!h@C+h!l!
 
-h@l@ h@!h@C+h!
-k1k0-h@$ k\h@k1k0-+$ h@C+h!
+h@l@ h@!h@C+h! k1k0-h@$ k\h@k1k0-+$ h@C+h!
     i       h@!h@C+h!
     kkf     h@!h@C+h!
     kLf     h@!h@C+h!
@@ -106,8 +105,7 @@ l!
 
 \ The COMMA operator
 \ ',' ( a -- )  Store a to 'here' and increment 'here' CELL bytes.
-h@l@ h@!h@C+h!
-k1k0-h@$ k,h@k1k0-+$ h@C+h!
+h@l@ h@!h@C+h! k1k0-h@$ k,h@k1k0-+$ h@C+h!
     i   h@!h@C+h!   \ docol
     \ store 'a' to here
     khf h@!h@C+h!
@@ -129,8 +127,7 @@ l!
 \ NB: This definition is different from the usual definition of tick
 \ because it does not skip leading spaces and can read only a single
 \ character. It will be redefined in later stage.
-h@l@,
-k1k0-h@$ k'h@k1k0-+$ h@C+h!
+h@l@, k1k0-h@$ k'h@k1k0-+$ h@C+h!
     i, kkf, kff, kef,
 l!
 
