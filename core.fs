@@ -131,4 +131,15 @@ h@l@, k1k0-h@$ k'h@k1k0-+$ h@C+h!
     i, kkf, kff, kef,
 l!
 
+\ Utility for defining a word
+\ 'c' ( "c" -- w )
+\ Read character, create new word then push its address.
+\ 'latest' will not be updated.
+h@l@, k1k0-h@$ kch@k1k0-+$ h@C+h!
+    i, 'h, '@, 'l, '@, ',,
+    'L, k1k0-, 'h, '@, '$,
+    'k, 'h, '@, 'L, k1k0-, '+, '$,
+    'h, '@, 'C, '+, 'h, '!, 'e,
+l!
+
 Q
