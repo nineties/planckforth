@@ -159,9 +159,9 @@ c# i, 'd, '@, 'e, l!
 \ Move value from data stack to return stack.
 c{  i,
     'r, 'r, '@,     \ ( a rsp ret )
-    'r, 'C, '-, '#, \ ( a rsp ret rsp-CELL rsp-CELL )
-    'R,             \ ( a rsp+CELL ret rsp ) extend return stack
-    '!,             \ ( a rsp+CELL ) store return address to the top
+    'r, 'C, '-, '#, \ ( a rsp ret rsp-1 rsp-1 )
+    'R,             \ ( a rsp+1 ret rsp ) extend return stack
+    '!,             \ ( a rsp+1 ) store return address to the top
     '!,             \ store a to the 2nd
     'e,
 l!
@@ -171,7 +171,7 @@ l!
 c}  i,
     'r, 'C, '+, '@, \ ( a ) load 2nd value
     'r, '@,         \ ( a ret ) load return addr
-    'r, 'C, '+, '#, \ ( a ret rsp+CELL rsp+CELL )
+    'r, 'C, '+, '#, \ ( a ret rsp+1 rsp+1 )
     'R,             \ ( a ret rsp ) reduce return stack
     '!,             \ ( a , R:ret ) store return addr to top of return stack
     'e,
