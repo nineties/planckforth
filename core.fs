@@ -194,5 +194,16 @@ l!
 \ Store byte 'c' to here and increment it
 cB i, 'h, '@, '$, 'h, 'L, k1k0-, '+, 'h, '!, 'e, l!
 
-kA kB B t
+\ 'a' ( c-addr -- a-addr ) ALIGNED
+\ Round up 'a' to a multiple of CELL
+ca i,
+    'L, Ck1k0--, '+,        \ ( a+CELL-1 )
+    'L, Ck1k0-- k0k1- ^,    \ ( a+CELL-1 ~(CELL-1) )
+    '&, 'e,
+l!
+
+\ 'A' ( -- ) ALIGN
+\ Round up 'here' to a multiple of CELL
+cA i, 'h, '@, 'a, 'h, '!, 'e, l!
+
 Q
