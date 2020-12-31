@@ -275,10 +275,24 @@ i,
     '~, 'o, '-,                 \ ( buf p-buf )
 'e, l!
 
-h@ kAB kBB kCB A  \ ( c-from )
-h@ # k4k0-+h!     \ ( c-from c-to )
-k3k0-             \ ( c-from c-to 3 )
-m                 \ copy!
-kAt
+\ 'F' ( c-addr u -- w )
+\ Lookup multi-character word from dictionary.
+\ Return CFA of the word if found, 0 otherwise.
+\ Immediate and smudge flags are not considered yet.
+cF i,
+    'l, '@, \ ( addr u it=latest )
+\ <loop>
+    '#, 'J, kHk0-C*,    \ goto <exit> if it=NULL
+        '{, 'o, 'o,     \ ( addr u addr u , R:it )
+        'r, '@, 'L, Ck1k0-+, '+,    \ compute address of name
+        'r, '@, 'C, '+, '?,         \ load length+flag field
+        \ ( addr1 u1 addr1 u1 addr2 u2 , R:it )
+        'E, 'J, k4k0-C*,    \ goto <1> if name is different
+        '}, 'j, k5k0-C*,    \ goto <exit>
+\ <1>
+        '}, '@, 'j, k0kI-C*,
+\ <exit>
+    '{, '_, '_, '}, \ Drop addr len, return it
+'e, l!
 
 Q
