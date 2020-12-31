@@ -205,7 +205,7 @@ cm i,
 'e, l!
 
 \ 'a' ( c-addr -- a-addr ) ALIGNED
-\ Round up 'a' to a multiple of CELL
+\ Round up to a nearlest multiple of CELL
 ca i,
     'L, Ck1k0--, '+,    \ ( a+CELL-1 )
     'L, k0k0-C-,        \ ( a+CELL-1 ~(CELL-1) )
@@ -213,7 +213,7 @@ ca i,
 'e, l!
 
 \ 'A' ( -- ) ALIGN
-\ Round up 'here' to a multiple of CELL
+\ Round up 'here' to a nearlest multiple of CELL
 cA i, 'h, '@, 'a, 'h, '!, 'e, l!
 
 \ 'E' ( c-addr1 u1 c-addr2 u2 -- n ) STR=
