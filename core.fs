@@ -324,7 +324,7 @@ cI i,
         'L, k0k0-, '=,
         'J, k5k0-C*,    \ goto <immediate> if immediate-bit=1
         'G, ',,         \ compile CFA
-        'j, k0k;-C*,    \ goto <loop>
+        'j, k0kE-C*,    \ goto <loop>
 \ <immediate>
         'G, 'x,         \ execute CFA
         'j, k0kI-C*,    \ goto <loop>
