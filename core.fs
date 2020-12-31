@@ -189,7 +189,7 @@ c~ i,
 
 \ 'B' ( c -- ) C-COMMA
 \ Store byte 'c' to here and increment it
-cB i, 'h, '@, '$, 'h, 'L, k1k0-, '+, 'h, '!, 'e, l!
+cB i, 'h, '@, '$, 'h, '@, 'L, k1k0-, '+, 'h, '!, 'e, l!
 
 \ 'a' ( c-addr -- a-addr ) ALIGNED
 \ Round up 'a' to a multiple of CELL
