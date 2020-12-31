@@ -382,4 +382,15 @@ c ; i ,
 \ Set immediate-bit of ';'
 l @ C + # { ? k @ k @ + | } $
 
+: immediate-bit [ ' L , k @ k @ + , ] ;
+: length-mask   [ ' L , k O k 0 + , ] ;
+
+\ ( "name" -- )
+: set-immediate
+    W F C + # { ? immediate-bit | } $
+;
+
+\ Set immediate-bit of single-line comment word \
+\ so that we can write comments in compile-mode.
+set-immediate \
 Q
