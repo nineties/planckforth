@@ -278,21 +278,29 @@ i,
 \ 'F' ( c-addr u -- w )
 \ Lookup multi-character word from dictionary.
 \ Return CFA of the word if found, 0 otherwise.
-\ Immediate and smudge flags are not considered yet.
+\ Entries with smudge-bit=1 are ignored.
 cF i,
-    'l, '@, \ ( addr u it=latest )
-\ <loop>
-    '#, 'J, kHk0-C*,    \ goto <exit> if it=NULL
-        '{, 'o, 'o,     \ ( addr u addr u , R:it )
-        'r, '@, 'L, Ck1k0-+, '+,    \ compute address of name
-        'r, '@, 'C, '+, '?,         \ load length+flag field
-        \ ( addr1 u1 addr1 u1 addr2 u2 , R:it )
-        'E, 'J, k4k0-C*,    \ goto <1> if name is different
-        '}, 'j, k5k0-C*,    \ goto <exit>
+    'l, '@,
+\ <loop> ( addr u it )
+    '#, 'J, kUk0-C*,        \ goto <exit> if it=NULL
+        '#, 'C, '+, '?,     \ ( addr u it len+flag )
+        'L, k@, '&,         \ test smudge-bit of it
+        'J, k4k0-C*,
 \ <1>
-        '}, '@, 'j, k0kI-C*,
+            \ smudge-bit=1
+            '@,             \ load link
+            'j, k0k>-C*,    \ goto <loop>
+\ <2>
+            \ smudge-bit=0
+            '{, 'o, 'o, 'r, '@, '~, '{, '~, '}, '},
+            \ ( addr u it addr u it )
+            '#, 'L, Ck1k0-+, '+,        \ address of name
+            '~, 'C, '+, '?,             \ length+flag
+            'L, kOk0-, '&,              \ take length (lower 5-bits)
+            \ ( addr1 u1 it addr1 u1 addr2 u2 )
+            'E, 'J, k0kJ-C*,            \ goto <1> if different name
 \ <exit>
-    '{, '_, '_, '}, \ Drop addr len, return it
+    '{, '_, '_, '}, \ Drop addr u return it
 'e, l!
 
 Q
