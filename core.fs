@@ -336,8 +336,22 @@ I \ Enter 2nd Stage
 
 r C + R     \ Drop 1st stage interpreter from call stack
 
+\ '\'' ( "name" -- xt )
+\ Redefine existing '\'' which uses 'k' and 'f'
+\ to use 'W' and 'F'.
+c ' i , ' W , ' F , ' G , ' e , l !
 
-\ : ( "<spaces>name" -- R:w ) COLON
+\ [ immediate ( -- )
+\ Switch to immediate mode
+c [ i , ' L , k 0 k 0 - , ' M , ' ! , ' e , l !
+\ Toggle immediate-bit of [
+l @ C + # { ? k @ k @ + | } $
+
+\ ] ( -- )
+\ Switch to compile mode
+c ] i , ' L , k 1 k 0 - , ' M , ' ! , ' e , l !
+
+\ : ( "name" -- R:w ) COLON
 \ Read name, create word, push it to return stack,
 \ compile 'docol' and enter compile mode.
 c : i ,
@@ -352,8 +366,7 @@ c : i ,
     ' m ,               \ fill name
     ' A ,               \ align here
     ' i , ' , ,         \ compile docol
-    \ enter compile mode
-    ' L , k 1 k 0 - , ' M , ' ! ,
+    ' ] ,               \ enter compile mode
 ' e , l !
 
 \ ; immediate ( R:w -- ) SEMICOLON
@@ -362,11 +375,9 @@ c ; i ,
     ' L , ' e , ' , ,   \ compile exit
 
     \ pick 2nd element of return stack
-    ' } , ' } , ' ~ , ' { ,
-    ' l , ' ! ,         \ update latest
-
-    \ enter immediate mode
-    ' L , k 0 k 0 - , ' M , ' ! ,
+     ' } , ' } , ' ~ , ' { ,
+     ' l , ' ! ,         \ update latest
+     ' [ ,               \ enter immediate mode
 ' e , l !
 \ Toggle immediate-bit of ';'
 l @ C + # { ? k @ k @ + | } $
