@@ -191,6 +191,22 @@ c~ i,
 \ Store byte 'c' to here and increment it
 cB i, 'h, '@, '$, 'h, '@, 'L, k1k0-, '+, 'h, '!, 'e, l!
 
+\ 'm' ( c-from c-to u -- ) CMOVE
+\ Copy u bytes from c-from to c-to.
+\ It is not safe when two region overlaps.
+cm i,
+\ <loop>
+    '#, 'J, kDk0-C*,        \ goto <exit> if u=0
+        '{,                 \ preserve u
+        'o, '?,             \ read character ( c-from c-to c )
+        'o, '$,             \ store c to c-to ( c-from c-to )
+        '{, 'L, k1k0-, '+,  \ increment c-from
+        '}, 'L, k1k0-, '+,  \ increment c-to
+        '}, 'L, k1k0-, '-,  \ decrement u
+        'j, k0kE-C*,        \ goto <loop>
+\ <exit>
+'e, l!
+
 \ 'a' ( c-addr -- a-addr ) ALIGNED
 \ Round up 'a' to a multiple of CELL
 ca i,
@@ -256,8 +272,13 @@ i,
     'L, k1k0-, '+,              \ increment p
     'k, '#, 's, 'J, k0k9-C*,    \ goto <loop> if c is not space
     '_, 'L, ,                   \ ( p buf )
-    'Q,
     '~, 'o, '-,                 \ ( buf p-buf )
 'e, l!
+
+h@ kAB kBB kCB A  \ ( c-from )
+h@ # k4k0-+h!     \ ( c-from c-to )
+k3k0-             \ ( c-from c-to 3 )
+m                 \ copy!
+kAt
 
 Q
