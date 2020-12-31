@@ -358,7 +358,7 @@ c : i ,
     \ save the address of the word to
     \ **2nd position** of return stack.
     \ Same reasons for TOR and FROMR
-    ' h , ' @ , ' # ,
+    ' h , ' @ ,
     ' } , ' ~ , ' { , ' { ,
     ' l , ' @ , ' , ,   \ fill link
     ' W ,               \ read name ( addr len )
