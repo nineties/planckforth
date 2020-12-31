@@ -336,4 +336,39 @@ I \ Enter 2nd Stage
 
 r C + R     \ Drop 1st stage interpreter from call stack
 
+
+\ : ( "<spaces>name" -- R:w ) COLON
+\ Read name, create word, push it to return stack,
+\ compile 'docol' and enter compile mode.
+c : i ,
+    \ save the address of the word to
+    \ **2nd position** of return stack.
+    \ Same reasons for TOR and FROMR
+    ' h , ' @ , ' # ,
+    ' } , ' ~ , ' { , ' { ,
+    ' l , ' @ , ' , ,   \ fill link
+    ' W ,               \ read name ( addr len )
+    ' # , ' B ,         \ fill length ( addr len )
+    ' m ,               \ fill name
+    ' A ,               \ align here
+    ' i , ' , ,         \ compile docol
+    \ enter compile mode
+    ' L , k 1 k 0 - , ' M , ' ! ,
+' e , l !
+
+\ ; immediate ( R:w -- ) SEMICOLON
+\ Compile 'exit', add w to dictionary and  enter immediate mode.
+c ; i ,
+    ' L , ' e , ' , ,   \ compile exit
+
+    \ pick 2nd element of return stack
+    ' } , ' } , ' ~ , ' { ,
+    ' l , ' ! ,         \ update latest
+
+    \ enter immediate mode
+    ' L , k 0 k 0 - , ' M , ' ! ,
+' e , l !
+\ Toggle immediate-bit of ';'
+l @ C + # { ? k @ k @ + | } $
+
 Q
