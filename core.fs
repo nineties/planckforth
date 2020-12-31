@@ -344,7 +344,7 @@ c ' i , ' W , ' F , ' G , ' e , l !
 \ [ immediate ( -- )
 \ Switch to immediate mode
 c [ i , ' L , k 0 k 0 - , ' M , ' ! , ' e , l !
-\ Toggle immediate-bit of [
+\ Set immediate-bit of [
 l @ C + # { ? k @ k @ + | } $
 
 \ ] ( -- )
@@ -379,7 +379,7 @@ c ; i ,
      ' l , ' ! ,         \ update latest
      ' [ ,               \ enter immediate mode
 ' e , l !
-\ Toggle immediate-bit of ';'
+\ Set immediate-bit of ';'
 l @ C + # { ? k @ k @ + | } $
 
 Q
