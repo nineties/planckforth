@@ -73,10 +73,8 @@ l!
 \ | link | len+flag | name... | padding... | code field ...|
 \ +------+----------+---------+------------+---------------+
 \ - link pointer to the previous entry (CELL byte)
-\ - length of the name (5 bits)
+\ - length of the name (7 bits)
 \ - immediate flag (1 bit)
-\ - smuege flag (1 bit)
-\ - unused bit (1 bit)
 \ - characters of the name (N bits)
 \ - padding to align CELL boundary if necessary.
 \ - codewords and datawords (CELL-bye aligned)
@@ -253,14 +251,14 @@ cs i, '#, 'L, k , '=, '~, 'L, k:k0-, '=, '|, 'e, l!
 \ 'W' ( "<spaces>name" -- c-addr u )
 \ Skip leading spaces (' ' and '\n'),
 \ Read name, then return its address and length.
-\ The maximum length of the name is 31. The behavior is undefined
-\ when the name exceeds 31 characters,
+\ The maximum length of the name is 127. The behavior is undefined
+\ when the name exceeds 127 characters,
 \ Note that it returns the address of statically allocated buffer,
 \ so the content will be overwritten each time 'w' executed.
 
 \ Allocate buffer of 31bytes or more,
 \ push the address for compilation of 'w'
-h@ # kOk0-+ h! A
+h@ # kOk0++ h! A
 cW~
 i,
     \ skip leading spaces
@@ -279,27 +277,20 @@ i,
 \ 'F' ( c-addr u -- w )
 \ Lookup multi-character word from dictionary.
 \ Return 0 if the word is not found.
-\ Entries with smudge-bit=1 are ignored.
 cF i,
     'l, '@,
 \ <loop> ( addr u it )
-    '#, 'J, kUk0-C*,        \ goto <exit> if it=NULL
-        '#, 'C, '+, '?,     \ ( addr u it len+flag )
-        'L, k@, '&,         \ test smudge-bit of it
-        'J, k4k0-C*,
+    '#, 'J, kIk0-C*,        \ goto <exit> if it=NULL
+        '{, 'o, 'o, 'r, '@, '~, '{, '~, '}, '},
+        \ ( addr u it addr u it )
+        '#, 'L, Ck1k0-+, '+,        \ address of name
+        '~, 'C, '+, '?,             \ length+flag
+        'L, kOk0+, '&,              \ take length (lower 7-bits)
+        \ ( addr1 u1 it addr1 u1 addr2 u2 )
+        'E, 'J, k3k0-C*,            \ goto <1> if different name
+        'j, k4k0-C*,                \ goto <exit>
 \ <1>
-            \ smudge-bit=1
-            '@,             \ load link
-            'j, k0k>-C*,    \ goto <loop>
-\ <2>
-            \ smudge-bit=0
-            '{, 'o, 'o, 'r, '@, '~, '{, '~, '}, '},
-            \ ( addr u it addr u it )
-            '#, 'L, Ck1k0-+, '+,        \ address of name
-            '~, 'C, '+, '?,             \ length+flag
-            'L, kOk0-, '&,              \ take length (lower 5-bits)
-            \ ( addr1 u1 it addr1 u1 addr2 u2 )
-            'E, 'J, k0kJ-C*,            \ goto <1> if different name
+        '@, 'j, k0kO-C*,            \ load link, goto <loop>
 \ <exit>
     '{, '_, '_, '}, \ Drop addr u return it
 'e, l!
