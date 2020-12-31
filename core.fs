@@ -332,4 +332,10 @@ cI i,
         'j, k0kI-C*,    \ goto <loop>
 l!
 
+I \ Enter 2nd Stage
+
+\ === 2nd Stage Interpreter ===
+
+r C + R     \ Drop 1st stage interpreter from call stack
+
 Q
