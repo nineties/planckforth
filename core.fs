@@ -312,4 +312,21 @@ cG i,
 h@ k0k0-,   \ allocate 1 cell and fill 0
 cM~ i, 'L, , 'e, l!
 
+\ 'I'
+\ The 2nd Stage Interpreter
+cI i,
+\ <loop>
+    'W,     \ read name from input
+    'F,     \ find word
+    'G,     \ Get CFA
+    'M, '@, \ read state
+    'J, k4k0-C*,    \ goto <immediate_mode> if state=0
+\ <compile_mode>
+    ',,
+    'j, k0k9-C*,    \ goto <loop>
+\ <immediate_mode>
+    'x,
+    'j, k0k<-C*,    \ goto <loop>
+l!
+
 Q
