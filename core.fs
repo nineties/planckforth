@@ -249,7 +249,7 @@ l!
 \ Return 1 if c==' ' or c=='\n', 0 otherwise.
 cs i, '#, 'L, k , '=, '~, 'L, k:k0-, '=, '|, 'e, l!
 
-\ 'w' ( "<spaces>name" -- c-addr u )
+\ 'W' ( "<spaces>name" -- c-addr u )
 \ Skip leading spaces (' ' and '\n'),
 \ Read name, then return its address and length.
 \ The maximum length of the name is 31. The behavior is undefined
@@ -260,7 +260,7 @@ cs i, '#, 'L, k , '=, '~, 'L, k:k0-, '=, '|, 'e, l!
 \ Allocate buffer of 31bytes or more,
 \ push the address for compilation of 'w'
 h@ # kOk0-+ h! A
-cw~
+cW~
 i,
     \ skip leading spaces
     'k, '#, 's, 'J, k4k0-C*, '_, 'j, k0k7-C*,
