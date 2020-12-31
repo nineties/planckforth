@@ -256,7 +256,7 @@ cs i, '#, 'L, k , '=, '~, 'L, k:k0-, '=, '|, 'e, l!
 \ Note that it returns the address of statically allocated buffer,
 \ so the content will be overwritten each time 'w' executed.
 
-\ Allocate buffer of 31bytes or more,
+\ Allocate buffer of 127 bytes or more,
 \ push the address for compilation of 'w'
 h@ # kOk0++ h! A
 cW~
