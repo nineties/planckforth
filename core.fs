@@ -189,21 +189,19 @@ c~ i,
 \ Store byte 'c' to here and increment it
 cB i, 'h, '@, '$, 'h, '@, 'L, k1k0-, '+, 'h, '!, 'e, l!
 
-\ 'm' ( c-from c-to u -- ) CMOVE
-\ Copy u bytes from c-from to c-to.
-\ It is not safe when two region overlaps.
+\ 'm' ( c-addr u -- ) CMOVE,
+\ Copy u bytes from c-addr to here,
+\ increment here u bytes.
 cm i,
 \ <loop>
-    '#, 'J, kDk0-C*,        \ goto <exit> if u=0
+    '#, 'J, k>k0-C*,        \ goto <exit> if u=0
         '{,                 \ preserve u
-        'o, '?,             \ read character ( c-from c-to c )
-        'o, '$,             \ store c to c-to ( c-from c-to )
-        '{, 'L, k1k0-, '+,  \ increment c-from
-        '}, 'L, k1k0-, '+,  \ increment c-to
+        '#, '?, 'B,         \ copy byte
+        'L, k1k0-, '+,      \ increment c-addr
         '}, 'L, k1k0-, '-,  \ decrement u
-        'j, k0kE-C*,        \ goto <loop>
+        'j, k0k?-C*,        \ goto <loop>
 \ <exit>
-    '_, '_, '_,
+    '_, '_,
 'e, l!
 
 \ 'a' ( c-addr -- a-addr ) ALIGNED
