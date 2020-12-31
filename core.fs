@@ -229,4 +229,35 @@ cE i,
     '_, '_, '_, 'L, k0k0-, 'e,
 l!
 
+\ 's' ( c -- n)
+\ Return 1 if c==' ' or c=='\n', 0 otherwise.
+cs i, '#, 'L, k , '=, '~, 'L, k:k0-, '=, '|, 'e, l!
+
+\ 'w' ( "<spaces>name" -- c-addr u )
+\ Skip leading spaces (' ' and '\n'),
+\ Read name, then return its address and length.
+\ The maximum length of the name is 31. The behavior is undefined
+\ when the name exceeds 31 characters,
+\ Note that it returns the address of statically allocated buffer,
+\ so the content will be overwritten each time 'w' executed.
+
+\ Allocate buffer of 31bytes or more,
+\ push the address for compilation of 'w'
+h@ # kOk0-+ h! A
+cw~
+i,
+    \ skip leading spaces
+    'k, '#, 's, 'J, k4k0-C*, '_, 'j, k0k7-C*,
+    \ p=address of buffer
+    'L, #, '~,
+\ <loop>
+    \ ( p c )
+    'o, '$,                     \ store c to p
+    'L, k1k0-, '+,              \ increment p
+    'k, '#, 's, 'J, k0k9-C*,    \ goto <loop> if c is not space
+    '_, 'L, ,                   \ ( p buf )
+    'Q,
+    '~, 'o, '-,                 \ ( buf p-buf )
+'e, l!
+
 Q
