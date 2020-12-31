@@ -205,6 +205,7 @@ cm i,
         '}, 'L, k1k0-, '-,  \ decrement u
         'j, k0kE-C*,        \ goto <loop>
 \ <exit>
+    '_, '_, '_,
 'e, l!
 
 \ 'a' ( c-addr -- a-addr ) ALIGNED
