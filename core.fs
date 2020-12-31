@@ -297,7 +297,7 @@ cF i,
 \ Get CFA of the word
 cG i,
     'C, '+, '#, '?, \ ( addr len+flag )
-    'L, kOk0-, '&,  \ take length
+    'L, kOk0+, '&,  \ take length
     '+,             \ add length to the addr
     'L, k1k0-, '+,  \ add 1 to the addr (1byte for len+field)
     'a,             \ align
