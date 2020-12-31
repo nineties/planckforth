@@ -215,7 +215,7 @@ cE i,
             '{,                 \ preserve u
             'o, '?,             \ ( c-addr1 c-addr2 c1 )
             'o, '?,             \ ( c-addr1 c-addr2 c1 c2 )
-            '},                 \ ( c-addr1 c-addr2 c1 c2 u )
+            '},                 \ ( c-addr1 c-addr2 c1 c2 u ) restore u
             '~, '{, '~, '},     \ ( c-addr1 c-addr2 u c1 c2 )
             '=, 'J, kFk0-C*,    \ jump to <not_equal> if c1!=c2
             '{, '{,             \ ( c-addr1 , R:u c-addr2 )
