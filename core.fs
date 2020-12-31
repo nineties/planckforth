@@ -316,17 +316,20 @@ cM~ i, 'L, , 'e, l!
 \ The 2nd Stage Interpreter
 cI i,
 \ <loop>
-    'W,     \ read name from input
-    'F,     \ find word
-    'G,     \ Get CFA
-    'M, '@, \ read state
-    'J, k4k0-C*,    \ goto <immediate_mode> if state=0
-\ <compile_mode>
-    ',,
-    'j, k0k9-C*,    \ goto <loop>
-\ <immediate_mode>
-    'x,
-    'j, k0k<-C*,    \ goto <loop>
+    'W,                 \ read name from input
+    'F,                 \ find word
+    'M, '@,             \ read state
+    'J, kAk0-C*,        \ goto <immediate> if state=0
+\ <compile>
+        '#, 'C, '+, '?, \ ( w len+flag )
+        'L, k@k@+, '&,  \ test immediate bit
+        'L, k0k0-, '=,
+        'J, k5k0-C*,    \ goto <immediate> if immediate-bit=1
+        'G, ',,         \ compile CFA
+        'j, k0k;-C*,    \ goto <loop>
+\ <immediate>
+        'G, 'x,         \ execute CFA
+        'j, k0kI-C*,    \ goto <loop>
 l!
 
 Q
