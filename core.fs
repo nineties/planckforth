@@ -393,4 +393,40 @@ l @ C + # { ? k @ k @ + | } $
 \ Set immediate-bit of single-line comment word \
 \ so that we can write comments in compile-mode.
 set-immediate \
-Q
+
+: alias-builtin \ ( "name-new" "name-old" -- )
+    \ Create new word "name-new".
+    \ Copy code pointer of builtin word "name-old" to
+    \ the new word "name-new".
+    \ "name-old" must not be a FORTH word.
+    h @ l @ , l !   \ fill link, update latest
+    W # B m A       \ fill length and chars of "name-new"
+    W F G @ ,       \ fill code-pointer of "name-old"
+;
+
+alias-builtin bye       Q
+alias-builtin cell      C
+alias-builtin here      h
+alias-builtin latest    l
+alias-builtin key       k
+alias-builtin emit      t
+alias-builtin branch    j
+alias-builtin 0branch   J
+alias-builtin execute   x
+alias-builtin c@        ?
+alias-builtin c!        $
+alias-builtin sp@       d
+alias-builtin sp!       D
+alias-builtin rp@       r
+alias-builtin rp!       R
+alias-builtin docol     i
+alias-builtin exit      e
+alias-builtin lit       L
+alias-builtin litstring S
+alias-builtin div       /
+alias-builtin mod       %
+alias-builtin and       &
+alias-builtin or        |
+alias-builtin xor       ^
+
+bye
