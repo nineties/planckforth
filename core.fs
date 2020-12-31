@@ -404,6 +404,13 @@ set-immediate \
     W F G @ ,       \ fill code-pointer of "name-old"
 ;
 
+\ Add new names to builtin primities.
+\ Instead of defining as a new FORTH word like shown below,
+\ the aliases ared created by copying their code-pointer.
+\ : new-name old-name ;
+\ Primitive operators which manipulate program counter and return stack
+\ can not be defined as a FORTH word.
+
 alias-builtin bye       Q
 alias-builtin cell      C
 alias-builtin here      h
