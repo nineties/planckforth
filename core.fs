@@ -277,7 +277,7 @@ i,
 
 \ 'F' ( c-addr u -- w )
 \ Lookup multi-character word from dictionary.
-\ Return CFA of the word if found, 0 otherwise.
+\ Return 0 if the word is not found.
 \ Entries with smudge-bit=1 are ignored.
 cF i,
     'l, '@,
@@ -303,4 +303,13 @@ cF i,
     '{, '_, '_, '}, \ Drop addr u return it
 'e, l!
 
+\ 'G' ( w -- xt )
+\ Get CFA of the word
+cG i,
+    'C, '+, '#, '?, \ ( addr len+flag )
+    'L, kOk0-, '&,  \ take length
+    '+,             \ add length to the addr
+    'L, k1k0-, '+,  \ add 1 to the addr (1byte for len+field)
+    'a,             \ align
+'e, l!
 Q
