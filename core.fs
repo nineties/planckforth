@@ -394,6 +394,12 @@ l @ C + # { ? k @ k @ + | } $
 \ so that we can write comments in compile-mode.
 set-immediate \
 
+\ Set immediate-bit of the word being defind
+: immediate
+    r @ C + # { ? immediate-bit | } $
+;
+set-immediate immediate
+
 : alias-builtin \ ( "name-new" "name-old" -- )
     \ Create new word "name-new".
     \ Copy code pointer of builtin word "name-old" to
