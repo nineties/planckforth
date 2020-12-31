@@ -246,7 +246,7 @@ l!
 \ Return 1 if c==' ' or c=='\n', 0 otherwise.
 cs i, '#, 'L, k , '=, '~, 'L, k:k0-, '=, '|, 'e, l!
 
-\ 'W' ( "<spaces>name" -- c-addr u )
+\ 'W' ( "name" -- c-addr u )
 \ Skip leading spaces (' ' and '\n'),
 \ Read name, then return its address and length.
 \ The maximum length of the name is 127. The behavior is undefined
