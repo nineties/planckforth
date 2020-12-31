@@ -203,4 +203,30 @@ ca i,
 \ Round up 'here' to a multiple of CELL
 cA i, 'h, '@, 'a, 'h, '!, 'e, l!
 
+\ 'E' ( c-addr1 u1 c-addr2 u2 -- n ) STR=
+\ Compare two strings.
+\ Return 1 if they are same 0 otherwise.
+cE i,
+    '{, '~, '},                 \ ( c-addr1 c-addr2 u1 u2 )
+    'o, '=, 'J, kVk0-C*,        \ jump to <not_equal> if u1!=u2
+\ <loop>
+        \ ( c-addr1 c-addr2 u )
+        '#, 'J, kMk0-C*,        \ jump to <equal> if u==0
+            '{,                 \ preserve u
+            'o, '?,             \ ( c-addr1 c-addr2 c1 )
+            'o, '?,             \ ( c-addr1 c-addr2 c1 c2 )
+            '},                 \ ( c-addr1 c-addr2 c1 c2 u )
+            '~, '{, '~, '},     \ ( c-addr1 c-addr2 u c1 c2 )
+            '=, 'J, kFk0-C*,    \ jump to <not_equal> if c1!=c2
+            '{, '{,             \ ( c-addr1 , R:u c-addr2 )
+            'L, k1k0-, '+,      \ increment c-addr1
+            '}, 'L, k1k0-, '+,  \ increment c-addrr2
+            '}, 'L, k1k0-, '-,  \ decrement u
+            'j, k0kN-C*,        \ jump to <loop>
+\ <equal>
+    '_, '_, '_, 'L, k1k0-, 'e,
+\ <not_equal>
+    '_, '_, '_, 'L, k0k0-, 'e,
+l!
+
 Q
