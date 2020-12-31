@@ -305,19 +305,11 @@ cG i,
     'a,             \ align
 'e, l!
 
-\ `state` variable (**The 1st multi-char word**)
+\ 'M' ( -- c-addr)
+\ The state variable
 \ 0: immediate mode
 \ 1: compile mode
-h@          \ save address of cell
-k0k0-,      \ allocate 1 cell and fill 0
-h@          \ save address of word
-W state     \ ( cell word name u )
-l@,         \ fill link
-#B          \ fill length ( cell word name u )
-#{          \ preserve u
-h@~m        \ fill name ( cell word )
-h@ } + h!   \ restore u, increment here
-A           \ align here
-i, 'L, ~, 'e, l!
+h@ k0k0-,   \ allocate 1 cell and fill 0
+cM~ i, 'L, , 'e, l!
 
 Q
