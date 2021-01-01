@@ -740,17 +740,12 @@ alias-builtin xor       ^
 
 : (
     1   \ depth counter
-    begin
-        key
-        dup '(' = if
-            drop 1+     \ increase depth
-        else
-            ')' = if
-                1-      \ decrease depth
-            then
-        then
-    dup 0= until
-    drop
+    begin ?dup while
+        key case
+        '(' of 1+ endof \ increment depth
+        ')' of 1- endof \ decrement depth
+        endcase
+    repeat
 ; immediate
 
 (
