@@ -781,4 +781,44 @@ alias-builtin xor       ^
     here +!
 ;
 
+( === create and does> === )
+
+\ no-operation
+: nop ;
+
+\ ( "name" -- )
+\ Read name and create new dictionary entry.
+\ When the word is executed, it pushs value of here
+\ at the end of the entry.
+: create
+    latest @ ,              \ fill link
+    here @ cell- latest !   \ update latest
+    word
+    dup c, cmove, align     \ fill length and name
+    docol ,                 \ compile docol
+    ['] lit ,
+    here @ 3 cells + ,      \ compile the address
+    ['] nop ,               \ does>, if any, will fill this cell
+    ['] exit ,              \ compile exit
+;
+
+: does>-helper
+    latest @ >cfa
+    3 cells + tuck !    \ replace nop
+;
+
+: does>
+    0 [compile] literal \ literal for xt
+    here @ cell-        \ save addr of xt
+
+    \ fill xt and exit after docol of latest
+    compile does>-helper
+
+    [compile] ; \ finish compilation of initialization part
+    :noname     \ start compilation of does> part
+    swap !      \ backfill xt to the operand of literal
+; immediate
+
+: constant create , does> @ ;
+
 bye
