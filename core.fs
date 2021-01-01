@@ -676,8 +676,12 @@ alias-builtin xor       ^
 
 \ === Recursive Call ===
 
+\ recursive call.
+\ compiles xt of current definition
 : recurse
     latest @ >cfa ,
 ; immediate
+
+
 
 bye
