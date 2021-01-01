@@ -674,19 +674,10 @@ alias-builtin xor       ^
     here @ over - swap !    \ backfill offset from while to here
 ; immediate
 
-:noname
-    begin
-        1
-    while
-        [ key A ] literal emit
-    repeat
-; execute
+\ === Recursive Call ===
 
-
-bye
-
-\ === Integer Comparison ===
-
-
+: recurse
+    latest @ >cfa ,
+; immediate
 
 bye
