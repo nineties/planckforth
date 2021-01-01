@@ -721,6 +721,22 @@ alias-builtin xor       ^
     compile drop
 ; immediate
 
+\ <value> a b rangeof <body> endof
+\ Execute <body> when
+\ a <= <value> and <value> <= b
+: rangeof
+    compile 2
+    compile pick
+    compile >=
+    compile swap
+    compile 2
+    compile pick
+    compile <=
+    compile and
+    [compile] if
+    compile drop
+; immediate
+
 \ compile: ( orig1 -- orig2 )
 : endof
     [compile] else
