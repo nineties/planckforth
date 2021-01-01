@@ -450,9 +450,11 @@ alias-builtin or        |
 alias-builtin xor       ^
 
 \ Rename existing FORTH words
-: word W ;
-: find F ;
-: >cfa G ;
+: word      W ;
+: find      F ;
+: >cfa      G ;
+: c,        B ;
+: cmove,    m ;
 
 \ === Compilers ===
 
