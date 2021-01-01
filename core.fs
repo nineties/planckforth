@@ -73,8 +73,9 @@ l!
 \ | link | len+flag | name... | padding... | code field ...|
 \ +------+----------+---------+------------+---------------+
 \ - link pointer to the previous entry (CELL byte)
-\ - length of the name (7 bits)
-\ - immediate flag (1 bit)
+\ - length of the name (6 bits)
+\ - smudge bit (1 bit)
+\ - immediate bit (1 bit)
 \ - characters of the name (N bits)
 \ - padding to align CELL boundary if necessary.
 \ - codewords and datawords (CELL-bye aligned)
@@ -249,14 +250,14 @@ cs i, '#, 'L, k , '=, '~, 'L, k:k0-, '=, '|, 'e, l!
 \ 'W' ( "name" -- c-addr u )
 \ Skip leading spaces (' ' and '\n'),
 \ Read name, then return its address and length.
-\ The maximum length of the name is 127. The behavior is undefined
-\ when the name exceeds 127 characters,
+\ The maximum length of the name is 63. The behavior is undefined
+\ when the name exceeds 63 characters,
 \ Note that it returns the address of statically allocated buffer,
 \ so the content will be overwritten each time 'w' executed.
 
-\ Allocate buffer of 127 bytes or more,
+\ Allocate buffer of 63 bytes or more,
 \ push the address for compilation of 'w'
-h@ # kOk0++ h! A
+h@ # kok0-+ h! A
 cW~
 i,
     \ skip leading spaces
@@ -275,20 +276,27 @@ i,
 \ 'F' ( c-addr u -- w )
 \ Lookup multi-character word from dictionary.
 \ Return 0 if the word is not found.
+\ Entries with smudge-bit=1 are ignored.
 cF i,
     'l, '@,
 \ <loop> ( addr u it )
-    '#, 'J, kIk0-C*,        \ goto <exit> if it=NULL
-        '{, 'o, 'o, 'r, '@, '~, '{, '~, '}, '},
-        \ ( addr u it addr u it )
-        '#, 'L, Ck1k0-+, '+,        \ address of name
-        '~, 'C, '+, '?,             \ length+flag
-        'L, kOk0+, '&,              \ take length (lower 7-bits)
-        \ ( addr1 u1 it addr1 u1 addr2 u2 )
-        'E, 'J, k3k0-C*,            \ goto <1> if different name
-        'j, k4k0-C*,                \ goto <exit>
+    '#, 'J, kUk0-C*,        \ goto <exit> if it=NULL
+        '#, 'C, '+, '?,     \ ( addr u it len+flag )
+        'L, k@, '&,         \ test smudge-bit of it
+        'J, k4k0-C*,
 \ <1>
-        '@, 'j, k0kO-C*,            \ load link, goto <loop>
+            \ smudge-bit=1
+            '@,             \ load link
+            'j, k0k>-C*,    \ goto <loop>
+\ <2>
+            \ smudge-bit=0
+            '{, 'o, 'o, 'r, '@, '~, '{, '~, '}, '},
+            \ ( addr u it addr u it )
+            '#, 'L, Ck1k0-+, '+,        \ address of name
+            '~, 'C, '+, '?,             \ length+flag
+            'L, kok0-, '&,              \ take length (lower 6-bits)
+            \ ( addr1 u1 it addr1 u1 addr2 u2 )
+            'E, 'J, k0kJ-C*,            \ goto <1> if different name
 \ <exit>
     '{, '_, '_, '}, \ Drop addr u return it
 'e, l!
@@ -297,7 +305,7 @@ cF i,
 \ Get CFA of the word
 cG i,
     'C, '+, '#, '?, \ ( addr len+flag )
-    'L, kOk0+, '&,  \ take length
+    'L, kok0-, '&,  \ take length
     '+,             \ add length to the addr
     'L, k1k0-, '+,  \ add 1 to the addr (1byte for len+field)
     'a,             \ align
@@ -351,39 +359,39 @@ l @ C + # { ? k @ k @ + | } $
 \ Switch to compile mode
 c ] i , ' L , k 1 k 0 - , ' M , ' ! , ' e , l !
 
-\ : ( "name" -- R:w ) COLON
-\ Read name, create word, push it to return stack,
+\ : ( "name" -- ) COLON
+\ Read name, create word with smudge=1,
 \ compile 'docol' and enter compile mode.
 c : i ,
-    \ save the address of the word to
-    \ **2nd position** of return stack.
-    \ Same reasons for TOR and FROMR
     ' h , ' @ ,
-    ' } , ' ~ , ' { , ' { ,
     ' l , ' @ , ' , ,   \ fill link
+    ' l , ' ! ,         \ update latest
     ' W ,               \ read name ( addr len )
-    ' # , ' B ,         \ fill length ( addr len )
+    ' # ,               \ ( addr len len )
+    ' L , k @ , ' | ,
+    ' B ,               \ fill length + smudge-bit
     ' m ,               \ fill name
     ' A ,               \ align here
     ' i , ' , ,         \ compile docol
     ' ] ,               \ enter compile mode
 ' e , l !
 
-\ ; immediate ( R:w -- ) SEMICOLON
-\ Compile 'exit', add w to dictionary and  enter immediate mode.
+\ ; ( -- ) SEMICOLON
+\ Compile 'exit', unsmudge latest, and enter immediate mode.
 c ; i ,
     ' L , ' e , ' , ,   \ compile exit
-
-    \ pick 2nd element of return stack
-     ' } , ' } , ' ~ , ' { ,
-     ' l , ' ! ,         \ update latest
-     ' [ ,               \ enter immediate mode
+    ' l , ' @ ,
+    ' C , ' + , ' # , ' ? ,
+    ' L , k [ k d + ,   \ 0xbf
+    ' & , ' ~ , ' $ ,   \ unsmudge
+    ' [ ,               \ enter immediate mode
 ' e , l !
 \ Set immediate-bit of ';'
 l @ C + # { ? k @ k @ + | } $
 
-: immediate-bit [ ' L , k @ k @ + , ] ;
-: length-mask   [ ' L , k O k 0 + , ] ;
+: immediate-bit [ ' L , k @ k @ + , ] ; \ 0x80
+: smudge-bit    [ ' L , k @ , ] ;       \ 0x40
+: length-mask   [ ' L , k o k 0 - , ] ; \ 0x3f
 
 \ ( "name" -- )
 : set-immediate
@@ -394,11 +402,10 @@ l @ C + # { ? k @ k @ + | } $
 \ so that we can write comments in compile-mode.
 set-immediate \
 
-\ Set immediate-bit of the word being defind
+\ Set immediate-bit of 'latest'
 : immediate
-    r @ C + # { ? immediate-bit | } $
+    l @ C + # { ? immediate-bit | } $
 ;
-set-immediate immediate
 
 : alias-builtin \ ( "name-new" "name-old" -- )
     \ Create new word "name-new".
@@ -441,5 +448,173 @@ alias-builtin mod       %
 alias-builtin and       &
 alias-builtin or        |
 alias-builtin xor       ^
+
+\ Rename existing FORTH words
+: word W ;
+: find F ;
+: >CFA G ;
+
+\ === Compilers ===
+
+\ compile: ( n -- )
+\ runtime: ( -- n )
+: literal
+    lit lit ,   \ compile lit
+    ,           \ compile n
+; immediate
+
+\ compile: ( "name" -- )
+\ '[compile] word' compiles word *now* even if it is immediate
+: [compile]
+    ' ,
+; immediate
+
+\ ( xt -- )
+\ postpone compilation of xt
+: (compile)
+    [compile] literal   \ compile 'literal'
+    [ ' , ] literal ,   \ compile ,
+;
+
+\ compile: ( "name" -- )
+\ 'compile word' compiles word *later* even if it is immediate
+: compile
+    ' (compile)
+; immediate
+
+\ ( -- xt )
+: :noname
+    here @
+    [ docol ] literal , \ compile docol
+    ]                   \ enter compile mode
+;
+
+\ ( "name" -- xt )
+\ compile time tick
+: [']
+    '                   \ read name and get xt
+    [compile] literal   \ call literal
+; immediate
+
+\ === Constants ===
+
+\ Make small integer words to **compile** integer literals
+\ since we don't have integer literals yet.
+: 0 [ key 0 key 0 - ] literal
+    [compile] literal
+ ; immediate
+
+: f 0 ;
+
+
+
+bye
+: 0 lit lit , lit [ key 0 key 0 - , ] , ; immediate
+: 1 lit lit , lit [ key 1 key 0 - , ] , ; immediate
+: 2 lit lit , lit [ key 2 key 0 - , ] , ; immediate
+: 3 lit lit , lit [ key 3 key 0 - , ] , ; immediate
+
+: true 1 ;
+: false 0 ;
+
+\ === Address Arithmetic ===
+
+: cell+ cell + ;
+: cell- cell - ;
+: cells cell * ;
+
+\ ( c-addr -- a-addr )
+\ Round up to nearlest multiple of CELL
+: aligned
+    cell + 1 -
+    0 cell -
+    and
+;
+
+\ ( -- )
+\ Round up 'here' to nearlest multiple to CELL
+: align here @ aligned here !  ;
+
+\ === Stack Manipulation ===
+
+: drop  sp@ cell+ sp! ;     \ ( w -- )
+: dup   sp@ @ ;             \ ( w -- w w )
+
+: >r rp@ rp@ @ rp@ cell - dup rp! ! ! ;         \ ( w -- R:w )
+: r> rp@ cell + @ rp@ @ rp@  cell + dup rp! ! ; \ ( R:w -- w)
+
+: swap  sp@ cell + dup @ >r ! r> ;  \ ( a b -- b a )
+: rot   >r swap r> swap ;           \ ( a b c -- b c a )
+: -rot  swap >r swap r> ;           \ ( a b c -- c a b )
+: nip   swap drop ;                 \ ( a b -- a )
+: over  >r dup r> swap ;            \ ( a b -- a b a )
+: tuck  dup -rot ;                  \ ( a b -- b a b )
+: pick  cells sp@ swap + cell + @ ; \ ( wu ... x0 u -- xu ... x0 xu )
+
+: 2drop drop drop ;                 \ ( a b -- )
+: 2dup  over over ;                 \ ( a b -- a b a b )
+: 2swap >r -rot r> -rot ;           \ ( a b c d -- c d a b )
+: 2nip  2swap 2drop ;               \ ( a b c d -- c d )
+: 2over 3 pick 3 pick ;             \ ( a b c d -- a b c d a b )
+: 2tuck 2swap 2over ;               \ ( a b c d -- c d a b c d )
+: 2rot  >r >r 2swap r> r> 2swap ;   \ ( a b c d e f -- c d e f a b )
+: -2rot 2swap >r >r 2swap r> r> ;   \ ( a b c d e f -- e f a b c d )
+
+: rdrop r> rp@ ! ;  \ ( R:w -- )
+
+\ ( -- a-addr )
+\ The bottom address of stacks.
+\ sp@ and rp@ points bottom if implementation so far is correct.
+: sp0 [ ' lit , sp@ cell+ , ] ;
+: rp0 [ ' lit , rp@ , ] ;
+
+\ === Compilers ===
+
+\ compilation: ( "name" -- )
+\ runtime: ( -- xt )
+: [']
+    lit lit , word find >CFA ,
+; immediate
+
+\ compilation: ( n -- )
+\ runtime: ( -- n)
+: literal
+    ['] lit ,
+    ,
+; immediate
+
+\ compilation: ( "name" -- )
+\ Compile word now even if it is immediate
+: [compile]
+    ' ,
+; immediate
+
+\ compilation: ( xt -- )
+\ Compile word later
+: (compile)
+    [compile] literal
+;
+
+: 'A' [ key A ] literal ;
+
+
+'A' emit
+
+bye
+
+\ === Integer Arithmetic ===
+
+: 1+ 1 + ;
+: 1- 1 - ;
+
+\ ( a b -- (a mod b) (a / b)
+: /mod o o / { mod } ;
+
+\ ( n -- -n )
+: negate 0 ~ - ;
+
+\ === Integer Comparison ===
+
+
 
 bye
