@@ -682,6 +682,28 @@ alias-builtin xor       ^
     latest @ >cfa ,
 ; immediate
 
+\ === Multiline Comment ===
 
+: '('   [ key ( ] literal ;
+: ')'   [ key ) ] literal ;
+
+: (
+    1   \ depth counter
+    begin
+        key
+        dup '(' = if
+            drop 1+     \ increase depth
+        else
+            ')' = if
+                1-      \ decrease depth
+            then
+        then
+    dup 0= until
+    drop
+; immediate
+
+(
+    Now we can use multiline comment with ( nests. )
+)
 
 bye
