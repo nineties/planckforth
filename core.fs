@@ -473,7 +473,7 @@ alias-builtin xor       ^
 
 \ ( xt -- )
 \ postpone compilation of xt
-: (compile)
+: compile-helper
     [compile] literal   \ compile 'literal'
     [ ' , ] literal ,   \ compile ,
 ;
@@ -481,7 +481,7 @@ alias-builtin xor       ^
 \ compile: ( "name" -- )
 \ 'compile word' compiles word *later* even if it is immediate
 : compile
-    ' (compile)
+    ' compile-helper
 ; immediate
 
 \ ( -- xt )
