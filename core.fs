@@ -629,6 +629,10 @@ alias-builtin xor       ^
     [compile] if
 ; immediate
 
+\ ( n -- n n | n )
+\ duplicate if n<>0
+: ?dup dup if dup then ;
+
 \ === Loops ===
 \ begin <body> <condition> until
 \ begin <body> again
