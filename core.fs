@@ -498,21 +498,13 @@ alias-builtin xor       ^
 
 \ === Constants ===
 
-\ Make small integer words to **compile** integer literals
-\ since we don't have integer literals yet.
-: 0 [ key 0 key 0 - ] literal
-    [compile] literal
- ; immediate
-
-: f 0 ;
-
-
-
-bye
-: 0 lit lit , lit [ key 0 key 0 - , ] , ; immediate
-: 1 lit lit , lit [ key 1 key 0 - , ] , ; immediate
-: 2 lit lit , lit [ key 2 key 0 - , ] , ; immediate
-: 3 lit lit , lit [ key 3 key 0 - , ] , ; immediate
+\ Since we don't have integer literals yet,
+\ define small integer words for convenience
+\ and readability.
+: 0 [ key 0 key 0 - ] literal ;
+: 1 [ key 1 key 0 - ] literal ;
+: 2 [ key 2 key 0 - ] literal ;
+: 3 [ key 3 key 0 - ] literal ;
 
 : true 1 ;
 : false 0 ;
@@ -565,40 +557,8 @@ bye
 \ ( -- a-addr )
 \ The bottom address of stacks.
 \ sp@ and rp@ points bottom if implementation so far is correct.
-: sp0 [ ' lit , sp@ cell+ , ] ;
-: rp0 [ ' lit , rp@ , ] ;
-
-\ === Compilers ===
-
-\ compilation: ( "name" -- )
-\ runtime: ( -- xt )
-: [']
-    lit lit , word find >CFA ,
-; immediate
-
-\ compilation: ( n -- )
-\ runtime: ( -- n)
-: literal
-    ['] lit ,
-    ,
-; immediate
-
-\ compilation: ( "name" -- )
-\ Compile word now even if it is immediate
-: [compile]
-    ' ,
-; immediate
-
-\ compilation: ( xt -- )
-\ Compile word later
-: (compile)
-    [compile] literal
-;
-
-: 'A' [ key A ] literal ;
-
-
-'A' emit
+: sp0 [ sp@ ] literal ;
+: rp0 [ rp@ ] literal ;
 
 bye
 
