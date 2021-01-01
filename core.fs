@@ -686,6 +686,53 @@ alias-builtin xor       ^
     latest @ >cfa ,
 ; immediate
 
+\ === Case ===
+
+\ ---
+\ <value> case
+\   <value1> of <case1> endof
+\   <value2> of <case2> endof
+\   ...
+\   <default case>
+\ endcase
+\ ---
+\ This is equivalent to
+\ ---
+\ <value>
+\ <value1> over = if drop <case1> else
+\ <value2> over = if drop <case2> else
+\ ...
+\ <default case>
+\ then ... then then
+\ ---
+
+
+\ compile: ( -- 0 )
+\ runtime: ( n -- )
+: case
+    0       \ push 0 to indicate there is no more case
+; immediate
+
+\ compile: ( -- orig )
+: of
+    compile over
+    compile =
+    [compile] if
+    compile drop
+; immediate
+
+\ compile: ( orig1 -- orig2 )
+: endof
+    [compile] else
+; immediate
+
+: endcase
+    compile drop
+    begin ?dup while
+        [compile] then
+    repeat
+; immediate
+
 \ === Multiline Comment ===
 
 : '('   [ key ( ] literal ;
