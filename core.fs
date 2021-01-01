@@ -560,18 +560,130 @@ alias-builtin xor       ^
 : sp0 [ sp@ ] literal ;
 : rp0 [ rp@ ] literal ;
 
-bye
-
 \ === Integer Arithmetic ===
 
 : 1+ 1 + ;
 : 1- 1 - ;
 
-\ ( a b -- (a mod b) (a / b)
-: /mod o o / { mod } ;
+\ ( a b -- (a mod b) (a / b) )
+: /mod 2dup mod -rot / ;
 
 \ ( n -- -n )
-: negate 0 ~ - ;
+: negate 0 swap - ;
+
+\ ( n1 -- n2 )
+: not false = ;
+
+: >     swap < ;
+: <=    > not ;
+: >=    < not ;
+: <>    = not ;
+
+: 0=    0 = ;
+: 0<>   0 <> ;
+: 0<    0 < ;
+: 0>    0 > ;
+: 0<=   0 <= ;
+: 0>=   0 >= ;
+
+\ ( a b c -- (a<=c & c<b) )
+: within tuck > -rot <= and ;
+
+\ === Conditional Branch ===
+\ <condition> if <if-true> then
+\ <condition> if <if-true> else <if-false> then
+\ <condition> unless <if-false> then
+\ <condition> unless <if-false> else <if-true> then
+
+\ compile: ( -- orig )
+\ runtime: ( n -- )
+: if
+    compile 0branch
+    here @ 0 ,  \ save location of offset, fill dummy
+; immediate
+
+\ compile: ( orig -- )
+\ runtime: ( -- )
+: then
+    here @      \ ( orig dest )
+    over -      \ ( orig offset )
+    swap !      \ fill offset to orig
+; immediate
+
+\ compile: ( orig1 -- orig2 )
+\ runtime: ( -- )
+: else
+    compile branch
+    here @ 0 ,  \ save location of offset, fill dummy
+    swap
+    \ fill offset, here-orig1, to orig1
+    here @
+    over -
+    swap !
+; immediate
+
+\ compile: ( -- orig )
+\ runtime: ( n -- )
+: unless
+    compile not
+    [compile] if
+; immediate
+
+\ === Loops ===
+\ begin <body> <condition> until
+\ begin <body> again
+\ begin <condition> while <body> repeat
+
+\ compile: ( -- dest )
+\ runtime: ( -- )
+: begin
+    here @      \ save location
+; immediate
+
+\ compile: ( dest -- )
+\ runtime: ( n -- )
+: until
+    compile 0branch
+    here @ - ,  \ fill offset
+; immediate
+
+\ compile: ( dest -- )
+\ runtime: ( -- )
+: again
+    compile branch
+    here @ - ,  \ fill offset
+; immediate
+
+\ compile: ( dest -- dest orig )
+\ runtime: ( n -- )
+\ dest=location of begin
+\ orig=location of while
+: while
+    compile 0branch
+    here @ 0 ,      \ save location, fill dummy
+; immediate
+
+\ compile: ( dest orig -- )
+\ runtime: ( -- )
+\ dest=location of begin
+\ orig=location of while
+: repeat
+    swap
+    compile branch
+    here @ - ,              \ fill offset from here to begin
+    here @ over - swap !    \ backfill offset from while to here
+; immediate
+
+:noname
+    begin
+        1
+    while
+        [ key A ] literal emit
+    repeat
+; execute
+
+
+bye
 
 \ === Integer Comparison ===
 
