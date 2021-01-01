@@ -770,4 +770,15 @@ alias-builtin xor       ^
     Now we can use multiline comment with ( nests. )
 )
 
+( === Memory Operation === )
+
+: +! ( n a-addr -- ) tuck @ + swap ! ;
+: -! ( n a-addr -- ) tuck @ - swap ! ;
+
+\ allocate n bytes
+: allot ( n -- c-addr )
+    here @ swap
+    here +!
+;
+
 bye
