@@ -452,7 +452,7 @@ alias-builtin xor       ^
 \ Rename existing FORTH words
 : word W ;
 : find F ;
-: >CFA G ;
+: >cfa G ;
 
 \ === Compilers ===
 
