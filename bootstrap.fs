@@ -837,70 +837,6 @@ alias-builtin xor       ^
 \ ( n "name" -- )
 : constant create , does> @ ;
 
-( === String === )
-
-\ Skip reading spaces, read characters and returns first character
-: char      ( <spces>ccc -- c ) word drop c@ ;
-
-\ compile-time version of char
-: [char]    ( compile: <spaces>ccc -- ; runtime: --- c )
-    char
-    [compile] literal
-; immediate
-
-
-: '\n' [ key : key 0 - ] literal ; \ neline (10)
-: bl   [ key P key 0 - ] literal ; \ space (32)
-: '"'  [char] "" ;
-
-: cr    '\n' emit ;
-: space bl emit ;
-
-\ Print string
-: type ( c-addr u -- )
-    begin dup 0> while   \ while u>0
-        over c@ emit    \ print char
-        1-              \ decrement u
-        swap 1+ swap    \ increment c-addr
-    repeat
-    2drop
-;
-
-\ Parse string delimited by "
-\ compile mode: the string is stored as operand of 'string' operator.
-\ immediate mode: the string is stored to temporary buffer.
-: s"
-    state @ if
-        compile string
-        here 0 ,    \ save location of length and fill dummy
-        0           \ length of the string
-        begin key dup '"' <> while
-            c,      \ store character
-            1+      \ increment length
-        repeat drop
-        swap !      \ back-fill length
-        align
-    else
-        here dup    \ save start address
-        begin key dup '"' <> while
-            over c! \ store char
-            1+      \ increment address
-        repeat drop
-        \ ( start-addr last-addr )
-        over -      \ calculate length
-    then
-; immediate
-
-\ Print string delimited by "
-: ."
-    [compile] s"
-    state @ if
-        compile type
-    else
-        type
-    then
-; immediate
-
 ( === Throw and Catch === )
 
 \ 'xt catch' saves data stack pointer and a marker
@@ -966,6 +902,70 @@ create exception-marker
     repeat
     drop
 ;
+
+( === String === )
+
+\ Skip reading spaces, read characters and returns first character
+: char      ( <spces>ccc -- c ) word drop c@ ;
+
+\ compile-time version of char
+: [char]    ( compile: <spaces>ccc -- ; runtime: --- c )
+    char
+    [compile] literal
+; immediate
+
+
+: '\n' [ key : key 0 - ] literal ; \ neline (10)
+: bl   [ key P key 0 - ] literal ; \ space (32)
+: '"'  [char] "" ;
+
+: cr    '\n' emit ;
+: space bl emit ;
+
+\ Print string
+: type ( c-addr u -- )
+    begin dup 0> while   \ while u>0
+        over c@ emit    \ print char
+        1-              \ decrement u
+        swap 1+ swap    \ increment c-addr
+    repeat
+    2drop
+;
+
+\ Parse string delimited by "
+\ compile mode: the string is stored as operand of 'string' operator.
+\ immediate mode: the string is stored to temporary buffer.
+: s"
+    state @ if
+        compile string
+        here 0 ,    \ save location of length and fill dummy
+        0           \ length of the string
+        begin key dup '"' <> while
+            c,      \ store character
+            1+      \ increment length
+        repeat drop
+        swap !      \ back-fill length
+        align
+    else
+        here dup    \ save start address
+        begin key dup '"' <> while
+            over c! \ store char
+            1+      \ increment address
+        repeat drop
+        \ ( start-addr last-addr )
+        over -      \ calculate length
+    then
+; immediate
+
+\ Print string delimited by "
+: ."
+    [compile] s"
+    state @ if
+        compile type
+    else
+        type
+    then
+; immediate
 
 ( === Printing Numbers === )
 
