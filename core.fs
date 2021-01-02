@@ -819,6 +819,12 @@ alias-builtin xor       ^
     swap !      \ backfill xt to the operand of literal
 ; immediate
 
+( === Variable and Constant === )
+
+\ ( "name" -- )
+: variable create 0 , ;
+
+\ ( n "name" -- )
 : constant create , does> @ ;
 
 bye
