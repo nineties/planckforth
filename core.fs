@@ -426,8 +426,8 @@ set-immediate \
 
 alias-builtin bye       Q
 alias-builtin cell      C
-alias-builtin here      h
-alias-builtin latest    l
+alias-builtin &here     h
+alias-builtin &latest   l
 alias-builtin key       k
 alias-builtin emit      t
 alias-builtin branch    j
@@ -455,6 +455,9 @@ alias-builtin xor       ^
 : >cfa      G ;
 : c,        B ;
 : cmove,    m ;
+
+: here      &here @ ;
+: latest    &latest @ ;
 
 \ === Compilers ===
 
@@ -486,7 +489,7 @@ alias-builtin xor       ^
 
 \ ( -- xt )
 : :noname
-    here @
+    here
     [ docol ] literal , \ compile docol
     ]                   \ enter compile mode
 ;
@@ -527,7 +530,7 @@ alias-builtin xor       ^
 
 \ ( -- )
 \ Round up 'here' to nearlest multiple to CELL
-: align here @ aligned here !  ;
+: align here aligned &here !  ;
 
 \ === Stack Manipulation ===
 
@@ -601,13 +604,13 @@ alias-builtin xor       ^
 \ runtime: ( n -- )
 : if
     compile 0branch
-    here @ 0 ,  \ save location of offset, fill dummy
+    here 0 ,    \ save location of offset, fill dummy
 ; immediate
 
 \ compile: ( orig -- )
 \ runtime: ( -- )
 : then
-    here @      \ ( orig dest )
+    here        \ ( orig dest )
     over -      \ ( orig offset )
     swap !      \ fill offset to orig
 ; immediate
@@ -616,10 +619,10 @@ alias-builtin xor       ^
 \ runtime: ( -- )
 : else
     compile branch
-    here @ 0 ,  \ save location of offset, fill dummy
+    here 0 ,    \ save location of offset, fill dummy
     swap
     \ fill offset, here-orig1, to orig1
-    here @
+    here
     over -
     swap !
 ; immediate
@@ -643,21 +646,21 @@ alias-builtin xor       ^
 \ compile: ( -- dest )
 \ runtime: ( -- )
 : begin
-    here @      \ save location
+    here        \ save location
 ; immediate
 
 \ compile: ( dest -- )
 \ runtime: ( n -- )
 : until
     compile 0branch
-    here @ - ,  \ fill offset
+    here - ,    \ fill offset
 ; immediate
 
 \ compile: ( dest -- )
 \ runtime: ( -- )
 : again
     compile branch
-    here @ - ,  \ fill offset
+    here - ,    \ fill offset
 ; immediate
 
 \ compile: ( dest -- dest orig )
@@ -666,7 +669,7 @@ alias-builtin xor       ^
 \ orig=location of while
 : while
     compile 0branch
-    here @ 0 ,      \ save location, fill dummy
+    here 0 ,        \ save location, fill dummy
 ; immediate
 
 \ compile: ( dest orig -- )
@@ -676,8 +679,8 @@ alias-builtin xor       ^
 : repeat
     swap
     compile branch
-    here @ - ,              \ fill offset from here to begin
-    here @ over - swap !    \ backfill offset from while to here
+    here - ,                \ fill offset from here to begin
+    here over - swap !      \ backfill offset from while to here
 ; immediate
 
 \ === Recursive Call ===
@@ -685,7 +688,7 @@ alias-builtin xor       ^
 \ recursive call.
 \ compiles xt of current definition
 : recurse
-    latest @ >cfa ,
+    latest >cfa ,
 ; immediate
 
 \ === Case ===
@@ -777,8 +780,8 @@ alias-builtin xor       ^
 
 \ allocate n bytes
 : allot ( n -- c-addr )
-    here @ swap
-    here +!
+    here swap
+    &here +!
 ;
 
 ( === create and does> === )
@@ -791,25 +794,25 @@ alias-builtin xor       ^
 \ When the word is executed, it pushs value of here
 \ at the end of the entry.
 : create
-    latest @ ,              \ fill link
-    here @ cell- latest !   \ update latest
+    latest ,                \ fill link
+    here cell- &latest !    \ update latest
     word
     dup c, cmove, align     \ fill length and name
     docol ,                 \ compile docol
     ['] lit ,
-    here @ 3 cells + ,      \ compile the address
+    here 3 cells + ,        \ compile the address
     ['] nop ,               \ does>, if any, will fill this cell
     ['] exit ,              \ compile exit
 ;
 
 : does>-helper
-    latest @ >cfa
+    latest >cfa
     3 cells + tuck !    \ replace nop
 ;
 
 : does>
     0 [compile] literal \ literal for xt
-    here @ cell-        \ save addr of xt
+    here cell-          \ save addr of xt
 
     \ fill xt and exit after docol of latest
     compile does>-helper
