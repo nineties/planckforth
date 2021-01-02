@@ -188,7 +188,7 @@ c~ i,
 \ Store byte 'c' to here and increment it
 cB i, 'h, '@, '$, 'h, '@, 'L, k1k0-, '+, 'h, '!, 'e, l!
 
-\ 'm' ( c-addr u -- ) STRING,
+\ 'm' ( c-addr u -- ) CMOVE,
 \ Copy u bytes from c-addr to here,
 \ increment here u bytes.
 cm i,
@@ -454,7 +454,7 @@ alias-builtin xor       ^
 : find      F ;
 : >cfa      G ;
 : c,        B ;
-: string,   m ;
+: cmove,    m ;
 : state     M ;
 
 : here      &here @ ;
@@ -799,7 +799,7 @@ alias-builtin xor       ^
     latest ,                \ fill link
     here cell- &latest !    \ update latest
     word
-    dup c, string, align    \ fill length and name
+    dup c, cmove, align     \ fill length and name
     docol ,                 \ compile docol
     ['] lit ,
     here 3 cells + ,        \ compile the address
