@@ -361,6 +361,7 @@ c ] i , ' L , k 1 k 0 - , ' M , ' ! , ' e , l !
 \ Read name, create word with smudge=1,
 \ compile 'docol' and enter compile mode.
 c : i ,
+    ' A ,               \ align here
     ' h , ' @ ,
     ' l , ' @ , ' , ,   \ fill link
     ' l , ' ! ,         \ update latest
@@ -377,6 +378,7 @@ c : i ,
 \ ; ( -- ) SEMICOLON
 \ Compile 'exit', unsmudge latest, and enter immediate mode.
 c ; i ,
+    ' A ,               \ align here
     ' L , ' e , ' , ,   \ compile exit
     ' l , ' @ ,
     ' C , ' + , ' # , ' ? ,
@@ -410,7 +412,7 @@ set-immediate \
     \ Copy code pointer of builtin word "name-old" to
     \ the new word "name-new".
     \ "name-old" must not be a FORTH word.
-    h @ l @ , l !   \ fill link, update latest
+    A h @ l @ , l ! \ fill link, update latest
     W # B m A       \ fill length and chars of "name-new"
     W F G @ ,       \ fill code-pointer of "name-old"
 ;
@@ -793,6 +795,7 @@ alias-builtin xor       ^
 \ When the word is executed, it pushs value of here
 \ at the end of the entry.
 : create
+    align
     latest ,                \ fill link
     here cell- &latest !    \ update latest
     word
@@ -810,6 +813,7 @@ alias-builtin xor       ^
 ;
 
 : does>
+    align
     0 [compile] literal \ literal for xt
     here cell-          \ save addr of xt
 
