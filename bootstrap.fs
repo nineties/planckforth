@@ -511,6 +511,7 @@ alias-builtin xor       ^
 : 1     [ key 1 key 0 - ] literal ;
 : 2     [ key 2 key 0 - ] literal ;
 : 3     [ key 3 key 0 - ] literal ;
+: 4     [ key 4 key 0 - ] literal ;
 : 10    [ key : key 0 - ] literal ;
 : 16    [ key @ key 0 - ] literal ;
 : -1    [ key 0 key 1 - ] literal ;
@@ -975,9 +976,18 @@ variable base   \ number base
 decimal \ set default to decimal
 
 : '0' [ key 0 ] literal ;
+: '9' [ key 9 ] literal ;
 : 'a' [ key a ] literal ;
+: 'x' [ key x ] literal ;
+: 'z' [ key z ] literal ;
+: 'A' [ key A ] literal ;
+: 'Z' [ key Z ] literal ;
 : '-' [ key - ] literal ;
+: '&' [ key & ] literal ;
+: '#' [ key # ] literal ;
+: '%' [ key % ] literal ;
 : '$' [ key $ ] literal ;
+: '\'' [ key ' ] literal ;
 
 \ Display unsigned integer u2 with number base u1.
 : print-uint ( u1 u2 -- )
@@ -1037,4 +1047,104 @@ decimal \ set default to decimal
         '-' emit
         u.
     then
+;
+
+( === Parsing Numbers === )
+
+\ Parse string c-addr2 u2 as an unsigned integer with base u1
+\ and return n. f represents the conversion is success or not.
+: parse-uint ( u1 c-addr2 u2 -- n f )
+    0   \ accumulator
+    begin
+        over 0>
+    while
+        \ ( base addr len acc )
+        >r                  \ save acc
+        1- >r               \ decrement len and save
+        dup c@ swap 1+ >r   \ load char, increment addr and save
+        dup case
+        '0' '9' rangeof '0' - endof
+        'a' 'z' rangeof 'a' - 10 + endof
+        'A' 'Z' rangeof 'A' - 10 + endof
+            \ failed to convert
+            r> r> r> drop drop drop
+            swap drop
+            false
+            exit
+        endcase
+        2dup
+        \ ( base n base n )
+        0 -rot
+        \ ( base n 0 base n )
+        within unless
+            \ failed to convert
+            r> r> r> drop drop drop
+            swap drop
+            false
+            exit
+        then
+        \ ( base addr len n acc )
+        r> swap r> swap r>
+        4 pick * +
+    repeat
+    \ success
+    swap drop
+    swap drop
+    swap drop
+    true
+;
+
+\ increment c-addr1 and decrement u1
+: s++ ( c-addr1 u1 -- c-addr2 u2 )
+    1- swap 1+ swap
+;
+
+\ Parse string as number.
+\ This function interprets prefixes that specifies number base.
+: >number ( c-addr u -- n f )
+    dup 0<= if
+        2drop
+        0 false
+        exit
+    then
+    over c@ case
+    '-' of
+        s++ base @ -rot
+        recurse if
+            negate true
+        else
+            false
+        then
+    endof
+    '&' of s++ 10 -rot parse-uint endof
+    '#' of s++ 10 -rot parse-uint endof
+    '%' of s++ 2 -rot parse-uint endof
+    '0' of
+        \ hexadecimal
+        dup 1 = if
+            2drop 0 true exit
+        then
+        s++
+        over c@ 'x' = if
+            s++ 16 -rot parse-uint exit
+        then
+        2drop 0 false exit
+    endof
+    '\'' of
+        \ character code
+        case
+        1 of drop 0 false endof
+        2 of 1+ c@ true endof
+        3 of
+            1+ dup c@ swap
+            1+ c@ '\'' = if true else false then
+        endof
+            drop 0 false
+        endcase
+    endof
+        \ default case
+        drop base @ -rot
+        parse-uint
+        dup     \ need this because endcase drops top of stack
+    endcase
 ;
