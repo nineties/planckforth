@@ -1,5 +1,5 @@
 # planckforth - 
-# Copyright (C) 2020 nineties
+# Copyright (C) 2021 nineties
 
 planck: planck.xxd
 	xxd -r -c 8 $< > $@

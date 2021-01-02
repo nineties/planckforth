@@ -16,7 +16,7 @@ l!
 \ **Now we can use single-line comments!**
 
 \ planckforth -
-\ Copyright (C) 2020 nineties
+\ Copyright (C) 2021 nineties
 
 \ This project aims to bootstrap a Forth interpreter
 \ from hand-written tiny ELF binary.
