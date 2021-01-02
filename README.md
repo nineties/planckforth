@@ -1,7 +1,6 @@
 # PlanckForth: Bootstrapping Forth from Handwritten Executable
 
-This project aims to create a Forth interpreter
-by bootstrapping from hand-written tiny ELF binary.
+This project aims to bootstrap a Forth interpreter from hand-written tiny ELF binary.
 
 ## How to build
 
