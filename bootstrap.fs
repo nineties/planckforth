@@ -452,7 +452,7 @@ alias-builtin xor       ^
 : find      F ;
 : >cfa      G ;
 : c,        B ;
-: cmove,    m ;
+: string,   m ;
 : state     M ;
 
 : here      &here @ ;
@@ -796,7 +796,7 @@ alias-builtin xor       ^
     latest ,                \ fill link
     here cell- &latest !    \ update latest
     word
-    dup c, cmove, align     \ fill length and name
+    dup c, string, align    \ fill length and name
     docol ,                 \ compile docol
     ['] lit ,
     here 3 cells + ,        \ compile the address
