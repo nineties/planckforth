@@ -18,7 +18,7 @@ l!
 \ planckforth -
 \ Copyright (C) 2020 nineties
 
-\ This project aims to create a full-fledged Forth interpreter
+\ This project aims to create a Forth interpreter
 \ by bootstrapping from hand-written tiny ELF binary.
 
 \ In the 1st stage, only single character words are registered
@@ -894,5 +894,3 @@ alias-builtin xor       ^
     then
 ; immediate
 
-." Hello World" cr
-bye
