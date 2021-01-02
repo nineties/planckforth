@@ -833,7 +833,7 @@ alias-builtin xor       ^
 \ ( n "name" -- )
 : constant create , does> @ ;
 
-( === Strings === )
+( === String === )
 
 \ Skip reading spaces, read characters and returns first character
 : char      ( <spces>ccc -- c ) word drop c@ ;
