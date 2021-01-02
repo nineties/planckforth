@@ -831,4 +831,54 @@ alias-builtin xor       ^
 \ ( n "name" -- )
 : constant create , does> @ ;
 
+( === Strings === )
+
+\ Skip reading spaces, read characters and returns first character
+: char      ( <spces>ccc -- c ) word drop c@ ;
+
+\ compile-time version of char
+: [char]    ( compile: <spaces>ccc -- ; runtime: --- c )
+    char
+    [compile] literal
+; immediate
+
+
+: '\n' [ key : key 0 - ] literal ; \ neline (10)
+: bl   [ key P key 0 - ] literal ; \ space (32)
+: '"'  [char] "" ;
+
+: cr    '\n' emit ;
+: space bl emit ;
+
+\ Print string
+: type ( c-addr u -- )
+    begin dup 0> while   \ while u>0
+        over c@ emit    \ print char
+        1-              \ decrement u
+        swap 1+ swap    \ increment c-addr
+    repeat
+;
+
+\ Parse string delimited by "
+\ compile mode: the string is stored as operand of 'string' operator.
+\ immediate mode: the string is stored to temporary buffer.
+: s" ( compile: 'ccc"' -- ; runtime: -- c-addr u )
+    here dup    \ save start address
+    begin key dup '"' <> while
+        over c! \ store char
+        1+      \ increment address
+    repeat drop
+    \ ( start-addr last-addr )
+    over -      \ calculate length
+    state @ if
+        \ create 'string' operation if compile mode
+        compile string
+        dup ,           \ fill length
+        cmove,          \ fill string
+        align
+    then
+; immediate
+
+s" Hello World" type cr
+
 bye
