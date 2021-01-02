@@ -897,3 +897,70 @@ alias-builtin xor       ^
     then
 ; immediate
 
+( === Throw and Catch === )
+
+\ 'xt catch' saves data stack pointer and a marker
+\ to indicate where to return on return stack
+\ then execute 'xt'.
+\ When 'n throw' is executed, the catch statement returns
+\ 'n'. If no throw is executed, returns 0.
+
+\ At the beginning of execution of 'xt', return stack
+\ contains following information.
+\ +-------------------------+
+\ | original return address |
+\ | saved stack pointer     |
+\ | exception marker        | <- top of return stack
+\ +-------------------------+
+\ If no 'throw' is called, after execution of 'xt'
+\ program goes to the exception-marker because it is
+\ on the top of return stack.
+\ The exception-marker drops 'saved stack pointer',
+\ push 0 to indicate no error and return to the
+\ 'original return address'.
+\ When 'n throw' is called, it scans return stack
+\ to find the exception-marker, restore return stack pointer
+\ and data stack pointer, push error code, and returns to
+\ the 'original return address'
+
+create exception-marker
+    ' rdrop ,   \ drop saved stack pointer
+    0 literal   \ push 0 to indicate no-error
+    ' exit ,
+
+: catch ( xt -- n )
+    sp@ cell+ >r            \ save stack pointer
+    exception-marker >r     \ push exception marker
+    execute
+;
+
+: throw ( w -- )
+    ?dup unless exit then   \ do nothing if no error
+    rp@
+    begin
+        dup rp0 cell- <     \ rp < rp0
+    while
+        dup @               \ load return stack entry
+        exception-marker = if
+            rp!     \ restore return stack pointer
+            rdrop   \ drop exception marker
+
+            \ Reserve enough working space of data stack since
+            \ following code manipulates data stack pointer
+            \ and write value to data stack directly via
+            \ address.
+            dup dup dup dup
+
+            r>      \ original stack pointer
+            \ ( n sp )
+            cell-   \ allocate space for error code
+            tuck !  \ store error code of top of stack
+            sp!     \ restore data stack pointer
+            exit
+        then
+        cell+
+    repeat
+    drop
+;
+
+bye
