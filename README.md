@@ -13,8 +13,8 @@ $ cat helloworld.fs | ./planck
 |:----:|:---------|:----------------|:-----------------------------|
 | Q    | quit     | ( -- )          | Exit the process             |
 | C    | cell     | ( -- n )        | The size of Cells            |
-| h    | &here    | ( -- c-addr )   | The address of 'here' cell   |
-| l    | &latest  | ( -- c-addr )   | The address of 'latest' cell |
+| h    | &here    | ( -- a-addr )   | The address of 'here' cell   |
+| l    | &latest  | ( -- a-addr )   | The address of 'latest' cell |
 | k    | key      | ( -- c )        | Read character               |
 | t    | type     | ( c -- )        | Print character              |
 | j    | jump     | ( -- )          | Unconditional branch         |
@@ -31,7 +31,7 @@ $ cat helloworld.fs | ./planck
 | R    | rstore   | ( a-addr -- )   | Set return stack pointer     |
 | i    | docol    | ( -- a-addr )   | Get the interpreter function |
 | e    | exit     | ( -- )          | Exit current function        |
-| L    | lit      | ( -- a )        | Load immediate               |
+| L    | lit      | ( -- n )        | Load immediate               |
 | S    | string   | ( -- c-addr u ) | Load string literal          |
 | +    | add      | ( a b -- c )    | c = (a + b)                  |
 | -    | sub      | ( a b -- c )    | c = (a - b)                  |
