@@ -903,7 +903,7 @@ create exception-marker
     drop
 ;
 
-( === String === )
+( === Printing Numbers === )
 
 \ Skip reading spaces, read characters and returns first character
 : char      ( <spces>ccc -- c ) word drop c@ ;
@@ -922,52 +922,6 @@ create exception-marker
 : cr    '\n' emit ;
 : space bl emit ;
 
-\ Print string
-: type ( c-addr u -- )
-    begin dup 0> while   \ while u>0
-        over c@ emit    \ print char
-        1-              \ decrement u
-        swap 1+ swap    \ increment c-addr
-    repeat
-    2drop
-;
-
-\ Parse string delimited by "
-\ compile mode: the string is stored as operand of 'string' operator.
-\ immediate mode: the string is stored to temporary buffer.
-: s"
-    state @ if
-        compile string
-        here 0 ,    \ save location of length and fill dummy
-        0           \ length of the string
-        begin key dup '"' <> while
-            c,      \ store character
-            1+      \ increment length
-        repeat drop
-        swap !      \ back-fill length
-        align
-    else
-        here dup    \ save start address
-        begin key dup '"' <> while
-            over c! \ store char
-            1+      \ increment address
-        repeat drop
-        \ ( start-addr last-addr )
-        over -      \ calculate length
-    then
-; immediate
-
-\ Print string delimited by "
-: ."
-    [compile] s"
-    state @ if
-        compile type
-    else
-        type
-    then
-; immediate
-
-( === Printing Numbers === )
 
 variable base   \ number base
 : decimal   10 base ! ;
@@ -975,19 +929,19 @@ variable base   \ number base
 
 decimal \ set default to decimal
 
-: '0' [ key 0 ] literal ;
-: '9' [ key 9 ] literal ;
-: 'a' [ key a ] literal ;
-: 'x' [ key x ] literal ;
-: 'z' [ key z ] literal ;
-: 'A' [ key A ] literal ;
-: 'Z' [ key Z ] literal ;
-: '-' [ key - ] literal ;
-: '&' [ key & ] literal ;
-: '#' [ key # ] literal ;
-: '%' [ key % ] literal ;
-: '$' [ key $ ] literal ;
-: '\'' [ key ' ] literal ;
+: '0' [ char 0 ] literal ;
+: '9' [ char 9 ] literal ;
+: 'a' [ char a ] literal ;
+: 'x' [ char x ] literal ;
+: 'z' [ char z ] literal ;
+: 'A' [ char A ] literal ;
+: 'Z' [ char Z ] literal ;
+: '-' [ char - ] literal ;
+: '&' [ char & ] literal ;
+: '#' [ char # ] literal ;
+: '%' [ char % ] literal ;
+: '$' [ char $ ] literal ;
+: '\'' [ char ' ] literal ;
 
 \ Display unsigned integer u2 with number base u1.
 : print-uint ( u1 u2 -- )
@@ -1148,3 +1102,50 @@ decimal \ set default to decimal
         dup     \ need this because endcase drops top of stack
     endcase
 ;
+
+( === String === )
+
+\ Print string
+: type ( c-addr u -- )
+    begin dup 0> while   \ while u>0
+        over c@ emit    \ print char
+        1-              \ decrement u
+        swap 1+ swap    \ increment c-addr
+    repeat
+    2drop
+;
+
+\ Parse string delimited by "
+\ compile mode: the string is stored as operand of 'string' operator.
+\ immediate mode: the string is stored to temporary buffer.
+: s"
+    state @ if
+        compile string
+        here 0 ,    \ save location of length and fill dummy
+        0           \ length of the string
+        begin key dup '"' <> while
+            c,      \ store character
+            1+      \ increment length
+        repeat drop
+        swap !      \ back-fill length
+        align
+    else
+        here dup    \ save start address
+        begin key dup '"' <> while
+            over c! \ store char
+            1+      \ increment address
+        repeat drop
+        \ ( start-addr last-addr )
+        over -      \ calculate length
+    then
+; immediate
+
+\ Print string delimited by "
+: ."
+    [compile] s"
+    state @ if
+        compile type
+    else
+        type
+    then
+; immediate
