@@ -1,10 +1,37 @@
 # PlanckForth: Bootstrapping Forth from Handwritten Executable
 
+This project aims to create a Forth interpreter
+by bootstrapping from hand-written tiny ELF binary.
+
+## How to build
+
+You can create a binary for x86 linux environment by following steps.
+Only `xxd` is needed to build PlanckForth.
+
 ```
 $ git clone https://github.com/nineties/planckforth.git
 $ cd planckforth
 $ make
-$ cat helloworld.fs | ./planck
+xxd -r -c 8 planck.xxd > planck
+chmod +x planck
+```
+
+## Hello World
+
+The hello world program at the beginning looks like this.
+
+```
+% ./planck
+kHtketkltkltkotk tkWtkotkrtkltkdtk!tk:k0-tQ
+Hello World!
+```
+After bootstrapping by `bootstrapping.fs`, it looks like this.
+
+```
+$ cat bootstrap.fs - | ./planck
+." Hello World!" cr
+Hello World!
+bye
 ```
 
 # Builtin Words
