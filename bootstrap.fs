@@ -1115,6 +1115,14 @@ decimal \ set default to decimal
     2drop
 ;
 
+\ Allocate a buffer for string literal
+bl constant s-buffer-size  \ 1024
+create s-buffer s-buffer-size allot
+
+\ Will define the error message corresponds to this error later
+\ because we can't write string literal yet.
+char 0 char B - constant string-overflow-error \ -18
+
 \ Parse string delimited by "
 \ compile mode: the string is stored as operand of 'string' operator.
 \ immediate mode: the string is stored to temporary buffer.
@@ -1130,8 +1138,11 @@ decimal \ set default to decimal
         swap !      \ back-fill length
         align
     else
-        here dup    \ save start address
+        s-buffer dup    \ save start address
         begin key dup '"' <> while
+            2dup swap - s-buffer-size >= if
+                throw string-overflow-error
+            then
             over c! \ store char
             1+      \ increment address
         repeat drop
