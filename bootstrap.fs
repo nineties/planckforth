@@ -859,6 +859,7 @@ alias-builtin xor       ^
         1-              \ decrement u
         swap 1+ swap    \ increment c-addr
     repeat
+    2drop
 ;
 
 \ Parse string delimited by "
