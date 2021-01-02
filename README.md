@@ -20,7 +20,7 @@ chmod +x planck
 The hello world program at the beginning looks like this.
 
 ```
-% ./planck
+$ ./planck
 kHtketkltkltkotk tkWtkotkrtkltkdtk!tk:k0-tQ
 ```
 After bootstrapping by `bootstrap.fs`, it looks like this.
