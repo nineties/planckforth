@@ -1160,3 +1160,38 @@ char 0 char B - constant string-overflow-error \ -18
         type
     then
 ; immediate
+
+( === Error Code and Messages === )
+
+\ Single linked list of error code and messages.
+\ Thre structure of each entry:
+\ | link | code | len | message ... |
+variable error-list
+0 error-list !
+
+: add-error ( n c-addr u -- )
+    error-list here
+    over @ ,    \ fill link
+    swap !      \ update error-list
+    rot ,       \ fill error-code
+    dup ,       \ fill length
+    cmove,      \ fill message
+    align
+;
+
+decimal
+
+s" -1" >number drop constant aborted-error
+
+aborted-error s" Aborted" add-error
+string-overflow-error s" Too long string literal" add-error
+
+variable next-user-error
+s" -256" >number drop next-user-error !
+
+\ Create new user defined error and returns error code.
+: exception ( c-addr u -- n )
+    next-user-error @ -rot add-error
+    next-user-error @
+    1 next-user-error -!
+;
