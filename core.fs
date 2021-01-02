@@ -862,23 +862,37 @@ alias-builtin xor       ^
 \ Parse string delimited by "
 \ compile mode: the string is stored as operand of 'string' operator.
 \ immediate mode: the string is stored to temporary buffer.
-: s" ( compile: 'ccc"' -- ; runtime: -- c-addr u )
-    here dup    \ save start address
-    begin key dup '"' <> while
-        over c! \ store char
-        1+      \ increment address
-    repeat drop
-    \ ( start-addr last-addr )
-    over -      \ calculate length
+: s"
     state @ if
-        \ create 'string' operation if compile mode
         compile string
-        dup ,           \ fill length
-        cmove,          \ fill string
+        here 0 ,    \ save location of length and fill dummy
+        0           \ length of the string
+        begin key dup '"' <> while
+            c,      \ store character
+            1+      \ increment length
+        repeat drop
+        swap !      \ back-fill length
         align
+    else
+        here dup    \ save start address
+        begin key dup '"' <> while
+            over c! \ store char
+            1+      \ increment address
+        repeat drop
+        \ ( start-addr last-addr )
+        over -      \ calculate length
     then
 ; immediate
 
-s" Hello World" type cr
+\ Print string delimited by "
+: ."
+    [compile] s"
+    state @ if
+        compile type
+    else
+        type
+    then
+; immediate
 
+." Hello World" cr
 bye
