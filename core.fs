@@ -455,6 +455,7 @@ alias-builtin xor       ^
 : >cfa      G ;
 : c,        B ;
 : cmove,    m ;
+: state     M ;
 
 : here      &here @ ;
 : latest    &latest @ ;
