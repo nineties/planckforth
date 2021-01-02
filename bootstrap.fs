@@ -507,10 +507,13 @@ alias-builtin xor       ^
 \ Since we don't have integer literals yet,
 \ define small integer words for convenience
 \ and readability.
-: 0 [ key 0 key 0 - ] literal ;
-: 1 [ key 1 key 0 - ] literal ;
-: 2 [ key 2 key 0 - ] literal ;
-: 3 [ key 3 key 0 - ] literal ;
+: 0     [ key 0 key 0 - ] literal ;
+: 1     [ key 1 key 0 - ] literal ;
+: 2     [ key 2 key 0 - ] literal ;
+: 3     [ key 3 key 0 - ] literal ;
+: 10    [ key : key 0 - ] literal ;
+: 16    [ key @ key 0 - ] literal ;
+: -1    [ key 0 key 1 - ] literal ;
 
 : true 1 ;
 : false 0 ;
@@ -963,4 +966,75 @@ create exception-marker
     drop
 ;
 
-bye
+( === Printing Numbers === )
+
+variable base   \ number base
+: decimal   10 base ! ;
+: hex       16 base ! ;
+
+decimal \ set default to decimal
+
+: '0' [ key 0 ] literal ;
+: 'a' [ key a ] literal ;
+: '-' [ key - ] literal ;
+: '$' [ key $ ] literal ;
+
+\ Display unsigned integer u2 with number base u1.
+: print-uint ( u1 u2 -- )
+    over /mod   ( base mod quot )
+    ?dup if
+        \ mod base quot base
+        >r over r>
+        recurse
+    then
+    dup 10 < if '0' + else 10 - 'a' + then emit
+    drop
+;
+
+\ Display signed integer n with number base u.
+: print-int ( u n -- )
+    dup 0< if '-' emit negate then
+    print-uint
+;
+
+\ Display unsigned integer followed by a space.
+: u. ( u -- ) base @ swap print-uint space ;
+
+\ Display n followed by a space.
+: . ( n -- ) base @ swap print-int space ;
+
+\ Display n as a signed decimal number followed by a space.
+: dec. ( n -- ) 10 swap print-int space ;
+
+\ Display u as an unsigned hex number prefixed with $
+\ and followed by a space.
+: hex. ( u -- ) '$' emit 16 swap print-uint space ;
+
+\ Number of characters of u in 'base'
+: uwidth ( u -- u )
+    base @ /
+    ?dup if recurse 1+ else 1 then
+;
+
+: spaces ( n -- )
+    begin dup 0> while space 1- repeat drop
+;
+
+\ Display unsigned integer u right aligned in n characters.
+: u.r ( u n -- )
+    over uwidth
+    - spaces u.
+;
+
+\ Display signed integer n1 right aligned in n2 characters.
+: .r ( n1 n2 -- )
+    over 0>= if
+        u.r
+    else
+        swap negate
+        dup uwidth 1+
+        rot swap - spaces
+        '-' emit
+        u.
+    then
+;
