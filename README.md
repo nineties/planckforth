@@ -23,14 +23,12 @@ The hello world program at the beginning looks like this.
 ```
 % ./planck
 kHtketkltkltkotk tkWtkotkrtkltkdtk!tk:k0-tQ
-Hello World!
 ```
 After bootstrapping by `bootstrapping.fs`, it looks like this.
 
 ```
 $ cat bootstrap.fs - | ./planck
 ." Hello World!" cr
-Hello World!
 bye
 ```
 
