@@ -929,19 +929,19 @@ variable base   \ number base
 
 decimal \ set default to decimal
 
-: '0' [ char 0 ] literal ;
-: '9' [ char 9 ] literal ;
-: 'a' [ char a ] literal ;
-: 'x' [ char x ] literal ;
-: 'z' [ char z ] literal ;
-: 'A' [ char A ] literal ;
-: 'Z' [ char Z ] literal ;
-: '-' [ char - ] literal ;
-: '&' [ char & ] literal ;
-: '#' [ char # ] literal ;
-: '%' [ char % ] literal ;
-: '$' [ char $ ] literal ;
-: '\'' [ char ' ] literal ;
+: '0' [char] 0 ;
+: '9' [char] 9 ;
+: 'a' [char] a ;
+: 'x' [char] x ;
+: 'z' [char] z ;
+: 'A' [char] A ;
+: 'Z' [char] Z ;
+: '-' [char] - ;
+: '&' [char] & ;
+: '#' [char] # ;
+: '%' [char] % ;
+: '$' [char] $ ;
+: '\'' [char] ' ;
 
 \ Display unsigned integer u2 with number base u1.
 : print-uint ( u1 u2 -- )
