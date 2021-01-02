@@ -188,7 +188,7 @@ c~ i,
 \ Store byte 'c' to here and increment it
 cB i, 'h, '@, '$, 'h, '@, 'L, k1k0-, '+, 'h, '!, 'e, l!
 
-\ 'm' ( c-addr u -- ) CMOVE,
+\ 'm' ( c-addr u -- ) STRING,
 \ Copy u bytes from c-addr to here,
 \ increment here u bytes.
 cm i,
