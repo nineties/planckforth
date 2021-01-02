@@ -24,38 +24,38 @@ l!
 \ In the 1st stage, only single character words are registered
 \ in the dictionary.
 \ List of builtin words:
-\ 'Q' ( -- )         Exit the process
-\ 'C' ( -- n )       The size of Cells
-\ 'h' ( -- addr )    The address of 'here' cell
-\ 'l' ( -- addr )    The address of 'latest' cell
-\ 'k' ( -- c )       Read character
-\ 't' ( c -- )       Print character
-\ 'j' ( -- )         Unconditional branch
-\ 'J' ( a -- )       Jump if a == 0
-\ 'f' ( c -- xt )    Get execution token of c
-\ 'x' ( xt -- ... )  Run the execution token
-\ '@' ( addr -- a )  Load value from addr
-\ '!' ( a addr -- )  Store value to addr
-\ '?' ( addr -- c )  Load byte from addr
-\ '$' ( c addr -- )  Store byte to addr
-\ 'd' ( -- addr )    Get data stack pointer
-\ 'D' ( addr -- )    Set data stack pointer
-\ 'r' ( -- addr )    Get return stack pointer
-\ 'R' ( addr -- )    Set return stack pointer
-\ 'i' ( -- addr )    Get the interpreter function
-\ 'e' ( -- )         Exit current function
-\ 'L' ( -- a )       Load immediate
-\ 'S' ( -- addr len) Load string literal
-\ '+' ( a b -- c )   c = (a + b)
-\ '-' ( a b -- c )   c = (a - b)
-\ '*' ( a b -- c )   c = (a * b)
-\ '/' ( a b -- c )   c = (a / b)
-\ '%' ( a b -- c )   c = (a % b)
-\ '&' ( a b -- c )   c = (a & b)
-\ '|' ( a b -- c )   c = (a | b)
-\ '^' ( a b -- c )   c = (a ^ b)
-\ '<' ( a b -- c )   c = (a < b)
-\ '=' ( a b -- c )   c = (a == b
+\ 'Q' ( -- )            Exit the process
+\ 'C' ( -- n )          The size of Cells
+\ 'h' ( -- a-addr )     The address of 'here' cell
+\ 'l' ( -- a-addr )     The address of 'latest' cell
+\ 'k' ( -- c )          Read character
+\ 't' ( c -- )          Print character
+\ 'j' ( -- )            Unconditional branch
+\ 'J' ( n -- )          Jump if a == 0
+\ 'f' ( c -- xt )       Get execution token of c
+\ 'x' ( xt -- ... )     Run the execution token
+\ '@' ( a-addr -- w )   Load value from addr
+\ '!' ( w a-addr -- )   Store value to addr
+\ '?' ( c-addr -- c )   Load byte from addr
+\ '$' ( c c-addr -- )   Store byte to addr
+\ 'd' ( -- a-addr )     Get data stack pointer
+\ 'D' ( a-addr -- )     Set data stack pointer
+\ 'r' ( -- a-addr )     Get return stack pointer
+\ 'R' ( a-addr -- )     Set return stack pointer
+\ 'i' ( -- a-addr )     Get the interpreter function
+\ 'e' ( -- )            Exit current function
+\ 'L' ( -- u )          Load immediate
+\ 'S' ( -- a-addr u )   Load string literal
+\ '+' ( a b -- c )      c = (a + b)
+\ '-' ( a b -- c )      c = (a - b)
+\ '*' ( a b -- c )      c = (a * b)
+\ '/' ( a b -- c )      c = (a / b)
+\ '%' ( a b -- c )      c = (a % b)
+\ '&' ( a b -- c )      c = (a & b)
+\ '|' ( a b -- c )      c = (a | b)
+\ '^' ( a b -- c )      c = (a ^ b)
+\ '<' ( a b -- c )      c = (a < b)
+\ '=' ( a b -- c )      c = (a == b
 
 \ The 1st stage interpreter repeats execution of k, f and x.
 \ There is no concept such as IMMEDIATE mode yet.
