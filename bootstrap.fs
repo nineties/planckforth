@@ -18,8 +18,8 @@ l!
 \ planckforth -
 \ Copyright (C) 2020 nineties
 
-\ This project aims to create a Forth interpreter
-\ by bootstrapping from hand-written tiny ELF binary.
+\ This project aims to bootstrap a Forth interpreter
+\ from hand-written tiny ELF binary.
 
 \ In the 1st stage, only single character words are registered
 \ in the dictionary.
@@ -55,11 +55,9 @@ l!
 \ '|' ( a b -- c )      c = (a | b)
 \ '^' ( a b -- c )      c = (a ^ b)
 \ '<' ( a b -- c )      c = (a < b)
-\ '=' ( a b -- c )      c = (a == b
+\ '=' ( a b -- c )      c = (a == b)
 
 \ The 1st stage interpreter repeats execution of k, f and x.
-\ There is no concept such as IMMEDIATE mode yet.
-
 \ There following line is an example program of planckforth
 \ which prints "Hello World!\n"
 \ --
@@ -68,7 +66,7 @@ l!
 \ This code repeats that 'k' reads a character and 't' prints it.
 \ Note that ':' (58) minus '0' (48) is '\n' (10).
 
-\ The structure of the dictionary is sames as many Forth implementation.
+\ The structure of the dictionary.
 \ +------+----------+---------+------------+---------------+
 \ | link | len+flag | name... | padding... | code field ...|
 \ +------+----------+---------+------------+---------------+
