@@ -442,7 +442,7 @@ alias-builtin rp!       R
 alias-builtin docol     i
 alias-builtin exit      e
 alias-builtin lit       L
-alias-builtin litstring S
+alias-builtin string    S
 alias-builtin div       /
 alias-builtin mod       %
 alias-builtin and       &
