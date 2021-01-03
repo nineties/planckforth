@@ -1054,7 +1054,7 @@ decimal \ set default to decimal
     then
     over c@ case
     '-' of
-        s++ base @ -rot
+        s++
         recurse if
             negate true
         else
