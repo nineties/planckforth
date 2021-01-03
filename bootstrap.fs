@@ -1213,6 +1213,9 @@ s" -1" >number drop constant aborted-error
 aborted-error s" Aborted" add-error
 string-overflow-error s" Too long string literal" add-error
 
+s" -13" >number drop constant undefined-word-error
+undefined-word-error s" Undefined word" add-error
+
 variable next-user-error
 s" -256" >number drop next-user-error !
 
@@ -1222,3 +1225,64 @@ s" -256" >number drop next-user-error !
     next-user-error @
     1 next-user-error -!
 ;
+
+( === 3rd Stage Interpreter === )
+
+create word-buffer s" 63" >number drop cell+ allot drop
+
+: interpret
+    word                            \ read name from input
+    2dup word-buffer copy-string    \ save input
+    2dup find                       \ lookup dictionary
+    ?dup if
+        \ Found the word
+        -rot 2drop
+        state @ if
+            \ compile mode
+            dup cell+ c@ immediate-bit and if
+                \ execute immediate word
+                >cfa execute
+            else
+                \ compile the word
+                >cfa ,
+            then
+        else
+            \ immediate mode
+            >cfa execute
+        then
+    else
+        >number unless
+            undefined-word-error throw
+        then
+        \ Not found
+        state @ if
+            \ compile mode
+            [compile] literal
+        then
+    then
+;
+
+: main
+    begin
+        ['] interpret catch
+        ?dup if
+            \ lookup error code
+            error-list @
+            begin ?dup while
+                \ ( error-code error-entry )
+                dup error>code
+                2 pick = if
+                    error>message type
+                    ." : "
+                    word-buffer string type cr
+                    bye
+                then
+                error>next
+            repeat
+            ." Unknown error code: " . cr
+            bye
+        then
+    again
+;
+
+main

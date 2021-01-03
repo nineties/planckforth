@@ -28,7 +28,15 @@ After bootstrapping by `bootstrap.fs`, it looks like this.
 ```
 $ cat bootstrap.fs - | ./planck
 ." Hello World!" cr
-bye
+```
+
+Other examples.
+
+```
+$ cat bootstrap.fs - | ./planck
+123 456 + . cr
+: fib dup 2 < unless 1- dup recurse swap 1- recurse + then ;
+30 fib . cr
 ```
 
 # Builtin Words
