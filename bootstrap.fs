@@ -804,7 +804,7 @@ alias-builtin xor       ^
 
 : does>-helper
     latest >cfa
-    3 cells + tuck !    \ replace nop
+    3 cells + ! \ replace nop
 ;
 
 : does>
@@ -812,7 +812,7 @@ alias-builtin xor       ^
     0 [compile] literal \ literal for xt
     here cell-          \ save addr of xt
 
-    \ fill xt and exit after docol of latest
+    \ replace nop with xt at runtime
     compile does>-helper
 
     [compile] ; \ finish compilation of initialization part
