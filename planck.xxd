@@ -105,7 +105,7 @@
 00000298: 9c82 0408 ad50 adff   lodsl; pushl %eax; next;
 000002a0: 2000 0000 0000 0000
 
-000002a8: 9082 0408 0153 0000   S: string
+000002a8: 9082 0408 0153 0000   S: litstring
 000002b0: b482 0408 ad56 5001   lodsl; pushl %esi; pushl %eax
 000002b8: c683 c603 83e6 fcad   addl %eax,%esi; addl $3,%esi; andl $~3,%esi;next;
 000002c0: ff20 0000 0000 0000

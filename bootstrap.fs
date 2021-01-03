@@ -442,7 +442,7 @@ alias-builtin rp!       R
 alias-builtin docol     i
 alias-builtin exit      e
 alias-builtin lit       L
-alias-builtin string    S
+alias-builtin litstring S
 alias-builtin div       /
 alias-builtin mod       %
 alias-builtin and       &
@@ -1128,7 +1128,7 @@ char 0 char B - constant string-overflow-error \ -18
 \ immediate mode: the string is stored to temporary buffer.
 : s"
     state @ if
-        compile string
+        compile litstring
         here 0 ,    \ save location of length and fill dummy
         0           \ length of the string
         begin key dup '"' <> while
