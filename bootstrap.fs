@@ -1263,6 +1263,7 @@ create word-buffer s" 63" >number drop cell+ allot drop
 ;
 
 : main
+    rdrop   \ drop 2nd stage
     begin
         ['] interpret catch
         ?dup if
