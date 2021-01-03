@@ -456,6 +456,8 @@ alias-builtin xor       ^
 : c,        B ;
 : cmove,    m ;
 : state     M ;
+: aligned   a ;
+: align     A ;
 
 : here      &here @ ;
 : latest    &latest @ ;
@@ -490,6 +492,7 @@ alias-builtin xor       ^
 
 \ ( -- xt )
 : :noname
+    align
     here
     [ docol ] literal , \ compile docol
     ]                   \ enter compile mode
@@ -524,18 +527,6 @@ alias-builtin xor       ^
 : cell+ cell + ;
 : cell- cell - ;
 : cells cell * ;
-
-\ ( c-addr -- a-addr )
-\ Round up to nearlest multiple of CELL
-: aligned
-    cell + 1 -
-    0 cell -
-    and
-;
-
-\ ( -- )
-\ Round up 'here' to nearlest multiple to CELL
-: align here aligned &here !  ;
 
 \ === Stack Manipulation ===
 
