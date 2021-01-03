@@ -1142,7 +1142,7 @@ decimal \ set default to decimal
 
 \ Allocate a buffer for string literal
 bl constant s-buffer-size  \ 1024
-create s-buffer s-buffer-size allot
+create s-buffer s-buffer-size allot drop
 
 \ Will define the error message corresponds to this error later
 \ because we can't write string literal yet.
