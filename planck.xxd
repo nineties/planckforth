@@ -34,8 +34,8 @@
 000000e0: c880 0408 016b 0000   k: key
 000000e8: ec80 0408 31c0 50ba   xorl %eax,%eax; pushl %eax; movl $1,%edx;
 000000f0: 0100 0000 89e1 31db   movl %esp,%ecx; xorl %ebx,%ebx (STDIN);
-000000f8: b803 0000 00cd 80ad   movl $SYS_READ,%eax; int $0x80;
-00000100: ff20 0000 0000 0000   next;
+000000f8: b803 0000 00cd 8085   movl $SYS_READ,%eax; int $0x80; test %eax,%eax;
+00000100: c076 89ad ff20 0000   jbe 0x0804808c(-119);
 
 00000108: e080 0408 0174 0000   t: type
 00000110: 1481 0408 ba01 0000   movl $1,%edx;
@@ -48,7 +48,7 @@
 00000140: 2000 0000 0000 0000
 
 00000148: 3081 0408 014a 0000   J: jump if zero
-00000150: 5481 0408 5885 c074   popl %eax; test %eax,%eax;je 19c(-29)
+00000150: 5481 0408 5885 c074   popl %eax; test %eax,%eax;je 0x0804813c(-29)
 00000158: e3ad adff 2000 0000   lodsl; next;
 
 00000160: 4881 0408 0166 0000   f: find
