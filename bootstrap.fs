@@ -1096,6 +1096,40 @@ decimal \ set default to decimal
 
 ( === String === )
 
+\ ( c-from c-to u -- )
+\ Copy u bytes from c-from to c-to.
+\ The memory regions must not be overlapped.
+: cmove
+    begin dup 0> while
+        1- >r   \ decrement u, save
+        over c@
+        over c! \ copy character
+        1+ >r   \ increment c-to, save
+        1+      \ increment c-from
+        r> r>
+    repeat
+    drop drop drop
+;
+
+\ we already have cmove,
+
+\ ( a-addr -- c-addr u )
+\ Load address of length of a string from length-prefixed string
+\ | length (1cell) | characters ... |
+: string dup @ swap cell+ swap ;
+
+\ ( c-addr u a-addr -- )
+\ Store length-prefixed string to given address
+: copy-string
+    2dup !      \ fill length
+    cell+       \ increment addr
+    swap cmove  \ copy string
+;
+
+\ ( c-addr u -- )
+\ Allocate memory and store length-prefixed string
+: string, dup , cmove, ;
+
 \ Print string
 : type ( c-addr u -- )
     begin dup 0> while   \ while u>0
@@ -1160,14 +1194,16 @@ char 0 char B - constant string-overflow-error \ -18
 variable error-list
 0 error-list !
 
+: error>next    ( a-addr -- a-addr) @ ;
+: error>message ( a-addr -- c-addr u ) 2 cells + string ;
+: error>code    ( a-addr -- n ) cell+ @ ;
+
 : add-error ( n c-addr u -- )
     error-list here
     over @ ,    \ fill link
     swap !      \ update error-list
     rot ,       \ fill error-code
-    dup ,       \ fill length
-    cmove,      \ fill message
-    align
+    string,     \ fill message
 ;
 
 decimal
