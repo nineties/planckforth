@@ -1395,7 +1395,7 @@ end-struct file%
     then
 ;
 
-: key-file ( file -- c ) file>key-file @ execute throw ;
+: key-file ( file -- c ) dup file>key-file @ execute throw ;
 
 : read-line ( c-addr u1 file -- u2 flag e )
     dup readable? if
@@ -1449,7 +1449,7 @@ R/O stdin_ file>fam c!
 ; stdin_ file>read-line !
 
 :noname ( file -- c e )
-    key success
+    drop key success
 ; stdin_ file>key-file !
 
 create stdout_ file% %allot drop
