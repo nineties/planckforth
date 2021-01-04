@@ -1475,21 +1475,21 @@ struct
     cell% field input>lineno
 end-struct inputstream%
 
-variable input-streams
-0 input-streams !
+variable inputstreams
+0 inputstreams !
 
-: push-input-stream ( file -- )
+: push-inputstream ( file -- )
     inputstream% %allot   \ addr
     swap over input>file !
     0 over input>lineno !
-    input-streams @ over input>next !
-    input-streams !
+    inputstreams @ over input>next !
+    inputstreams !
 ;
 
-: pop-input-stream ( -- )
-    input-streams @ input-streams !
+: pop-inputstream ( -- )
+    inputstreams @ inputstreams !
 ;
 
-stdin_ push-input-stream
+stdin_ push-inputstream
 
 ." Ready" cr
