@@ -1492,4 +1492,70 @@ variable inputstreams
 
 stdin_ push-inputstream
 
+\ Rewrite existing functions that reads input using inputstream.
+
+: key ( -- c )
+    inputstreams @ input>file @ key-file
+;
+
+: word ( -- c-addr )
+    inputstreams @ input>file @
+    \ skip leading spaces
+    0
+    begin
+        drop
+        dup key-file    \ ( file c )
+        dup bl <> over '\n' <> and
+    until
+    word-buffer tuck c!
+    1+
+    begin
+        \ ( file p )
+        over key-file
+        dup bl = over '\n' = or if
+            drop
+            0 swap c!   \ store \0
+            drop
+            word-buffer exit
+        then
+        over c!
+        1+
+    again
+;
+
+: ' ( "name" -- xt ) word find >cfa ;
+
+: : ( "name -- )
+    align
+    here latest , &latest !
+    word dup strlen
+    smudge-bit or c,
+    strcpy,
+    align
+    docol ,
+    ]
+;
+
+: ; ( -- )
+    align
+    compile exit
+    latest cell + dup c@
+    smudge-bit invert and swap c!
+    [compile] [
+; immediate
+
+: create ( "name" -- )
+     align
+     here latest , &latest !
+     word dup strlen c, strcpy,
+     align
+     docol ,
+     compile lit
+     here 3 cells + ,
+     compile nop
+     compile exit
+;
+
+: char ( "ccc" -- c ) word c@ ;
+
 ." Ready" cr
