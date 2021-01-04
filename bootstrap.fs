@@ -1575,13 +1575,10 @@ stdin_ push-inputstream
 -56 s" Bye" def-error QUIT
 
 : interpret
-    word case               \ read name from input
+    word                    \ read name from input
 
-    \ EOF check
-    success of ( ok ) endof
-    UNEXPECTED-EOF-ERROR of QUIT throw endof
-        throw ( rethrow other errors )
-    endcase
+    \ EOF at this point is not an error
+    UNEXPECTED-EOF-ERROR = if QUIT throw then
 
     dup word-buffer strcpy  \ save input
     dup find                \ lookup dictionary
@@ -1640,9 +1637,7 @@ stdin_ push-inputstream
 : switch-to-4th-stage
     rdrop   \ drop 3rd stage
 
-    ['] interpret-loop catch
-
-    bye
+    ['] interpret-loop catch bye
 ;
 
 switch-to-4th-stage
