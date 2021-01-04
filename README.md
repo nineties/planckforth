@@ -1,4 +1,4 @@
-# PlanckForth: Bootstrapping Forth from Handwritten Executable
+# PlanckForth: Bootstrapping Forth from Handwritten Binary
 
 This project aims to bootstrap a Forth interpreter from hand-written tiny ELF binary.
 
