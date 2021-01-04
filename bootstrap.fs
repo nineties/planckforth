@@ -1291,3 +1291,13 @@ create word-buffer s" 63" >number drop cell+ allot drop
 ;
 
 main
+
+( === Dump of data stack === )
+: .s ( -- )
+    sp0 sp@ - cell- cell /  ( depth of the stack )
+    '<' emit 0 u.r '>' emit space
+    sp@ sp0 ( beg end )
+    begin 2dup < while
+        cell- dup @ .
+    repeat 2drop
+;
