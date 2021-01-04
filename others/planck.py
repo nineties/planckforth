@@ -183,7 +183,6 @@ while True:
     elif code == LITSTRING:
         n = read(pc)
         push(pc + CELL)
-        push(n)
         pc = (pc + 2*CELL + n - 1) & ~CELL
     elif code == ADD:
         b = pop()

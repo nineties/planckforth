@@ -64,7 +64,7 @@ $ cat bootstrap.fs - | ./planck
 | i    | docol     | ( -- a-addr )   | Get the interpreter function |
 | e    | exit      | ( -- )          | Exit current function        |
 | L    | lit       | ( -- n )        | Load immediate               |
-| S    | litstring | ( -- c-addr u ) | Load string literal          |
+| S    | litstring | ( -- c-addr )   | Load string literal          |
 | +    | add       | ( a b -- c )    | c = (a + b)                  |
 | -    | sub       | ( a b -- c )    | c = (a - b)                  |
 | *    | mul       | ( a b -- c )    | c = (a * b)                  |

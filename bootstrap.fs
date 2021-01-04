@@ -134,8 +134,9 @@ l!
 \ 'latest' will not be updated.
 h@l@, k1k0-h@$ kch@k1k0-+$ h@C+h!
     i, 'h, '@, 'l, '@, ',,
-    'L, k1k0-, 'h, '@, '$,
-    'k, 'h, '@, 'L, k1k0-, '+, '$,
+    'L, k1k0-, 'h, '@, '$,                  \ fill 1
+    'k, 'h, '@, 'L, k1k0-, '+, '$,          \ fill "c"
+    'L, k0k0-, 'h, '@, 'L, k2k0-, '+, '$,   \ fill "\0"
     'h, '@, 'C, '+, 'h, '!,
 'e, l!
 
@@ -215,37 +216,41 @@ ca i,
 \ Round up 'here' to a nearlest multiple of CELL
 cA i, 'h, '@, 'a, 'h, '!, 'e, l!
 
-\ 'E' ( c-addr1 u1 c-addr2 u2 -- n ) STR=
-\ Compare two strings.
+\ 'E' ( c-addr1 c-addr2 -- flag ) STR=
+\ Compate null-terminated strings.
 \ Return 1 if they are same 0 otherwise.
 cE i,
-    '{, '~, '},                 \ ( c-addr1 c-addr2 u1 u2 )
-    'o, '=, 'J, kVk0-C*,        \ jump to <not_equal> if u1!=u2
 \ <loop>
-        \ ( c-addr1 c-addr2 u )
-        '#, 'J, kMk0-C*,        \ jump to <equal> if u==0
-            '{,                 \ preserve u
-            'o, '?,             \ ( c-addr1 c-addr2 c1 )
-            'o, '?,             \ ( c-addr1 c-addr2 c1 c2 )
-            '},                 \ ( c-addr1 c-addr2 c1 c2 u ) restore u
-            '~, '{, '~, '},     \ ( c-addr1 c-addr2 u c1 c2 )
-            '=, 'J, kFk0-C*,    \ jump to <not_equal> if c1!=c2
-            '{, '{,             \ ( c-addr1 , R:u c-addr2 )
-            'L, k1k0-, '+,      \ increment c-addr1
-            '}, 'L, k1k0-, '+,  \ increment c-addrr2
-            '}, 'L, k1k0-, '-,  \ decrement u
-            'j, k0kN-C*,        \ jump to <loop>
-\ <equal>
-    '_, '_, '_, 'L, k1k0-, 'e,
+    'o, '?, 'o, '?,         \ ( c-addr1 c-addr2 c1 c2 )
+    'o, '=, 'J, k=k0-C*,    \ goto <not_equal> if c1<>c2
+    'J, kAk0-C*,            \ goto <equal> if c1==0
+    'L, k1k0-, '+, '~,      \ increment c-addr2
+    'L, k1k0-, '+, '~,      \ increment c-addr1
+    'j, k0kC-C*,            \ goto <loop>
 \ <not_equal>
     '_, '_, '_, 'L, k0k0-, 'e,
+\ <equal>
+    '_, '_, 'L, k1k0-, 'e,
+l!
+
+\ 'z' ( c-addr -- u ) STRLEN
+\ Calculate length of string
+cz i,
+    'L, k0k0-,  \ 0
+\ <loop>
+    'o, '?, 'J, k;k0-C*,    \ goto <exit> if '\0'
+    'L, k1k0-, '+,  '~,     \ increment u
+    'L, k1k0-, '+,  '~,     \ increment c-addr
+    'j, k0k=-C*,            \ goto <loop>
+\ <exit>
+    '~, '_, 'e,
 l!
 
 \ 's' ( c -- n)
 \ Return 1 if c==' ' or c=='\n', 0 otherwise.
 cs i, '#, 'L, k , '=, '~, 'L, k:k0-, '=, '|, 'e, l!
 
-\ 'W' ( "name" -- c-addr u )
+\ 'W' ( "name" -- c-addr )
 \ Skip leading spaces (' ' and '\n'),
 \ Read name, then return its address and length.
 \ The maximum length of the name is 63. The behavior is undefined
@@ -253,9 +258,9 @@ cs i, '#, 'L, k , '=, '~, 'L, k:k0-, '=, '|, 'e, l!
 \ Note that it returns the address of statically allocated buffer,
 \ so the content will be overwritten each time 'w' executed.
 
-\ Allocate buffer of 63 bytes or more,
+\ Allocate buffer of 63+1 bytes or more,
 \ push the address for compilation of 'w'
-h@ # kok0-+ h! A
+h@ # kpk0-+ h! A
 cW~
 i,
     \ skip leading spaces
@@ -267,19 +272,20 @@ i,
     'o, '$,                     \ store c to p
     'L, k1k0-, '+,              \ increment p
     'k, '#, 's, 'J, k0k9-C*,    \ goto <loop> if c is not space
-    '_, 'L, ,                   \ ( p buf )
-    '~, 'o, '-,                 \ ( buf p-buf )
+    '_,
+    'L, k0k0-, 'o, '$,           \ fill \0
+    '_, 'L, ,                    \ return buf
 'e, l!
 
-\ 'F' ( c-addr u -- w )
+\ 'F' ( c-addr -- w )
 \ Lookup multi-character word from dictionary.
 \ Return 0 if the word is not found.
 \ Entries with smudge-bit=1 are ignored.
 cF i,
     'l, '@,
-\ <loop> ( addr u it )
-    '#, 'J, kUk0-C*,        \ goto <exit> if it=NULL
-        '#, 'C, '+, '?,     \ ( addr u it len+flag )
+\ <loop> ( addr it )
+    '#, 'J, kEk0-C*,        \ goto <exit> if it=NULL
+        '#, 'C, '+, '?,     \ ( addr it len+flag )
         'L, k@, '&,         \ test smudge-bit of it
         'J, k4k0-C*,
 \ <1>
@@ -288,15 +294,12 @@ cF i,
             'j, k0k>-C*,    \ goto <loop>
 \ <2>
             \ smudge-bit=0
-            '{, 'o, 'o, 'r, '@, '~, '{, '~, '}, '},
-            \ ( addr u it addr u it )
-            '#, 'L, Ck1k0-+, '+,        \ address of name
-            '~, 'C, '+, '?,             \ length+flag
-            'L, kok0-, '&,              \ take length (lower 6-bits)
-            \ ( addr1 u1 it addr1 u1 addr2 u2 )
-            'E, 'J, k0kJ-C*,            \ goto <1> if different name
+            'o, 'o,                     \ ( addr it addr it )
+            'L, Ck1k0-+, '+,        \ address of name
+            \ ( addr1 it addr1 addr2 )
+            'E, 'J, k0k:-C*,            \ goto <1> if different name
 \ <exit>
-    '{, '_, '_, '}, \ Drop addr u return it
+    '{, '_, '}, \ Drop addr, return it
 'e, l!
 
 \ 'G' ( w -- xt )
@@ -305,7 +308,7 @@ cG i,
     'C, '+, '#, '?, \ ( addr len+flag )
     'L, kok0-, '&,  \ take length
     '+,             \ add length to the addr
-    'L, k1k0-, '+,  \ add 1 to the addr (1byte for len+field)
+    'L, k2k0-, '+,  \ add 2 to the addr (len+field and \0)
     'a,             \ align
 'e, l!
 
@@ -361,18 +364,19 @@ c ] i , ' L , k 1 k 0 - , ' M , ' ! , ' e , l !
 \ Read name, create word with smudge=1,
 \ compile 'docol' and enter compile mode.
 c : i ,
-    ' A ,               \ align here
+    ' A ,                   \ align here
     ' h , ' @ ,
-    ' l , ' @ , ' , ,   \ fill link
-    ' l , ' ! ,         \ update latest
-    ' W ,               \ read name ( addr len )
-    ' # ,               \ ( addr len len )
-    ' L , k @ , ' | ,
-    ' B ,               \ fill length + smudge-bit
-    ' m ,               \ fill name
-    ' A ,               \ align here
-    ' i , ' , ,         \ compile docol
-    ' ] ,               \ enter compile mode
+    ' l , ' @ , ' , ,       \ fill link
+    ' l , ' ! ,             \ update latest
+    ' W ,                   \ read name ( addr )
+    ' # , ' z , ' # ,       \ ( addr len len )
+    ' L , k @ , ' | ,       \ set smudge-bit
+    ' B ,                   \ fill length + smudge-bit
+    ' m ,                   \ fill name
+    ' L , k 0 k 0 - , ' B , \ fill \0
+    ' A ,                   \ align here
+    ' i , ' , ,             \ compile docol
+    ' ] ,                   \ enter compile mode
 ' e , l !
 
 \ ; ( -- ) SEMICOLON
@@ -412,9 +416,11 @@ set-immediate \
     \ Copy code pointer of builtin word "name-old" to
     \ the new word "name-new".
     \ "name-old" must not be a FORTH word.
-    A h @ l @ , l ! \ fill link, update latest
-    W # B m A       \ fill length and chars of "name-new"
-    W F G @ ,       \ fill code-pointer of "name-old"
+    A h @ l @ , l !         \ fill link, update latest
+    W # z # B m             \ fill length and chars of "name-new"
+    [ ' L , k 0 k 0 - , ] B \ fill \0
+    A
+    W F G @ ,               \ fill code-pointer of "name-old"
 ;
 
 \ Add new names to builtin primities.
@@ -455,6 +461,7 @@ alias-builtin xor       ^
 : >cfa      G ;
 : c,        B ;
 : cmove,    m ;
+: strlen    z ;
 : state     M ;
 : aligned   a ;
 : align     A ;
@@ -795,15 +802,16 @@ alias-builtin xor       ^
 \ at the end of the entry.
 : create
     align
-    latest ,                \ fill link
-    here cell- &latest !    \ update latest
+    latest ,                    \ fill link
+    here cell- &latest !        \ update latest
     word
-    dup c, cmove, align     \ fill length and name
-    docol ,                 \ compile docol
+    dup strlen
+    dup c, cmove, 0 c, align    \ fill length, name and \0
+    docol ,                     \ compile docol
     ['] lit ,
-    here 3 cells + ,        \ compile the address
-    ['] nop ,               \ does>, if any, will fill this cell
-    ['] exit ,              \ compile exit
+    here 3 cells + ,            \ compile the address
+    ['] nop ,                   \ does>, if any, will fill this cell
+    ['] exit ,                  \ compile exit
 ;
 
 : does>-helper
@@ -903,7 +911,7 @@ create exception-marker
 ( === Printing Numbers === )
 
 \ Skip reading spaces, read characters and returns first character
-: char      ( <spces>ccc -- c ) word drop c@ ;
+: char      ( <spces>ccc -- c ) word c@ ;
 
 \ compile-time version of char
 : [char]    ( compile: <spaces>ccc -- ; runtime: --- c )
@@ -1002,25 +1010,20 @@ decimal \ set default to decimal
 
 ( === Parsing Numbers === )
 
-\ Parse string c-addr2 u2 as an unsigned integer with base u1
+\ Parse string c-addr as an unsigned integer with base u
 \ and return n. f represents the conversion is success or not.
-: parse-uint ( u1 c-addr2 u2 -- n f )
+: parse-uint ( u c-addr -- n f )
     0   \ accumulator
-    begin
-        over 0>
-    while
-        \ ( base addr len acc )
+    begin over c@ while
+        \ ( base addr acc )
         >r                  \ save acc
-        1- >r               \ decrement len and save
         dup c@ swap 1+ >r   \ load char, increment addr and save
         dup case
         '0' '9' rangeof '0' - endof
         'a' 'z' rangeof 'a' - 10 + endof
         'A' 'Z' rangeof 'A' - 10 + endof
             \ failed to convert
-            r> r> r> drop drop drop
-            swap drop
-            false
+            2drop r> r> swap drop false
             exit
         endcase
         2dup
@@ -1029,74 +1032,69 @@ decimal \ set default to decimal
         \ ( base n 0 base n )
         within unless
             \ failed to convert
-            r> r> r> drop drop drop
-            swap drop
-            false
+            2drop r> r> swap drop false
             exit
         then
-        \ ( base addr len n acc )
-        r> swap r> swap r>
-        4 pick * +
+        \ ( base addr n acc )
+        r> swap r>
+        3 pick * +
     repeat
     \ success
-    swap drop
     swap drop
     swap drop
     true
 ;
 
-\ increment c-addr1 and decrement u1
-: s++ ( c-addr1 u1 -- c-addr2 u2 )
-    1- swap 1+ swap
-;
-
 \ Parse string as number.
 \ This function interprets prefixes that specifies number base.
-: >number ( c-addr u -- n f )
-    dup 0<= if
-        2drop
+: >number ( c-addr -- n f )
+    dup c@ unless
+        drop
         0 false
         exit
     then
-    over c@ case
+    dup c@ case
     '-' of
-        s++
+        1+
         recurse if
             negate true
         else
             false
         then
     endof
-    '&' of s++ 10 -rot parse-uint endof
-    '#' of s++ 10 -rot parse-uint endof
-    '%' of s++ 2 -rot parse-uint endof
+    '&' of 1+ 10 swap parse-uint endof
+    '#' of 1+ 10 swap parse-uint endof
+    '%' of 1+ 2 swap parse-uint endof
     '0' of
         \ hexadecimal
-        dup 1 = if
-            2drop 0 true exit
+        \ ( addr )
+        1+
+        dup c@ unless
+            drop 0 true exit
         then
-        s++
-        over c@ 'x' = if
-            s++ 16 -rot parse-uint exit
+        dup c@ 'x' = if
+            1+ 16 swap parse-uint exit
         then
-        2drop 0 false exit
+        drop 0 false exit
     endof
     '\'' of
         \ character code
-        case
-        1 of drop 0 false endof
-        2 of 1+ c@ true endof
-        3 of
-            1+ dup c@ swap
-            1+ c@ '\'' = if true else false then
-        endof
+        \ ( addr )
+        1+
+        dup c@ unless
+            drop 0 false exit
+        then
+        dup c@ swap 1+
+        c@ case
+        0 of true exit endof
+        '\'' of true exit endof
             drop 0 false
         endcase
     endof
         \ default case
-        drop base @ -rot
-        parse-uint
-        dup     \ need this because endcase drops top of stack
+        \ ( addr base )
+        drop base @ swap parse-uint
+        dup \ need this because endcase drops top of stack
     endcase
 ;
 
@@ -1119,29 +1117,29 @@ decimal \ set default to decimal
 
 \ we already have cmove,
 
-\ ( a-addr -- c-addr u )
-\ Load address of length of a string from length-prefixed string
-\ | length (1cell) | characters ... |
-: string dup @ swap cell+ swap ;
-
-\ ( c-addr u a-addr -- )
-\ Store length-prefixed string to given address
-: copy-string
-    2dup !      \ fill length
-    cell+       \ increment addr
-    swap cmove  \ copy string
+\ ( c-from c-to -- )
+\ copy nul terminated string from c-from to c-to
+: strcpy
+    begin over c@ dup while
+        \ ( c-from c-to c )
+        over c!
+        1+ swap 1+ swap
+    repeat drop drop drop
 ;
 
-\ ( c-addr u -- )
-\ Allocate memory and store length-prefixed string
-: string, dup , cmove, ;
+\ ( c-addr -- )
+\ copy string to here including \0
+: strcpy,
+    begin dup c@ dup while
+        c, 1+
+    repeat drop
+    0 c,
+;
 
 \ Print string
-: type ( c-addr u -- )
-    begin dup 0> while   \ while u>0
-        over c@ emit    \ print char
-        1-              \ decrement u
-        swap 1+ swap    \ increment c-addr
+: type ( c-addr -- )
+    begin dup c@ dup while  \ while c<>\0
+        emit 1+
     repeat
     2drop
 ;
@@ -1166,6 +1164,7 @@ char 0 char B - constant STRING-OVERFLOW-ERROR \ -18
             c,      \ store character
             1+      \ increment length
         repeat drop
+        0 c,        \ store \0
         swap !      \ back-fill length
         align
     else
@@ -1177,8 +1176,7 @@ char 0 char B - constant STRING-OVERFLOW-ERROR \ -18
             over c! \ store char
             1+      \ increment address
         repeat drop
-        \ ( start-addr last-addr )
-        over -      \ calculate length
+        0 swap c!   \ store \0
     then
 ; immediate
 
@@ -1196,24 +1194,24 @@ char 0 char B - constant STRING-OVERFLOW-ERROR \ -18
 
 \ Single linked list of error code and messages.
 \ Thre structure of each entry:
-\ | link | code | len | message ... |
+\ | link | code | message ... |
 variable error-list
 0 error-list !
 
 : error>next    ( a-addr -- a-addr) @ ;
-: error>message ( a-addr -- c-addr u ) 2 cells + string ;
+: error>message ( a-addr -- c-addr ) 2 cells + ;
 : error>code    ( a-addr -- n ) cell+ @ ;
 
-: add-error ( n c-addr u -- )
+: add-error ( n c-addr -- )
     error-list here
     over @ ,    \ fill link
     swap !      \ update error-list
     rot ,       \ fill error-code
-    string,     \ fill message
+    strcpy,     \ fill message
 ;
 
-: def-error ( n c-addr u "name" -- )
-    create 2 pick ,
+: def-error ( n c-addr "name" -- )
+    create over ,
     add-error
     does> @
 ;
@@ -1226,7 +1224,7 @@ variable next-user-error
 s" -256" >number drop next-user-error !
 
 \ Create new user defined error and returns error code.
-: exception ( c-addr u -- n )
+: exception ( c-addr -- n )
     next-user-error @ -rot add-error
     next-user-error @
     1 next-user-error -!
@@ -1237,12 +1235,13 @@ s" -256" >number drop next-user-error !
 create word-buffer s" 63" >number drop cell+ allot drop
 
 : interpret
-    word                            \ read name from input
-    2dup word-buffer copy-string    \ save input
-    2dup find                       \ lookup dictionary
+    word                    \ read name from input
+    \ ( addr )
+    dup word-buffer strcpy  \ save input
+    dup find                \ lookup dictionary
     ?dup if
         \ Found the word
-        -rot 2drop
+        swap drop
         state @ if
             \ compile mode
             dup cell+ c@ immediate-bit and if
@@ -1281,7 +1280,7 @@ create word-buffer s" 63" >number drop cell+ allot drop
                 2 pick = if
                     error>message type
                     ." : "
-                    word-buffer string type cr
+                    word-buffer type cr
                     bye
                 then
                 error>next
@@ -1423,15 +1422,15 @@ R/O stdin_ file>fam c!
     drop
     dup >r
     begin dup 0> while
-        key 2 tuck c!  s++
+        \ c-addr u c
+        key 2 pick c!
+        1- swap 1+ swap
     repeat
     2drop
     r> success  \ 0: no-error
 ; stdin_ file>read-file !
 
 :noname ( c-addr u1 file -- u2 flag e )
-    ." Readline!" cr
-    .s cr
     drop 0
     begin
         ( c-addr u1 u2 )
@@ -1446,7 +1445,7 @@ R/O stdin_ file>fam c!
             exit
         then
         3 pick c!
-        1+ >r s++ r>
+        1+ >r 1- swap 1+ swap r>
     again
 ; stdin_ file>read-line !
 
@@ -1493,3 +1492,5 @@ variable input-streams
 ;
 
 stdin_ push-input-stream
+
+." Ready" cr

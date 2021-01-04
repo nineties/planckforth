@@ -100,7 +100,6 @@ defcode('L', lit) { push(*pc++); next(); }
 defcode('S', litstring) {
     int len = *pc++;
     push((cell) pc);
-    push(len);
     pc += (len + CELL - 1)/CELL;
 }
 defcode('k', key) { 

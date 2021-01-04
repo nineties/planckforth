@@ -106,9 +106,9 @@
 000002a0: 2000 0000 0000 0000
 
 000002a8: 9082 0408 0153 0000   S: litstring
-000002b0: b482 0408 ad56 5001   lodsl; pushl %esi; pushl %eax
-000002b8: c683 c603 83e6 fcad   addl %eax,%esi; addl $3,%esi; andl $~3,%esi;next;
-000002c0: ff20 0000 0000 0000
+000002b0: b482 0408 ad56 01c6   lodsl; pushl %esi; addl %eax,%esi;
+000002b8: 83c6 0383 e6fc adff   addl $3,%esi; andl $~3,%esi;next;
+000002c0: 2000 0000 0000 0000
 
 000002c8: a882 0408 012b 0000   +: add
 000002d0: d482 0408 5801 0424   popl %eax; addl %eax,(%esp)
@@ -124,15 +124,15 @@
 
 00000310: f882 0408 012f 0000   /: div
 00000318: 1c83 0408 31d2 5b58   xorl %edx,%edx; popl %ebx; popl %eax
-00000320: f7fb 50ad ff20 0000   idiv %ebx; pushl %eax
+00000320: f7fb 50ad ff20 0000   idiv %ebx; pushl %eax; next;
 
 00000328: 1083 0408 0125 0000   %: mod
 00000330: 3483 0408 31d2 5b58   xorl %edx,%edx; popl %ebx; popl %eax
-00000338: f7fb 52ad ff20 0000   idiv %ebx; pushl %edx
+00000338: f7fb 52ad ff20 0000   idiv %ebx; pushl %edx; next;
 
 00000340: 2883 0408 0126 0000   &: and
 00000348: 4c83 0408 5821 0424   popl %eax; andl %eax,(%esp)
-00000350: adff 2000 0000 0000   next;
+00000350: adff 2000 0000 0000   next; next;
 
 00000358: 4083 0408 017c 0000   |: or
 00000360: 6483 0408 5809 0424   popl %eax; orl %eax,(%esp)
