@@ -869,7 +869,7 @@ create exception-marker
     execute
 ;
 
-: SUCCESS 0 ;
+: success 0 ;
 
 : throw ( w -- )
     ?dup unless exit then   \ do nothing if no error
@@ -1414,7 +1414,7 @@ R/O stdin_ file>fam c!
         key 2 tuck c!  s++
     repeat
     2drop
-    r> SUCCESS  \ 0: no-error
+    r> success  \ 0: no-error
 ; stdin_ file>read !
 
 create stdout_ file% %allot drop
@@ -1423,8 +1423,9 @@ W/O stdout_ file>fam c!
 \ Write u byte from c-addr to stdout.
 \ This is ad-hoc implementation for bootstrap process.
 :noname ( c-addr u file -- e )
-    drop type SUCCESS
+    drop type success
 ; stdout_ file>write !
 ' not-implemented stdout_ file>read !
-' not-implemented stdout_ file>flush !
 
+\ do nothing
+:noname drop success ; stdout_ file>flush !
