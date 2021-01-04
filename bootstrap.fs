@@ -982,7 +982,7 @@ decimal \ set default to decimal
 \ Display unsigned integer u right aligned in n characters.
 : u.r ( u n -- )
     over uwidth
-    - spaces u.
+    - spaces base @ swap print-uint
 ;
 
 \ Display signed integer n1 right aligned in n2 characters.
@@ -994,7 +994,7 @@ decimal \ set default to decimal
         dup uwidth 1+
         rot swap - spaces
         '-' emit
-        u.
+        base @ swap print-uint
     then
 ;
 
