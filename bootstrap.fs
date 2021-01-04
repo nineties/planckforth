@@ -1429,3 +1429,29 @@ W/O stdout_ file>fam c!
 
 \ do nothing
 :noname drop success ; stdout_ file>flush !
+
+( === Input Stream === )
+
+\ input stream stack
+struct
+    cell% field input>next
+    cell% field input>file
+    cell% field input>lineno
+end-struct input%
+
+variable input-streams
+0 input-streams !
+
+: push-input-stream ( file -- )
+    input% %allot   \ addr
+    swap over input>file !
+    0 over input>lineno !
+    input-streams @ over input>next !
+    input-streams !
+;
+
+: pop-input-stream ( -- )
+    input-streams @ input-streams !
+;
+
+stdin_ push-input-stream
