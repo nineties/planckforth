@@ -1421,7 +1421,7 @@ create stdout_ file% %allot drop
 W/O stdout_ file>fam c!
 
 \ Write u byte from c-addr to stdout.
-\ This is ad-hoc implementation forr bootstrap process.
+\ This is ad-hoc implementation for bootstrap process.
 :noname ( c-addr u file -- e )
     drop type SUCCESS
 ; stdout_ file>write !
