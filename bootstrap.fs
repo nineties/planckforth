@@ -1301,3 +1301,24 @@ main
         cell- dup @ .
     repeat 2drop
 ;
+
+( === Data Structure === )
+
+: struct ( -- offset )
+    0
+;
+: end-struct ( offset "name" -- )
+    constant
+;
+
+: cell% ( offset1 -- offset2 size ) aligned cell ;
+: char% ( offset1 -- offset2 size ) 1 ;
+: chars% ( offset1 n --  offset2 size ) ;
+: cells% ( offset1 n --  offset2 size ) swap aligned swap cells ;
+
+: field ( offset1 size2 "name" -- offset2 )
+    create
+        over ,    \ fill offset
+        +           \ return new offset
+    does> @ +
+;
