@@ -1347,6 +1347,7 @@ main
 ( === File I/O Abstraction === )
 
 decimal
+-39 s" Unexpected end of file" def-error UNEXPECTED-EOF-ERROR
 -68 s" FLUSH-FILE" def-error FLUSH-FILE-ERROR
 -70 s" READ-FILE" def-error READ-FILE-ERROR
 -71 s" READ-LINE" def-error READ-LINE-ERROR
@@ -1505,13 +1506,15 @@ variable inputstreams
 
 stdin_ push-inputstream
 
-\ Rewrite existing functions that reads input using inputstream.
+\ Rewrite existing functions that reads inputs using inputstream.
 
 : key ( -- c )
     inputstreams @ input>file @ key-file
 ;
 
-: word ( -- c-addr )
+\ Read a word from input stream, return address of the string
+\ and error-code.
+: word ( -- c-addr e )
     inputstreams @ input>file @
     \ skip leading spaces
     0
@@ -1520,6 +1523,9 @@ stdin_ push-inputstream
         dup key-file    \ ( file c )
         dup bl <> over '\n' <> and
     until
+    dup EOF = if
+        drop word-buffer UNEXPECTED-EOF-ERROR
+    then
     word-buffer tuck c!
     1+
     begin
@@ -1528,20 +1534,20 @@ stdin_ push-inputstream
         dup bl = over '\n' = or if
             drop
             0 swap c!   \ store \0
-            drop
-            word-buffer exit
+            drop word-buffer success
+            exit
         then
         over c!
         1+
     again
 ;
 
-: ' ( "name" -- xt ) word find >cfa ;
+: ' ( "name" -- xt ) word throw find >cfa ;
 
 : : ( "name -- )
     align
     here latest , &latest !
-    word dup strlen
+    word throw dup strlen
     smudge-bit or c,
     strcpy,
     align
@@ -1549,18 +1555,10 @@ stdin_ push-inputstream
     ]
 ;
 
-: ; ( -- )
-    align
-    compile exit
-    latest cell + dup c@
-    smudge-bit invert and swap c!
-    [compile] [
-; immediate
-
 : create ( "name" -- )
      align
      here latest , &latest !
-     word dup strlen c, strcpy,
+     word throw dup strlen c, strcpy,
      align
      docol ,
      compile lit
@@ -1569,6 +1567,84 @@ stdin_ push-inputstream
      compile exit
 ;
 
-: char ( "ccc" -- c ) word c@ ;
+
+: char ( "ccc" -- c ) word throw c@ ;
+
+( === 4th Stage Interpreter === )
+
+-56 s" Bye" def-error QUIT
+
+: interpret
+    word case               \ read name from input
+
+    \ EOF check
+    success of ( ok ) endof
+    UNEXPECTED-EOF-ERROR of QUIT throw endof
+        throw ( rethrow other errors )
+    endcase
+
+    dup word-buffer strcpy  \ save input
+    dup find                \ lookup dictionary
+    ?dup if
+        \ Found the word
+        swap drop
+        state @ if
+            \ compile mode
+            dup cell+ c@ immediate-bit and if
+                \ execute immediate word
+                >cfa execute
+            else
+                \ compile the word
+                >cfa ,
+            then
+        else
+            \ immediate mode
+            >cfa execute
+        then
+    else
+        >number unless
+            UNDEFINED-WORD-ERROR throw
+        then
+        \ Not found
+        state @ if
+            \ compile mode
+            [compile] literal
+        then
+    then
+;
+
+: interpret-loop
+    begin
+        ['] interpret catch
+        ?dup if
+            \ lookup error code
+            dup QUIT = if throw then
+            error-list @
+            begin ?dup while
+                \ ( error-code error-entry )
+                dup error>code
+                2 pick = if
+                    error>message type
+                    ." : "
+                    word-buffer type cr
+                    bye
+                then
+                error>next
+            repeat
+            ." Unknown error code: " . cr
+            bye
+        then
+    again
+;
+
+: switch-to-4th-stage
+    rdrop   \ drop 3rd stage
+
+    ['] interpret-loop catch
+
+    bye
+;
+
+switch-to-4th-stage
 
 ." Ready" cr
