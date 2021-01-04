@@ -1,9 +1,11 @@
 # planckforth - 
 # Copyright (C) 2021 nineties
 
-planck: planck.xxd
-	xxd -r -c 8 $< > $@
-	chmod +x $@
+default: x86hex
+	
+x86hex: planck.xxd
+	xxd -r -c 8 $< > planck
+	chmod +x planck
 
 c: others/planck.c
 	gcc -Wall -O2 $< -o planck
