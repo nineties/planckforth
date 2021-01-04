@@ -1351,6 +1351,7 @@ main
 decimal
 -68 s" FLUSH-FILE" def-error FLUSH-FILE-ERROR
 -70 s" READ-FILE" def-error READ-FILE-ERROR
+-71 s" READ-LINE" def-error READ-LINE-ERROR
 -75 s" WRITE-FILE" def-error WRITE-FILE-ERROR
 
 \ file access methods (fam)
@@ -1360,9 +1361,11 @@ decimal
 
 \ File
 struct
-    cell% field file>write    ( c-addr u1 file -- e )
-    cell% field file>read     ( c-addr u1 file -- u2 e )
-    cell% field file>flush    ( file -- e )
+    cell% field file>read-file  ( c-addr u1 file -- u2 e )
+    cell% field file>read-line  ( c-addr u1 file -- u2 flag e )
+    cell% field file>key-file   ( file -- c e )
+    cell% field file>write-file ( c-addr u1 file -- e )
+    cell% field file>flush-file ( file -- e )
     char% field file>fam
     \ will add other fields later
 end-struct file%
@@ -1372,7 +1375,7 @@ end-struct file%
 
 : write-file ( c-addr u1 file -- e )
     dup writable? if
-        dup file>write @ execute
+        dup file>write-file @ execute
     else
         WRITE-FILE-ERROR
     then
@@ -1380,17 +1383,27 @@ end-struct file%
 
 : read-file ( c-addr u1 file -- u2 e )
     dup readable? if
-        dup file>read @ execute
+        dup file>read-file @ execute
     else
-        READ-FILE-ERROR
+        0 READ-FILE-ERROR
     then
 ;
 
 : flush-file ( file -- e )
     dup writable? if
-        dup file>flush @ execute
+        dup file>flush-file @ execute
     else
         FLUSH-FILE-ERROR
+    then
+;
+
+: key-file ( file -- c ) file>key-file @ execute throw ;
+
+: read-line ( c-addr u1 file -- u2 flag e )
+    dup readable? if
+        dup file>read-line @ execute
+    else
+        READ-LINE-ERROR
     then
 ;
 
@@ -1402,8 +1415,10 @@ s" Not implemented" exception constant NOT-IMPLEMENTED
 
 create stdin_ file% %allot drop
 R/O stdin_ file>fam c!
-' not-implemented stdin_ file>write !
-' not-implemented stdin_ file>flush !
+' not-implemented stdin_ file>read-line !
+' not-implemented stdin_ file>key-file !
+' not-implemented stdin_ file>write-file !
+' not-implemented stdin_ file>flush-file !
 
 \ Read u byte from stdin to c-addr.
 \ This is ad-hoc implementation for bootstrap process.
@@ -1415,20 +1430,22 @@ R/O stdin_ file>fam c!
     repeat
     2drop
     r> success  \ 0: no-error
-; stdin_ file>read !
+; stdin_ file>read-file !
 
 create stdout_ file% %allot drop
 W/O stdout_ file>fam c!
+' not-implemented stdout_ file>read-file !
+' not-implemented stdout_ file>read-line !
+' not-implemented stdout_ file>key-file !
 
 \ Write u byte from c-addr to stdout.
 \ This is ad-hoc implementation for bootstrap process.
 :noname ( c-addr u file -- e )
     drop type success
-; stdout_ file>write !
-' not-implemented stdout_ file>read !
+; stdout_ file>write-file !
 
 \ do nothing
-:noname drop success ; stdout_ file>flush !
+:noname drop success ; stdout_ file>flush-file !
 
 ( === Input Stream === )
 
