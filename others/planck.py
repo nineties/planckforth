@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # planck - 
 # Copyright (C) 2021 nineties
 #

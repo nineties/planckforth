@@ -15,6 +15,9 @@ xxd -r -c 8 planck.xxd > planck
 chmod +x planck
 ```
 
+There are implementations in C and Python 3 as a reference in `others`.
+Try `make c` or `make python`
+
 ## Hello World
 
 The hello world program at the beginning looks like this.
