@@ -311,7 +311,7 @@ cG i,
     'a,             \ align
 'e, l!
 
-\ 'M' ( -- c-addr)
+\ 'M' ( -- a-addr)
 \ The state variable
 \ 0: immediate mode
 \ 1: compile mode
