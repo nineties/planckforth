@@ -45,7 +45,7 @@ l!
 \ 'i' ( -- a-addr )     Get the interpreter function
 \ 'e' ( -- )            Exit current function
 \ 'L' ( -- u )          Load immediate
-\ 'S' ( -- a-addr u )   Load string literal
+\ 'S' ( -- c-addr )     Load string literal
 \ '+' ( a b -- c )      c = (a + b)
 \ '-' ( a b -- c )      c = (a - b)
 \ '*' ( a b -- c )      c = (a * b)
