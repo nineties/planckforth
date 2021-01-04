@@ -1320,7 +1320,7 @@ main
 
 : field ( offset1 size2 "name" -- offset2 )
     create
-        over ,    \ fill offset
-        +           \ return new offset
+        over ,  \ fill offset
+        +       \ return new offset
     does> @ +
 ;
