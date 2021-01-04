@@ -1150,7 +1150,7 @@ create s-buffer s-buffer-size allot drop
 
 \ Will define the error message corresponds to this error later
 \ because we can't write string literal yet.
-char 0 char B - constant string-overflow-error \ -18
+char 0 char B - constant STRING-OVERFLOW-ERROR \ -18
 
 \ Parse string delimited by "
 \ compile mode: the string is stored as operand of 'string' operator.
@@ -1170,7 +1170,7 @@ char 0 char B - constant string-overflow-error \ -18
         s-buffer dup    \ save start address
         begin key dup '"' <> while
             2dup swap - s-buffer-size >= if
-                throw string-overflow-error
+                throw STRING-OVERFLOW-ERROR
             then
             over c! \ store char
             1+      \ increment address
@@ -1210,15 +1210,17 @@ variable error-list
     string,     \ fill message
 ;
 
+: def-error ( n c-addr u "name" -- )
+    create 2 pick ,
+    add-error
+    does> @
+;
+
 decimal
 
-s" -1" >number drop constant aborted-error
+STRING-OVERFLOW-ERROR s" Too long string literal" add-error
 
-aborted-error s" Aborted" add-error
-string-overflow-error s" Too long string literal" add-error
-
-s" -13" >number drop constant undefined-word-error
-undefined-word-error s" Undefined word" add-error
+s" -13" >number drop s" Undefined word" def-error UNDEFINED-WORD-ERROR
 
 variable next-user-error
 s" -256" >number drop next-user-error !
@@ -1256,7 +1258,7 @@ create word-buffer s" 63" >number drop cell+ allot drop
         then
     else
         >number unless
-            undefined-word-error throw
+            UNDEFINED-WORD-ERROR throw
         then
         \ Not found
         state @ if
