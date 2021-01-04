@@ -869,6 +869,8 @@ create exception-marker
     execute
 ;
 
+: SUCCESS 0 ;
+
 : throw ( w -- )
     ?dup unless exit then   \ do nothing if no error
     rp@
@@ -1217,9 +1219,7 @@ variable error-list
 ;
 
 decimal
-
 STRING-OVERFLOW-ERROR s" Too long string literal" add-error
-
 s" -13" >number drop s" Undefined word" def-error UNDEFINED-WORD-ERROR
 
 variable next-user-error
@@ -1306,21 +1306,125 @@ main
 
 ( === Data Structure === )
 
+\ align n1 to u-byte boundary
+: aligned-by ( n1 u -- n2 )
+    1- dup invert   \ ( n1 u-1 ~(u-1) )
+    -rot + and
+;
+
+\ align here to u-byte boundary
+: align-by ( u -- )
+    here swap aligned-by &here !
+;
+
 : struct ( -- offset )
     0
 ;
+
+\ struct ... end-struct new-word
+\ defines new-word as a operator
+\ that returns alignment and size of the struct.
+\ new-word: ( -- align size )
 : end-struct ( offset "name" -- )
-    constant
+    create , does> @ cell swap
 ;
 
-: cell% ( offset1 -- offset2 size ) aligned cell ;
-: char% ( offset1 -- offset2 size ) 1 ;
-: chars% ( offset1 n --  offset2 size ) ;
-: cells% ( offset1 n --  offset2 size ) swap aligned swap cells ;
+: cell% ( -- align size ) cell cell ;
+: char% ( -- align size ) 1 1 ;
 
-: field ( offset1 size2 "name" -- offset2 )
+\ allocate user memory
+: %allot ( align size -- addr )
+    swap align-by allot
+;
+
+: field ( offset1 align size "name" -- offset2 )
+    \ align offset with 'align'
+    -rot aligned-by \ ( size offset )
     create
-        over ,  \ fill offset
+        dup ,   \ fill offset
         +       \ return new offset
     does> @ +
 ;
+
+( === File I/O Abstraction === )
+
+decimal
+-68 s" FLUSH-FILE" def-error FLUSH-FILE-ERROR
+-70 s" READ-FILE" def-error READ-FILE-ERROR
+-75 s" WRITE-FILE" def-error WRITE-FILE-ERROR
+
+\ file access methods (fam)
+0x00 constant R/O  \ read-only
+0x01 constant R/W  \ read-write
+0x02 constant W/O  \ write-only
+
+\ File
+struct
+    cell% field file>write    ( c-addr u1 file -- e )
+    cell% field file>read     ( c-addr u1 file -- u2 e )
+    cell% field file>flush    ( file -- e )
+    char% field file>fam
+    \ will add other fields later
+end-struct file%
+
+: writable? ( file -- f ) file>fam c@ R/O <> ;
+: readable? ( file -- f ) file>fam c@ W/O <> ;
+
+: write-file ( c-addr u1 file -- e )
+    dup writable? if
+        dup file>write @ execute
+    else
+        WRITE-FILE-ERROR
+    then
+;
+
+: read-file ( c-addr u1 file -- u2 e )
+    dup readable? if
+        dup file>read @ execute
+    else
+        READ-FILE-ERROR
+    then
+;
+
+: flush-file ( file -- e )
+    dup writable? if
+        dup file>flush @ execute
+    else
+        FLUSH-FILE-ERROR
+    then
+;
+
+\ Temporary implementation stdin and stdout using 'key' and 'type'
+
+s" Not implemented" exception constant NOT-IMPLEMENTED
+
+: not-implemented NOT-IMPLEMENTED throw ;
+
+create stdin_ file% %allot drop
+R/O stdin_ file>fam c!
+' not-implemented stdin_ file>write !
+' not-implemented stdin_ file>flush !
+
+\ Read u byte from stdin to c-addr.
+\ This is ad-hoc implementation for bootstrap process.
+:noname ( c-addr u file -- u e )
+    drop
+    dup >r
+    begin dup 0> while
+        key 2 tuck c!  s++
+    repeat
+    2drop
+    r> SUCCESS  \ 0: no-error
+; stdin_ file>read !
+
+create stdout_ file% %allot drop
+W/O stdout_ file>fam c!
+
+\ Write u byte from c-addr to stdout.
+\ This is ad-hoc implementation forr bootstrap process.
+:noname ( c-addr u file -- e )
+    drop type SUCCESS
+; stdout_ file>write !
+' not-implemented stdout_ file>read !
+' not-implemented stdout_ file>flush !
+
