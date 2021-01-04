@@ -575,6 +575,10 @@ alias-builtin xor       ^
 \ ( n1 -- n2 )
 : not false = ;
 
+\ ( n1 -- n2 )
+\ bitwise invert
+: invert -1 xor ;
+
 : >     swap < ;
 : <=    > not ;
 : >=    < not ;
