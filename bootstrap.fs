@@ -803,8 +803,7 @@ alias-builtin xor       ^
     align
     latest ,                    \ fill link
     here cell- &latest !        \ update latest
-    word
-    dup strlen
+    word dup strlen
     dup c, cmove, 0 c, align    \ fill length, name and \0
     docol ,                     \ compile docol
     ['] lit ,
