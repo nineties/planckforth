@@ -1131,7 +1131,7 @@ decimal \ set default to decimal
 : strcpy,
     begin dup c@ dup while
         c, 1+
-    repeat drop
+    repeat 2drop
     0 c,
 ;
 
@@ -1203,9 +1203,10 @@ variable error-list
 
 : add-error ( n c-addr -- )
     error-list here
+    ( n c-addr )
     over @ ,    \ fill link
     swap !      \ update error-list
-    rot ,       \ fill error-code
+    swap ,      \ fill error-code
     strcpy,     \ fill message
 ;
 
