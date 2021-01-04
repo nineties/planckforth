@@ -1473,13 +1473,13 @@ struct
     cell% field input>next
     cell% field input>file
     cell% field input>lineno
-end-struct input%
+end-struct inputstream%
 
 variable input-streams
 0 input-streams !
 
 : push-input-stream ( file -- )
-    input% %allot   \ addr
+    inputstream% %allot   \ addr
     swap over input>file !
     0 over input>lineno !
     input-streams @ over input>next !
