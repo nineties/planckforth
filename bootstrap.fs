@@ -1352,6 +1352,8 @@ decimal
 -71 s" READ-LINE" def-error READ-LINE-ERROR
 -75 s" WRITE-FILE" def-error WRITE-FILE-ERROR
 
+-1 constant EOF
+
 \ file access methods (fam)
 0x00 constant R/O  \ read-only
 0x01 constant R/W  \ read-write
@@ -1371,6 +1373,7 @@ end-struct file%
 : writable? ( file -- f ) file>fam c@ R/O <> ;
 : readable? ( file -- f ) file>fam c@ W/O <> ;
 
+\ Write bytes from buffer c-addr u1 to file, return error-code.
 : write-file ( c-addr u1 file -- e )
     dup writable? if
         dup file>write-file @ execute
@@ -1379,6 +1382,8 @@ end-struct file%
     then
 ;
 
+\ Read u1-bytes at most from file, write it to c-addr.
+\ Return number of bytes read and error-code.
 : read-file ( c-addr u1 file -- u2 e )
     dup readable? if
         dup file>read-file @ execute
@@ -1387,6 +1392,7 @@ end-struct file%
     then
 ;
 
+\ Flush output buffer of file, return error-code.
 : flush-file ( file -- e )
     dup writable? if
         dup file>flush-file @ execute
@@ -1395,8 +1401,15 @@ end-struct file%
     then
 ;
 
+\ Read a character. Return EOF at end of input.
 : key-file ( file -- c ) dup file>key-file @ execute throw ;
 
+\ Read characters from 'file' to the buffer c-addr u1
+\ until reaches '\n' or end of file.
+\ The last '\n' is not stored to the buffer.
+\ u2 is the number of characters written to the buffer.
+\ flag=true if it reaches '\n'.
+\ e is error code.
 : read-line ( c-addr u1 file -- u2 flag e )
     dup readable? if
         dup file>read-line @ execute
