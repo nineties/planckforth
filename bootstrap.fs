@@ -1231,7 +1231,7 @@ s" -256" >number drop next-user-error !
 
 ( === 3rd Stage Interpreter === )
 
-create word-buffer s" 63" >number drop cell+ allot drop
+create word-buffer s" 64" >number drop cell+ allot drop
 
 : interpret
     word                    \ read name from input
