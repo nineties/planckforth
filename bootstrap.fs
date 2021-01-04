@@ -1415,13 +1415,10 @@ s" Not implemented" exception constant NOT-IMPLEMENTED
 
 create stdin_ file% %allot drop
 R/O stdin_ file>fam c!
-' not-implemented stdin_ file>read-line !
-' not-implemented stdin_ file>key-file !
 ' not-implemented stdin_ file>write-file !
 ' not-implemented stdin_ file>flush-file !
 
 \ Read u byte from stdin to c-addr.
-\ This is ad-hoc implementation for bootstrap process.
 :noname ( c-addr u file -- u e )
     drop
     dup >r
@@ -1432,6 +1429,31 @@ R/O stdin_ file>fam c!
     r> success  \ 0: no-error
 ; stdin_ file>read-file !
 
+:noname ( c-addr u1 file -- u2 flag e )
+    ." Readline!" cr
+    .s cr
+    drop 0
+    begin
+        ( c-addr u1 u2 )
+        over 0<= if
+            -rot dup dup false success
+            exit
+        then
+        key
+        dup '\n' = if
+            ( c-addr u1 u2 c )
+            drop -rot drop drop true success
+            exit
+        then
+        3 pick c!
+        1+ >r s++ r>
+    again
+; stdin_ file>read-line !
+
+:noname ( file -- c e )
+    key success
+; stdin_ file>key-file !
+
 create stdout_ file% %allot drop
 W/O stdout_ file>fam c!
 ' not-implemented stdout_ file>read-file !
@@ -1439,7 +1461,6 @@ W/O stdout_ file>fam c!
 ' not-implemented stdout_ file>key-file !
 
 \ Write u byte from c-addr to stdout.
-\ This is ad-hoc implementation for bootstrap process.
 :noname ( c-addr u file -- e )
     drop type success
 ; stdout_ file>write-file !
