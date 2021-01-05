@@ -788,7 +788,7 @@ alias-builtin xor       ^
 ( === Memory Operation === )
 
 : +! ( n a-addr -- ) tuck @ + swap ! ;
-: -! ( n a-addr -- ) tuck @ - swap ! ;
+: -! ( n a-addr -- ) tuck @ swap - swap ! ;
 
 \ allocate n bytes
 : allot ( n -- c-addr )
