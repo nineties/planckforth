@@ -8,6 +8,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 typedef uintptr_t cell;
 typedef void (**cfa)();
@@ -153,5 +157,19 @@ defbinary("|", or, |, uintptr_t)
 defbinary("^", xor, ^, uintptr_t)
 defbinary("<", lt, <, intptr_t)
 defbinary("=", eq, ==, intptr_t)
+defcode("(open-file)", openfile) {
+    int flags = pop();
+    char *name = (char*) pop();
+    int fd = open(name, flags);
+    push(fd);
+    push(fd >= 0);
+    next();
+}
+defcode("(close-file)", closefile) {
+    int fd = pop();
+    int r = close(fd);
+    push(r >= 0);
+    next();
+}
 
 #endif

@@ -3,6 +3,7 @@
 # Copyright (C) 2021 nineties
 #
 
+import os
 import sys
 import operator
 
@@ -59,6 +60,15 @@ def comma_string(s):
     for c in s:
         comma_byte(ord(c))
     comma_byte(0)
+
+def read_string(addr):
+    s = ""
+    while True:
+        c = read_byte(addr)
+        if c == 0: break
+        s += chr(c)
+        addr += 1
+    return s
 
 def find(c):
     it = read(LATEST_CELL)
@@ -197,6 +207,18 @@ def argv():
     push(ARGV_ADDR)
     push(len(sys.argv))
 add_simple_operator('v', argv)
+def openfile():
+    flag = pop()
+    name = read_string(pop())
+    fd = os.open(name, flag)
+    push(fd)
+    push(fd >= 0)
+def closefile():
+    fd = pop()
+    os.close(fd)
+    push(fd >= 0)
+add_simple_operator('(open-file)', openfile)
+add_simple_operator('(close-file)', closefile)
 
 start = read(HERE_CELL)
 comma(find('k'))

@@ -1374,8 +1374,8 @@ decimal
 
 \ file access methods (fam)
 0x00 constant R/O  \ read-only
-0x01 constant R/W  \ read-write
-0x02 constant W/O  \ write-only
+0x01 constant W/O  \ write-only
+0x02 constant R/W  \ read-write
 
 \ File
 struct
@@ -1944,24 +1944,15 @@ codegen-target @ s" i386-linux" str= [if]
 
 ( === File I/O === )
 
-5 constant SYS_OPEN
-6 constant SYS_CLOSE
-
-: fam-to-mode ( fam -- u )
-    case
-    R/O of 0x00 endof
-    W/O of 0x01 endof
-    R/W of 0x02 endof
-        FILE-IO-ERROR throw
-    endcase
-;
+5 constant SYS-OPEN
+6 constant SYS-CLOSE
 
 : (open-file) ( c-addr fam -- obj f )
-    fam-to-mode swap SYS_OPEN syscall2 dup 0>=
+    swap SYS-OPEN syscall2 dup 0>=
 ;
 
-: (close-file) ( obj -- f)
-    SYS_CLOSE syscall1 0>=
+: (close-file) ( obj -- f )
+    SYS-CLOSE syscall1 0>=
 ;
 
 [else] \ i386-linux
