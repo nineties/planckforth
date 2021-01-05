@@ -1294,7 +1294,9 @@ create word-buffer s" 64" >number drop cell+ allot drop
                 then
                 error>next
             repeat
-            ." Unknown error code: " . cr
+            ." Unknown error code: "
+            word-buffer type
+            ."  (" 0 .r ." )" cr
             bye
         then
     again
@@ -1664,7 +1666,9 @@ stdin_ push-inputstream
                 then
                 error>next
             repeat
-            ." Unknown error code: " . cr
+            ." Unknown error code: "
+            word-buffer type
+            ."  (" 0 .r ." )" cr
             bye
         then
     again
