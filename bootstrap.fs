@@ -562,6 +562,11 @@ alias-builtin xor       ^
 
 : rdrop r> rp@ ! ;  \ ( R:w -- )
 
+\ ( R xu ... x0 u -- xu ... x0 xu )
+: rpick
+    cells rp@ + cell + @
+;
+
 \ ( -- a-addr )
 \ The bottom address of stacks.
 \ sp@ and rp@ points bottom if implementation so far is correct.
