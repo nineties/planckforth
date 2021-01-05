@@ -17,6 +17,9 @@ rp = MEMORY_SIZE - STACK_SIZE
 ip = 0
 pc = 0
 
+def aligned(n):
+    return (n + CELL - 1) & ~(CELL - 1)
+
 def read(addr):
     return int.from_bytes(
             memory[addr:addr+CELL], 'little', signed=True)
@@ -184,7 +187,7 @@ while True:
     elif code == LITSTRING:
         n = read(pc)
         push(pc + CELL)
-        pc = (pc + 2*CELL + n - 1) & ~CELL
+        pc = aligned(pc + CELL + n)
     elif code == ADD:
         b = pop()
         push(pop() + b)
