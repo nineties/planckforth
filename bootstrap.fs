@@ -1914,14 +1914,14 @@ codegen-target @ s" i386-linux" str= [if]
     latest dup >dfa swap >cfa !
 ; immediate
 
-: syscall0 ( n -- r )
+: syscall0 ( n -- e )
     eax pop
     int80
     eax push
     next
 ;asm
 
-: syscall1 ( arg1 n -- r )
+: syscall1 ( arg1 n -- e )
     eax pop
     ebx pop
     int80
@@ -1929,7 +1929,7 @@ codegen-target @ s" i386-linux" str= [if]
     next
 ;asm
 
-: syscall2 ( arg2 arg1 n -- r )
+: syscall2 ( arg2 arg1 n -- e )
     eax pop
     ebx pop
     ecx pop
@@ -1938,7 +1938,7 @@ codegen-target @ s" i386-linux" str= [if]
     next
 ;asm
 
-: syscall3 ( arg3 arg2 arg1 n -- r )
+: syscall3 ( arg3 arg2 arg1 n -- e )
     eax pop
     ebx pop
     ecx pop
