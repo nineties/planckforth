@@ -1,153 +1,154 @@
 00000000: 7f45 4c46 0101 0100   # planckforth -
 00000008: 0000 0000 0000 0000   # Copyright (C) 2021 nineties
 00000010: 0200 0300 0100 0000   ET_EXEC,EM_386,EV_CURRENT
-00000018: 7080 0408 3400 0000   e_entry=0x08048070,e_phoff=<phdr>
+00000018: 7480 0408 3400 0000   e_entry=0x08048074,e_phoff=<phdr>
 00000020: 0000 0000 0000 0000   e_shoff,e_flags
 00000028: 3400 2000 0100 0000   e_ehsize,e_phentsize,e_phnum,e_shentsize
 00000030: 0000 0000 0100 0000   e_shnum,e_shstrndx,<phdr>p_type=PT_LOAD
 00000038: 0000 0000 0080 0408   p_offset,p_vaddr=0x08048000
-00000040: 0000 0000 c803 0000   p_paddr,p_filesz
+00000040: 0000 0000 d003 0000   p_paddr,p_filesz
 00000048: 0000 0008 0700 0000   p_memsz(128MB),p_flags=PF_X|PF_W|PF_R
-00000050: 0010 0000 c883 0408   p_align, <here>
-00000058: a883 0408 e880 0408   <latest:init="=">, <interpreter>key
-00000060: 6881 0408 9881 0408   find execute
-00000068: 3881 0408 f0ff ffff   jump -16
-00000070: be5c 8004 08bd 0080   movl $interpreter,%esi; movl $0x10048000,%ebp;
-00000078: 0410 adff 2000 0000   next;
+00000050: 0010 0000 d083 0408   p_align, <here>
+00000058: b083 0408 0000 0000   <latest:init="=">, <sp0>
+00000060: f080 0408 7081 0408   <interpreter>key, find
+00000068: a081 0408 4081 0408   execute, jump
+00000070: f0ff ffff be60 8004   -16, movl $interpreter, %esi
+00000078: 08bd 0080 0410 8925   movl $0x10048000,%ebp; movl %esp,sp0;
+00000080: 5c80 0408 adff 2000   next;
 
-00000080: 0000 0000 0151 0000   Q: quit
-00000088: 8c80 0408 31db b801   xorl %ebx,%ebx; mov $SYS_EXIT,%eax;
-00000090: 0000 00cd 8000 0000   int $0x80;
+00000088: 0000 0000 0151 0000   Q: quit
+00000090: 9480 0408 31db b801   xorl %ebx,%ebx; mov $SYS_EXIT,%eax;
+00000098: 0000 00cd 8000 0000   int $0x80;
 
-00000098: 8080 0408 0143 0000   C: cellsize
-000000a0: a480 0408 6804 0000   pushl $4;
-000000a8: 00ad ff20 0000 0000   next;
+000000a0: 8880 0408 0143 0000   C: cellsize
+000000a8: ac80 0408 6804 0000   pushl $4;
+000000b0: 00ad ff20 0000 0000   next;
 
-000000b0: 9880 0408 0168 0000   h: here
-000000b8: bc80 0408 6854 8004   pushl $here;
-000000c0: 08ad ff20 0000 0000   next;
+000000b8: a080 0408 0168 0000   h: here
+000000c0: c480 0408 6854 8004   pushl $here;
+000000c8: 08ad ff20 0000 0000   next;
 
-000000c8: b080 0408 016c 0000   l: latest
-000000d0: d480 0408 6858 8004   pushl $latest;
-000000d8: 08ad ff20 0000 0000   next;
+000000d0: b880 0408 016c 0000   l: latest
+000000d8: dc80 0408 6858 8004   pushl $latest;
+000000e0: 08ad ff20 0000 0000   next;
 
-000000e0: c880 0408 016b 0000   k: key
-000000e8: ec80 0408 31c0 50ba   xorl %eax,%eax; pushl %eax; movl $1,%edx;
-000000f0: 0100 0000 89e1 31db   movl %esp,%ecx; xorl %ebx,%ebx (STDIN);
-000000f8: b803 0000 00cd 8085   movl $SYS_READ,%eax; int $0x80; test %eax,%eax;
-00000100: c076 89ad ff20 0000   jbe 0x0804808c(-119);
+000000e8: d080 0408 016b 0000   k: key
+000000f0: f480 0408 31c0 50ba   xorl %eax,%eax; pushl %eax; movl $1,%edx;
+000000f8: 0100 0000 89e1 31db   movl %esp,%ecx; xorl %ebx,%ebx (STDIN);
+00000100: b803 0000 00cd 8085   movl $SYS_READ,%eax; int $0x80; test %eax,%eax;
+00000108: c076 89ad ff20 0000   jbe 0x08048094(-119);
 
-00000108: e080 0408 0174 0000   t: type
-00000110: 1481 0408 ba01 0000   movl $1,%edx;
-00000118: 0089 e1bb 0100 0000   movl %esp,%ecx; movl $1,%ebx (STDOUT);
-00000120: b804 0000 00cd 8083   movl $SYS_WRITE,%eax; int $0x80;
-00000128: c404 adff 2000 0000   addl $4,%esp; next;
+00000110: e880 0408 0174 0000   t: type
+00000118: 1c81 0408 ba01 0000   movl $1,%edx;
+00000120: 0089 e1bb 0100 0000   movl %esp,%ecx; movl $1,%ebx (STDOUT);
+00000128: b804 0000 00cd 8083   movl $SYS_WRITE,%eax; int $0x80;
+00000130: c404 adff 2000 0000   addl $4,%esp; next;
 
-00000130: 0881 0408 016a 0000   j: jump
-00000138: 3c81 0408 0336 adff   addl (%esi),%esi; next;
-00000140: 2000 0000 0000 0000
+00000138: 1081 0408 016a 0000   j: jump
+00000140: 4481 0408 0336 adff   addl (%esi),%esi; next;
+00000148: 2000 0000 0000 0000
 
-00000148: 3081 0408 014a 0000   J: jump if zero
-00000150: 5481 0408 5885 c074   popl %eax; test %eax,%eax;je 0x0804813c(-29)
-00000158: e3ad adff 2000 0000   lodsl; next;
+00000150: 3881 0408 014a 0000   J: jump if zero
+00000158: 5c81 0408 5885 c074   popl %eax; test %eax,%eax;je 0x0804813c(-29)
+00000160: e3ad adff 2000 0000   lodsl; next;
 
-00000160: 4881 0408 0166 0000   f: find
-00000168: 6c81 0408 8a24 24b0   movb (%esp),%ah;movb $1,%al;
-00000170: 018b 0d58 8004 088b   movl latest,%ecx;<1>movl 4(%ecx),%ebx;
-00000178: 5904 6639 c374 048b   cmpw %ax,%bx;je 2f;movl (%ecx),%ecx
-00000180: 09eb f483 c108 890c   jmp 1b(-12);<2>addl $8,%ecx;movl %ecx,(%esp)
-00000188: 24ad ff20 0000 0000   next;
+00000168: 5081 0408 0166 0000   f: find
+00000170: 7481 0408 8a24 24b0   movb (%esp),%ah;movb $1,%al;
+00000178: 018b 0d58 8004 088b   movl latest,%ecx;<1>movl 4(%ecx),%ebx;
+00000180: 5904 6639 c374 048b   cmpw %ax,%bx;je 2f;movl (%ecx),%ecx
+00000188: 09eb f483 c108 890c   jmp 1b(-12);<2>addl $8,%ecx;movl %ecx,(%esp)
+00000190: 24ad ff20 0000 0000   next;
 
-00000190: 6081 0408 0178 0000   x: execute
-00000198: 9c81 0408 58ff 2000   popl %eax; jmp *(%eax)
+00000198: 6881 0408 0178 0000   x: execute
+000001a0: a481 0408 58ff 2000   popl %eax; jmp *(%eax)
 
-000001a0: 9081 0408 0140 0000   @: fetch
-000001a8: ac81 0408 588b 0050   popl %eax; movl (%eax),%eax;push %eax;
-000001b0: adff 2000 0000 0000   next;
+000001a8: 9881 0408 0140 0000   @: fetch
+000001b0: b481 0408 588b 0050   popl %eax; movl (%eax),%eax;push %eax;
+000001b8: adff 2000 0000 0000   next;
 
-000001b8: a081 0408 0121 0000   !: store
-000001c0: c481 0408 585b 8918   popl %eax; popl %ebx; movl %ebx,(%eax)
-000001c8: adff 2000 0000 0000   next;
+000001c0: a881 0408 0121 0000   !: store
+000001c8: cc81 0408 585b 8918   popl %eax; popl %ebx; movl %ebx,(%eax)
+000001d0: adff 2000 0000 0000   next;
 
-000001d0: b881 0408 013f 0000   ?: cfetch
-000001d8: dc81 0408 580f b600   popl %eax; movzbl (%eax),%eax;
-000001e0: 50ad ff20 0000 0000   pushl %eax; next;
+000001d8: c081 0408 013f 0000   ?: cfetch
+000001e0: e481 0408 580f b600   popl %eax; movzbl (%eax),%eax;
+000001e8: 50ad ff20 0000 0000   pushl %eax; next;
 
-000001e8: d081 0408 0124 0000   $: cstore
-000001f0: f481 0408 585b 8818   popl %eax; popl %ebx; movb %bl,(%eax)
-000001f8: adff 2000 0000 0000   next;
+000001f0: d881 0408 0124 0000   $: cstore
+000001f8: fc81 0408 585b 8818   popl %eax; popl %ebx; movb %bl,(%eax)
+00000200: adff 2000 0000 0000   next;
 
-00000200: e881 0408 0164 0000   d: dfetch
-00000208: 0c82 0408 89e0 50ad   movl %esp,%eax; pushl %eax; next;
-00000210: ff20 0000 0000 0000
+00000208: f081 0408 0164 0000   d: dfetch
+00000210: 1482 0408 89e0 50ad   movl %esp,%eax; pushl %eax; next;
+00000218: ff20 0000 0000 0000
 
-00000218: 0082 0408 0144 0000   D: dstore
-00000220: 2482 0408 5889 c4ad   popl %eax; movl %eax,%esp; next;
-00000228: ff20 0000 0000 0000
+00000220: 0882 0408 0144 0000   D: dstore
+00000228: 2c82 0408 5889 c4ad   popl %eax; movl %eax,%esp; next;
+00000230: ff20 0000 0000 0000
 
-00000230: 1882 0408 0172 0000   r: rfetch
-00000238: 3c82 0408 55ad ff20   pushl %ebp; next;
+00000238: 2082 0408 0172 0000   r: rfetch
+00000240: 4482 0408 55ad ff20   pushl %ebp; next;
 
-00000240: 3082 0408 0152 0000   R: rstore
-00000248: 4c82 0408 5dad ff20   popl %ebp; next;
+00000248: 3882 0408 0152 0000   R: rstore
+00000250: 5482 0408 5dad ff20   popl %ebp; next;
 
-00000250: 4082 0408 0169 0000   i: docol
-00000258: 5c82 0408 6868 8204   pushl $docol;
-00000260: 08ad ff20 0000 0000   next;
-00000268: 8d6d fc89 7500 83c0   <docol>rpush %esi; addl $4,%eax
-00000270: 0489 c6ad ff20 0000   movl %eax,%esi; next;
+00000258: 4882 0408 0169 0000   i: docol
+00000260: 6482 0408 6870 8204   pushl $docol;
+00000268: 08ad ff20 0000 0000   next;
+00000270: 8d6d fc89 7500 83c0   <docol>rpush %esi; addl $4,%eax
+00000278: 0489 c6ad ff20 0000   movl %eax,%esi; next;
 
-00000278: 5082 0408 0165 0000   e: exit
-00000280: 8482 0408 8b75 008d   rpop %esi
-00000288: 6d04 adff 2000 0000   next
+00000280: 5882 0408 0165 0000   e: exit
+00000288: 8c82 0408 8b75 008d   rpop %esi
+00000290: 6d04 adff 2000 0000   next
 
-00000290: 7882 0408 014c 0000   L: lit
-00000298: 9c82 0408 ad50 adff   lodsl; pushl %eax; next;
-000002a0: 2000 0000 0000 0000
+00000298: 8082 0408 014c 0000   L: lit
+000002a0: a482 0408 ad50 adff   lodsl; pushl %eax; next;
+000002a8: 2000 0000 0000 0000
 
-000002a8: 9082 0408 0153 0000   S: litstring
-000002b0: b482 0408 ad56 01c6   lodsl; pushl %esi; addl %eax,%esi;
-000002b8: 83c6 0383 e6fc adff   addl $3,%esi; andl $~3,%esi;next;
-000002c0: 2000 0000 0000 0000
+000002b0: 9882 0408 0153 0000   S: litstring
+000002b8: bc82 0408 ad56 01c6   lodsl; pushl %esi; addl %eax,%esi;
+000002c0: 83c6 0383 e6fc adff   addl $3,%esi; andl $~3,%esi;next;
+000002c8: 2000 0000 0000 0000
 
-000002c8: a882 0408 012b 0000   +: add
-000002d0: d482 0408 5801 0424   popl %eax; addl %eax,(%esp)
-000002d8: adff 2000 0000 0000   next;
+000002d0: b082 0408 012b 0000   +: add
+000002d8: dc82 0408 5801 0424   popl %eax; addl %eax,(%esp)
+000002e0: adff 2000 0000 0000   next;
 
-000002e0: c882 0408 012d 0000   -: sub
-000002e8: ec82 0408 5829 0424   popl %eax; subl %eax,(%esp)
-000002f0: adff 2000 0000 0000   next;
+000002e8: d082 0408 012d 0000   -: sub
+000002f0: f482 0408 5829 0424   popl %eax; subl %eax,(%esp)
+000002f8: adff 2000 0000 0000   next;
 
-000002f8: e082 0408 012a 0000   *: mul
-00000300: 0483 0408 585b 0faf   popl %eax; popl %ebx; imul %ebx,%eax
-00000308: c350 adff 2000 0000   pushl %eax; next;
+00000300: e882 0408 012a 0000   *: mul
+00000308: 0c83 0408 585b 0faf   popl %eax; popl %ebx; imul %ebx,%eax
+00000310: c350 adff 2000 0000   pushl %eax; next;
 
-00000310: f882 0408 012f 0000   /: div
-00000318: 1c83 0408 31d2 5b58   xorl %edx,%edx; popl %ebx; popl %eax
-00000320: f7fb 50ad ff20 0000   idiv %ebx; pushl %eax; next;
+00000318: 0083 0408 012f 0000   /: div
+00000320: 2483 0408 31d2 5b58   xorl %edx,%edx; popl %ebx; popl %eax
+00000328: f7fb 50ad ff20 0000   idiv %ebx; pushl %eax; next;
 
-00000328: 1083 0408 0125 0000   %: mod
-00000330: 3483 0408 31d2 5b58   xorl %edx,%edx; popl %ebx; popl %eax
-00000338: f7fb 52ad ff20 0000   idiv %ebx; pushl %edx; next;
+00000330: 1883 0408 0125 0000   %: mod
+00000338: 3c83 0408 31d2 5b58   xorl %edx,%edx; popl %ebx; popl %eax
+00000340: f7fb 52ad ff20 0000   idiv %ebx; pushl %edx; next;
 
-00000340: 2883 0408 0126 0000   &: and
-00000348: 4c83 0408 5821 0424   popl %eax; andl %eax,(%esp)
-00000350: adff 2000 0000 0000   next; next;
+00000348: 3083 0408 0126 0000   &: and
+00000350: 5483 0408 5821 0424   popl %eax; andl %eax,(%esp)
+00000358: adff 2000 0000 0000   next; next;
 
-00000358: 4083 0408 017c 0000   |: or
-00000360: 6483 0408 5809 0424   popl %eax; orl %eax,(%esp)
-00000368: adff 2000 0000 0000   next;
+00000360: 4883 0408 017c 0000   |: or
+00000368: 6c83 0408 5809 0424   popl %eax; orl %eax,(%esp)
+00000370: adff 2000 0000 0000   next;
 
-00000370: 5883 0408 015e 0000   ^: xor
-00000378: 7c83 0408 5831 0424   popl %eax; andl %eax,(%esp)
-00000380: adff 2000 0000 0000   next;
+00000378: 6083 0408 015e 0000   ^: xor
+00000380: 8483 0408 5831 0424   popl %eax; andl %eax,(%esp)
+00000388: adff 2000 0000 0000   next;
 
-00000388: 7083 0408 013c 0000   <: less
-00000390: 9483 0408 585b 39c3   popl %eax; popl %ebx; cmpl %eax,%ebx
-00000398: 0f9c c00f b6c0 50ad   setl %al; movzbl %al, %eax; pushl %eax; next;
-000003a0: ff20 0000 0000 0000
+00000390: 7883 0408 013c 0000   <: less
+00000398: 9c83 0408 585b 39c3   popl %eax; popl %ebx; cmpl %eax,%ebx
+000003a0: 0f9c c00f b6c0 50ad   setl %al; movzbl %al, %eax; pushl %eax; next;
+000003a8: ff20 0000 0000 0000
 
-000003a8: 8883 0408 013d 0000   =: equal
-000003b0: b483 0408 585b 39c3   popl %eax; popl %ebx; cmpl %eax,%ebx
-000003b8: 0f94 c00f b6c0 50ad   setl %al; movzbl %al, %eax; pushl %eax; next;
-000003c0: ff20 0000 0000 0000
+000003b0: 9083 0408 013d 0000   =: equal
+000003b8: bc83 0408 585b 39c3   popl %eax; popl %ebx; cmpl %eax,%ebx
+000003c0: 0f94 c00f b6c0 50ad   setl %al; movzbl %al, %eax; pushl %eax; next;
+000003c8: ff20 0000 0000 0000
