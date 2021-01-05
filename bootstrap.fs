@@ -1304,6 +1304,7 @@ main
     begin 2dup < while
         cell- dup @ .
     repeat 2drop
+    cl
 ;
 
 ( === Data Structure === )
