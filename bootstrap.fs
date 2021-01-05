@@ -468,6 +468,7 @@ alias-builtin xor       ^
 
 : here      &here @ ;
 : latest    &latest @ ;
+: >dfa >cfa cell + ;
 
 \ === Compilers ===
 
