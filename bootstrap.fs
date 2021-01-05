@@ -1310,7 +1310,9 @@ decimal
 -1 s" Aborted" def-error ABORTED-ERROR
 -37 s" File I/O exception" def-error FILE-IO-ERROR
 -39 s" Unexpected end of file" def-error UNEXPECTED-EOF-ERROR
+-62 s" CLOSE-FILE" def-error CLOSE-FILE-ERROR
 -68 s" FLUSH-FILE" def-error FLUSH-FILE-ERROR
+-69 s" OPEN-FILE" def-error OPEN-FILE-ERROR
 -70 s" READ-FILE" def-error READ-FILE-ERROR
 -71 s" READ-LINE" def-error READ-LINE-ERROR
 -75 s" WRITE-FILE" def-error WRITE-FILE-ERROR
@@ -1381,11 +1383,11 @@ decimal
 
 \ File
 struct
-    cell% field file>read-file  ( c-addr u1 obj -- u2 e )
-    cell% field file>read-line  ( c-addr u1 obj -- u2 flag e )
-    cell% field file>key-file   ( obj -- c e )
-    cell% field file>write-file ( c-addr u obj -- e )
-    cell% field file>flush-file ( obj -- e )
+    cell% field file>read-file  ( c-addr u1 obj -- u2 f )
+    cell% field file>read-line  ( c-addr u1 obj -- u2 flag f )
+    cell% field file>key-file   ( obj -- c f )
+    cell% field file>write-file ( c-addr u obj -- f )
+    cell% field file>flush-file ( obj -- f )
     char% field file>fam
     cell% field file>name
 
@@ -1399,7 +1401,7 @@ end-struct file%
 \ Write bytes from buffer c-addr u1 to file, return error-code.
 : write-file ( c-addr u1 file -- e )
     dup writable? if
-        dup file>obj swap file>write-file @ execute
+        dup file>obj @ swap file>write-file @ execute
     else
         WRITE-FILE-ERROR
     then
@@ -1409,7 +1411,7 @@ end-struct file%
 \ Return number of bytes read and error-code.
 : read-file ( c-addr u1 file -- u2 e )
     dup readable? if
-        dup file>obj swap file>read-file @ execute
+        dup file>obj @ swap file>read-file @ execute
     else
         0 READ-FILE-ERROR
     then
@@ -1418,7 +1420,7 @@ end-struct file%
 \ Flush output buffer of file, return error-code.
 : flush-file ( file -- e )
     dup writable? if
-        dup file>obj swap file>flush-file @ execute
+        dup file>obj @ swap file>flush-file @ execute
     else
         FLUSH-FILE-ERROR
     then
@@ -1426,7 +1428,7 @@ end-struct file%
 
 \ Read a character. Return EOF at end of input.
 : key-file ( file -- c )
-    dup file>obj swap file>key-file @ execute throw
+    dup file>obj @ swap file>key-file @ execute throw
 ;
 
 \ Read characters from 'file' to the buffer c-addr u1
@@ -1437,7 +1439,7 @@ end-struct file%
 \ e is error code.
 : read-line ( c-addr u1 file -- u2 flag e )
     dup readable? if
-        dup file>obj swap file>read-line @ execute
+        dup file>obj @ swap file>read-line @ execute
     else
         READ-LINE-ERROR
     then
@@ -1948,15 +1950,35 @@ codegen-target @ s" i386-linux" str= [if]
 
 ( === File I/O === )
 
-5 constant SYS-OPEN
-6 constant SYS-CLOSE
+3 constant SYS_READ
+4 constant SYS_WRITE
+5 constant SYS_OPEN
+6 constant SYS_CLOSE
 
 : (open-file) ( c-addr fam -- obj f )
-    swap SYS-OPEN syscall2 dup 0>=
+    swap SYS_OPEN syscall2 dup 0>= if success else OPEN-FILE-ERROR then
 ;
 
 : (close-file) ( obj -- f )
-    SYS-CLOSE syscall1 0>=
+    SYS_CLOSE syscall1 0>= if success else CLOSE-FILE-ERROR then
+;
+
+: (read-file) ( c-addr u fd -- u2 f )
+    >r swap r> SYS_READ syscall3 dup 0>= if
+        success
+    else
+        READ-FILE-ERROR
+    then
+;
+
+: (write-file) ( c-addr u1 fd -- f )
+    >r swap >r dup r> r>    \ ( u1 u1 c-addr fd )
+    SYS_WRITE syscall3      \ ( u1 u2 )
+    = if
+        success
+    else
+        WRITE-FILE-ERROR
+    then
 ;
 
 [else] \ i386-linux
@@ -1968,26 +1990,31 @@ codegen-target @ s" no-codegen" str= not [if]
 
 ( === open/close === )
 
+: need-defined ( "name" -- )
+    word throw dup find unless
+        ." Implementation of " type ."  is missing." cr
+        ." Please implement it or use --gen <target> option." cr
+        UNDEFINED-WORD-ERROR throw
+    then drop
+;
 
--62 s" CLOSE-FILE" def-error CLOSE-FILE-ERROR
--69 s" OPEN-FILE" def-error OPEN-FILE-ERROR
+need-defined (open-file)
+need-defined (close-file)
+need-defined (write-file)
+need-defined (read-file)
 
 : open-file ( c-addr fam -- file e )
-    2dup (open-file) if
-        file% %allot
-        tuck file>obj !
-        tuck file>fam !
-        tuck file>name !
-        success
-    else
-        OPEN-FILE-ERROR throw
-    then
+    2dup (open-file) throw
+    file% %allot
+    tuck file>obj !
+    tuck file>fam !
+    tuck file>name !
+    ['] (read-file) over file>read-file !
+    ['] (write-file) over file>write-file !
 ;
 
 : close-file ( file -- e )
-    file>obj (close-file) unless
-        CLOSE-FILE-ERROR throw
-    then
+    file>obj (close-file) throw
 ;
 
 s" bootstrap.fs" R/O open-file
