@@ -119,6 +119,16 @@ def add_binary_operator(name, op):
 write(HERE_CELL, 2*CELL)
 write(LATEST_CELL, 0)
 
+# Store command line arguments
+argv_addrs = []
+for arg in sys.argv:
+    argv_addrs.append(read(HERE_CELL))
+    comma_string(arg)
+align()
+ARGV_ADDR = read(HERE_CELL)
+for addr in argv_addrs:
+    comma(addr)
+
 def docol(ip, np):
     rpush(np)
     return next(ip + CELL)
@@ -170,6 +180,10 @@ add_binary_operator('|', operator.or_)
 add_binary_operator('^', operator.xor)
 add_binary_operator('<', operator.lt)
 add_binary_operator('=', operator.eq)
+def argv():
+    push(ARGV_ADDR)
+    push(len(sys.argv))
+add_simple_operator('v', argv)
 
 start = read(HERE_CELL)
 comma(find('k'))
