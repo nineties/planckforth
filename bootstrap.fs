@@ -1787,9 +1787,6 @@ do-stack 16 cells + do-sp !
 : j 4 rpick ;
 : k 6 rpick ;
 
-." Ready" cr
-
-
 
 ( === Command-line Arguments === )
 
@@ -1872,3 +1869,5 @@ codegen-target @ s" no-codegen" str= <> [if]
     ." Unknown codegen target: " codegen-target @ type cr
     abort
 [then] [then]
+
+." Ready" cr
