@@ -11,7 +11,7 @@ c: others/planck.c
 	gcc -Wall -O2 $< -o planck
 
 python: others/planck.py
-	ln -s others/planck.py planck
+	cp others/planck.py planck
 	chmod +x planck
 
 .PHONY: clean
