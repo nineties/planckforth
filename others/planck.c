@@ -19,7 +19,7 @@ typedef void (**cfa)();
 #define CELL            sizeof(cell)
 #define STACK_SIZE      1024
 #define RSTACK_SIZE     1024
-#define MEMORY_SIZE     0x100000
+#define MEMORY_SIZE     0x20000
 
 typedef struct builtin {
     struct builtin *prev;

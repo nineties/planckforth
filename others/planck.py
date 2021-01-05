@@ -7,7 +7,7 @@ import os
 import sys
 import operator
 
-MEMORY_SIZE = 0x08000000
+MEMORY_SIZE = 0x20000
 STACK_SIZE = 0x400
 RSTACK_SIZE = 0x400
 HERE_CELL = 0
