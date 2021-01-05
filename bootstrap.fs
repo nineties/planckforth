@@ -1693,4 +1693,106 @@ switch-to-4th-stage
 
 : [then] ; immediate \ do nothing
 
+( === Do-loop === )
+
+\ limit start do ... loop
+
+123 constant do-mark
+457 constant leave-mark
+
+create do-stack 16 cells allot drop
+variable do-sp
+do-stack 16 cells + do-sp !
+
+: >do ( w -- do: w )
+    cell do-sp -!
+    do-sp @ !
+;
+
+: do> ( do: w -- w )
+    do-sp @ @
+    cell do-sp +!
+;
+
+: do@ ( do: w -- w, do: w)
+    do-sp @ @
+;
+
+\ compile: ( -- dest mark )
+: do
+    compile >r  \ save start
+    compile >r  \ save limit
+    here >do do-mark >do
+; immediate
+
+: leave ( -- orig mark )
+    compile branch
+    here >do
+    0 ,        \ fill dummy offset
+    leave-mark >do
+; immediate
+
+: backpatch-leave ( dest , do: orig1 mark1 ... -- do: origN markN ... )
+    begin do@ leave-mark = while
+        do> drop do>
+        2dup -
+        swap !
+    repeat
+    drop
+;
+
+: loop
+    compile r>
+    compile r>
+    compile 1+
+    compile 2dup
+    compile >r
+    compile >r
+    compile =
+    compile 0branch
+    here cell + backpatch-leave     \ leave jumps to here
+    do> drop            \ do-mark
+    do> here - ,
+    compile rdrop
+    compile rdrop
+; immediate
+
+: i 2 rpick ;
+: j 4 rpick ;
+: k 6 rpick ;
+
 ." Ready" cr
+
+
+
+( === Command-line Arguments === )
+
+variable argc
+variable argv
+v argc ! argv !
+
+: arg ( u -- c-addr )
+    dup argc @ < if
+        cells argv @ + @
+    else
+        drop 0
+    then
+;
+
+\ Remove 1 arg, update argv and argc
+: shift-args ( -- )
+    argc @ 1 = if exit then
+    1 argc -!
+    argc @ 1 do
+        i 1+ arg            \ argv[i+1]
+        i cells argv @ +    \ &argv[i]
+        !                   \ copy argv[i+1] to argv[i]
+    loop
+;
+
+\ Take 1 arg and shift arguments
+: next-arg ( -- c-addr )
+    argc @ 1 = if 0 exit then
+    1 arg
+    shift-args
+;
