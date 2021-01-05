@@ -1861,9 +1861,60 @@ read-commandline-args
 
 codegen-target @ s" i386-linux" str= [if]
 
-\ i386-linux dependent codes will be added here
+%000 constant eax immediate
+%001 constant ecx immediate
+%010 constant edx immediate
+%011 constant ebx immediate
 
-[else]
+\ compile 'pop reg' and 'push reg'
+: pop ( reg -- ) 0x58 + c, ; immediate
+: push ( reg -- ) 0x50 + c, ; immediate
+
+\ lodsl; jmp *(%eax);
+: next ( -- ) 0xad c, 0xff c, 0x20 c, ; immediate
+: int80 ( -- ) 0xcd c, 0x80 c, ; immediate
+
+\ overwrite code field by DFA
+: ;asm
+    [compile] ; \ finish compilation
+    latest dup >dfa over >cfa !
+; immediate
+
+: syscall0 ( n -- r )
+    eax pop
+    int80
+    eax push
+    next
+;asm
+
+: syscall1 ( arg1 n -- r )
+    eax pop
+    ebx pop
+    int80
+    eax push
+    next
+;asm
+
+: syscall2 ( arg2 arg1 n -- r )
+    eax pop
+    ebx pop
+    ecx pop
+    int80
+    eax push
+    next
+;asm
+
+: syscall3 ( arg3 arg2 arg1 n -- r )
+    eax pop
+    ebx pop
+    ecx pop
+    edx pop
+    int80
+    eax push
+    next
+;asm
+
+[else] \ i386-linux
 
 codegen-target @ s" no-codegen" str= <> [if]
     ." Unknown codegen target: " codegen-target @ type cr
