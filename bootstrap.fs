@@ -1860,3 +1860,14 @@ variable codegen-target
 ;
 
 read-commandline-args
+
+codegen-target @ s" i386-linux" str= [if]
+
+\ i386-linux dependent codes will be added here
+
+[else]
+
+codegen-target @ s" no-codegen" str= <> [if]
+    ." Unknown codegen target: " codegen-target @ type cr
+    abort
+[then] [then]
