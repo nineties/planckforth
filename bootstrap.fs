@@ -1301,6 +1301,16 @@ create word-buffer s" 64" >number drop cell+ allot drop
 
 main
 
+( === Error-codes === )
+
+decimal
+-1 s" Aborted" def-error ABORTED-ERROR
+-39 s" Unexpected end of file" def-error UNEXPECTED-EOF-ERROR
+-68 s" FLUSH-FILE" def-error FLUSH-FILE-ERROR
+-70 s" READ-FILE" def-error READ-FILE-ERROR
+-71 s" READ-LINE" def-error READ-LINE-ERROR
+-75 s" WRITE-FILE" def-error WRITE-FILE-ERROR
+
 ( === Dump of data stack === )
 : .s ( -- )
     sp0 sp@ - cell- cell /  ( depth of the stack )
@@ -1355,13 +1365,6 @@ main
 ;
 
 ( === File I/O Abstraction === )
-
-decimal
--39 s" Unexpected end of file" def-error UNEXPECTED-EOF-ERROR
--68 s" FLUSH-FILE" def-error FLUSH-FILE-ERROR
--70 s" READ-FILE" def-error READ-FILE-ERROR
--71 s" READ-LINE" def-error READ-LINE-ERROR
--75 s" WRITE-FILE" def-error WRITE-FILE-ERROR
 
 -1 constant EOF
 
