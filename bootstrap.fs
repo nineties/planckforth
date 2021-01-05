@@ -1310,6 +1310,7 @@ decimal
 -1 s" Aborted" def-error ABORTED-ERROR
 -37 s" File I/O exception" def-error FILE-IO-ERROR
 -39 s" Unexpected end of file" def-error UNEXPECTED-EOF-ERROR
+-59 s" ALLOCATE" def-error ALLOCATE-ERROR
 -62 s" CLOSE-FILE" def-error CLOSE-FILE-ERROR
 -68 s" FLUSH-FILE" def-error FLUSH-FILE-ERROR
 -69 s" OPEN-FILE" def-error OPEN-FILE-ERROR
@@ -1904,6 +1905,24 @@ codegen-target @ s" i386-linux" str= [if]
 %001 constant ecx immediate
 %010 constant edx immediate
 %011 constant ebx immediate
+%100 constant esp immediate
+%101 constant ebp immediate
+%110 constant esi immediate
+%111 constant edi immediate
+
+: mod-reg-r/m ( mod reg r/m -- u )
+    0
+    swap 0x7 and or
+    swap 0x7 and 8 * or
+    swap 0x3 and 64 * or
+;
+
+: scale-index-byte ( scale index byte -- u )
+    0
+    swap 0x7 and or
+    swap 0x7 and 8 * or
+    swap 0x3 and 64 * or
+;
 
 \ compile 'pop reg' and 'push reg'
 : pop ( reg -- ) 0x58 + c, ; immediate
@@ -1912,6 +1931,20 @@ codegen-target @ s" i386-linux" str= [if]
 \ lodsl; jmp *(%eax);
 : next ( -- ) 0xad c, 0xff c, 0x20 c, ; immediate
 : int80 ( -- ) 0xcd c, 0x80 c, ; immediate
+
+\ movl disp(reg1), reg2
+: movmr ( disp reg1 reg2 -- )
+    0x8b c, \ opcode
+    swap dup %100 = if \ if reg1=esp
+        \ ( disp reg2 reg1 )
+        %01 -rot mod-reg-r/m c,
+        %00 %100 %100 scale-index-byte c,
+    else
+        \ ( disp reg2 reg1 )
+        %01 -rot mod-reg-r/m c,
+    then
+    c, \ displacement
+; immediate
 
 \ overwrite code field by DFA
 : ;asm
@@ -1953,28 +1986,128 @@ codegen-target @ s" i386-linux" str= [if]
     next
 ;asm
 
+: syscall4 ( arg4 arg3 arg2 arg1 n -- e )
+    eax pop
+    ebx pop
+    ecx pop
+    edx pop
+    esi push            \ save program counter ( arg4 esi )
+    [ 4 ] esp esi movmr     \ movl 4(%esp), %esi
+    int80
+    esi pop             \ restore esi
+    ebx pop
+    eax push
+    next
+;asm
+
+: syscall5 ( arg5 arg4 arg3 arg2 arg1 n -- e )
+    eax pop
+    ebx pop
+    ecx pop
+    edx pop
+    esi push            \ save esi ( arg5 arg4 esi )
+    [ 4 ] esp esi movmr
+    [ 8 ] esp edi movmr
+    int80
+    esi pop
+    ebx pop
+    ebx pop
+    eax push
+    next
+;asm
+
+: syscall6 ( arg6 arg5 arg4 arg3 arg2 arg1 n -- e )
+    eax pop
+    ebx pop
+    ecx pop
+    edx pop
+    esi push
+    ebp push    \ ( arg6 arg5 arg4 esi ebp )
+    [ 8 ] esp esi movmr
+    [ 12 ] esp edi movmr
+    [ 16 ] esp ebp movmr
+    int80
+    ebp pop
+    esi pop
+    ebx pop
+    ebx pop
+    ebx pop
+    eax push
+    next
+;asm
+
+( === Heap Memory === )
+
+192 constant SYS-MMAP2
+
+0x0 constant PROT-NONE
+0x1 constant PROT-READ
+0x2 constant PROT-WRITE
+0x4 constant PROT-EXEC
+0x8 constant PROT-SEM
+
+0x01 constant MAP-SHARED
+0x02 constant MAP-PRIVATE
+0x0f constant MAP-TYPE
+0x10 constant MAP-FIXED
+0x20 constant MAP-ANONYMOUS
+
+: mmap2 ( addr1 u -- addr2 e )
+    >r >r                                   \ ( R: u addr1 )
+    0                                       \ offset
+    -1                                      \ fd
+    MAP-ANONYMOUS MAP-PRIVATE or            \ flags
+    PROT-READ PROT-WRITE or PROT-EXEC or    \ prot
+    r> r> swap                              \ u addr1
+    SYS-MMAP2
+    syscall6
+    dup -1 <>  ALLOCATE-ERROR orelse
+;
+
+\ Secure a large heap memory block and cut memories from the block.
+\ The allocated memories are never released until the program exit.
+0x8000000 constant BLOCK-SIZE ( 128MB )
+variable block-addr
+variable next-addr
+variable remaining-size
+
+0 BLOCK-SIZE mmap2 throw block-addr !
+block-addr @ next-addr !
+BLOCK-SIZE remaining-size  !
+
+: allocate ( u -- addr e )
+    dup remaining-size @ <= if
+        ( u addr )
+        next-addr @
+        swap dup next-addr +! remaining-size -!
+        success
+    else
+        drop 0 ALLOCATE-ERROR
+    then
+;
+
 ( === File I/O === )
 
-3 constant SYS_READ
-4 constant SYS_WRITE
-5 constant SYS_OPEN
-6 constant SYS_CLOSE
+3 constant SYS-READ
+4 constant SYS-WRITE
+5 constant SYS-OPEN
+6 constant SYS-CLOSE
 
 : (open-file) ( c-addr fam -- obj f )
-    swap SYS_OPEN syscall2 dup 0>= OPEN-FILE-ERROR orelse
+    swap SYS-OPEN syscall2 dup 0>= OPEN-FILE-ERROR orelse
 ;
 
 : (close-file) ( obj -- f )
-    SYS_CLOSE syscall1 0>= CLOSE-FILE-ERROR orelse
+    SYS-CLOSE syscall1 0>= CLOSE-FILE-ERROR orelse
 ;
 
 : (read-file) ( c-addr u fd -- u2 f )
-    >r swap r> SYS_READ syscall3 dup 0>= READ-LINE-ERROR orelse
+    >r swap r> SYS-READ syscall3 dup 0>= READ-LINE-ERROR orelse
 ;
 
 : (write-file) ( c-addr u1 fd -- f )
     >r swap >r dup r> r>    \ ( u1 u1 c-addr fd )
-    SYS_WRITE syscall3      \ ( u1 u2 )
+    SYS-WRITE syscall3      \ ( u1 u2 )
     = WRITE-FILE-ERROR orelse
 ;
 
@@ -1983,9 +2116,8 @@ codegen-target @ s" i386-linux" str= [if]
 codegen-target @ s" no-codegen" str= not [if]
     ." Unknown codegen target: " codegen-target @ type cr
     abort
-[then] [then]
+[then] [then] \ End of environment dependent code
 
-( === open/close === )
 
 : need-defined ( "name" -- )
     word throw dup find unless
@@ -1994,6 +2126,22 @@ codegen-target @ s" no-codegen" str= not [if]
         UNDEFINED-WORD-ERROR throw
     then drop
 ;
+
+( === Heap Memory === )
+
+need-defined allocate
+
+\ allocate heap memory
+: %allocate ( align size -- addr e )
+    over + allocate ?dup if
+        \ ( align addr e )
+        >r 2drop 0 >r
+    else
+        swap 1- & success
+    then
+;
+
+( === open/close === )
 
 need-defined (open-file)
 need-defined (close-file)
