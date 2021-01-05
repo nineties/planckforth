@@ -1311,6 +1311,8 @@ decimal
 -71 s" READ-LINE" def-error READ-LINE-ERROR
 -75 s" WRITE-FILE" def-error WRITE-FILE-ERROR
 
+: abort ABORTED-ERROR throw ;
+
 ( === Dump of data stack === )
 : .s ( -- )
     sp0 sp@ - cell- cell /  ( depth of the stack )
@@ -1852,7 +1854,7 @@ variable codegen-target
             then
         else
             ." Unknown option: " type cr
-            drop ABORTED-ERROR throw
+            abort
         then
     repeat
 ;
