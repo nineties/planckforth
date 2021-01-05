@@ -155,5 +155,5 @@
 
 000003d0: b083 0408 0176 0000   v: argv
 000003d8: dc83 0408 8b05 5c80   movl sp0,%eax;
-000003e0: 0408 ff70 04ff 30ad   pushl 4(%eax); pushl (%eax);
-000003e8; ff20 0000 0000 0000   next;
+000003e0: 0408 89c3 83c3 0453   movl %eax,%ebx; addl $4,%ebx; pushl %ebx
+000003e8: ff30 adff 2000 0000   pushl (%eax); next;
