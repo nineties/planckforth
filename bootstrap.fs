@@ -1849,7 +1849,7 @@ variable codegen-target
                 6 + codegen-target !
                 shift-args
             else
-                shift-args
+                drop shift-args
                 next-arg codegen-target !
             then
         else
