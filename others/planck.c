@@ -157,18 +157,42 @@ defbinary("|", or, |, uintptr_t)
 defbinary("^", xor, ^, uintptr_t)
 defbinary("<", lt, <, intptr_t)
 defbinary("=", eq, ==, intptr_t)
+
+/* File IO */
+#define SUCCESS 0
+#define CLOSE_FILE_ERROR    -62
+#define OPEN_FILE_ERROR     -69
+#define READ_FILE_ERROR     -70
+#define WRITE_FILE_ERROR    -75
 defcode("(open-file)", openfile) {
     int flags = pop();
     char *name = (char*) pop();
     int fd = open(name, flags);
     push(fd);
-    push(fd >= 0);
+    push((fd >= 0) ? SUCCESS : OPEN_FILE_ERROR);
     next();
 }
 defcode("(close-file)", closefile) {
     int fd = pop();
     int r = close(fd);
-    push(r >= 0);
+    push((r >= 0) ? SUCCESS : CLOSE_FILE_ERROR);
+    next();
+}
+defcode("(read-file)", readfile) {
+    int fd = pop();
+    int size = pop();
+    char *buf = (char*) pop();
+    int r = read(fd, buf, size);
+    push(r);
+    push((r >= 0) ? SUCCESS : READ_FILE_ERROR);
+    next();
+}
+defcode("(write-file)", writefile) {
+    int fd = pop();
+    int size = pop();
+    char *buf = (char*) pop();
+    int r = write(fd, buf, size);
+    push((r == size) ? SUCCESS : WRITE_FILE_ERROR);
     next();
 }
 

@@ -2011,12 +2011,12 @@ need-defined (read-file)
     tuck file>name !
     ['] (read-file) over file>read-file !
     ['] (write-file) over file>write-file !
+    success
 ;
 
 : close-file ( file -- e )
     file>obj (close-file) throw
+    success
 ;
-
-s" bootstrap.fs" R/O open-file
 
 ." Ready" cr

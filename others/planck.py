@@ -38,14 +38,12 @@ def comma(v):
     write(HERE_CELL, here + 4)
 
 def read_byte(addr):
-    #return memory[addr]
     i = addr>>2
     m = (addr&0x3)*8
     v = memory[i]
     return (v >> m) & 0xff
 
 def write_byte(addr, c):
-    #memory[addr] = v
     i = addr>>2
     m = (addr&0x3)*8
     v = memory[i]
@@ -61,6 +59,11 @@ def comma_string(s):
         comma_byte(ord(c))
     comma_byte(0)
 
+def write_string(addr, s):
+    for c in s:
+        write_byte(addr, c)
+        addr += 1
+
 def read_string(addr):
     s = ""
     while True:
@@ -69,6 +72,13 @@ def read_string(addr):
         s += chr(c)
         addr += 1
     return s
+
+def read_bytes(addr, n):
+    data = []
+    for i in range(n):
+        data.append(read_byte(addr))
+        addr += 1
+    return bytes(data)
 
 def find(c):
     it = read(LATEST_CELL)
@@ -207,18 +217,40 @@ def argv():
     push(ARGV_ADDR)
     push(len(sys.argv))
 add_simple_operator('v', argv)
+
+SUCCESS = 0
+CLOSE_FILE_ERROR = -62
+OPEN_FILE_ERROR = -69
+READ_FILE_ERROR = -70
+WRITE_FILE_ERROR = -75
 def openfile():
     flag = pop()
     name = read_string(pop())
     fd = os.open(name, flag)
     push(fd)
-    push(fd >= 0)
+    push(SUCCESS if (fd >= 0) else OPEN_FILE_ERROR)
 def closefile():
     fd = pop()
     os.close(fd)
-    push(fd >= 0)
+    push(SUCCESS if (fd >= 0) else CLOSE_FILE_ERROR)
+def readfile():
+    fd = pop()
+    size = pop()
+    addr = pop()
+    s = os.read(fd, size)
+    write_string(addr, s)
+    push(len(s))
+    push(SUCCESS if (len(s) > 0) else READ_FILE_ERROR)
+def writefile():
+    fd = pop()
+    size = pop()
+    addr = pop()
+    n = os.write(fd, read_bytes(addr, size))
+    push(SUCCESS if (n == size) else WRITE_FILE_ERROR)
 add_simple_operator('(open-file)', openfile)
 add_simple_operator('(close-file)', closefile)
+add_simple_operator('(write-file)', writefile)
+add_simple_operator('(read-file)', readfile)
 
 start = read(HERE_CELL)
 comma(find('k'))
