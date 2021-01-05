@@ -1723,8 +1723,8 @@ switch-to-4th-stage
 
 \ limit start do ... loop
 
-123 constant do-mark
-457 constant leave-mark
+1 constant do-mark
+2 constant leave-mark
 
 create do-stack 16 cells allot drop
 variable do-sp
@@ -1920,11 +1920,59 @@ codegen-target @ s" i386-linux" str= [if]
     next
 ;asm
 
+( === File I/O === )
+
+5 constant SYS_OPEN
+6 constant SYS_CLOSE
+
+: fam-to-mode ( fam -- u )
+    case
+    R/O of 0x00 endof
+    W/O of 0x01 endof
+    R/W of 0x02 endof
+        FILE-IO-ERROR throw
+    endcase
+;
+
+: (open-file) ( c-addr fam -- obj f )
+    fam-to-mode swap SYS_OPEN syscall2 dup 0>=
+;
+
+: (close-file) ( obj -- f)
+    SYS_CLOSE syscall1 0>=
+;
+
 [else] \ i386-linux
 
 codegen-target @ s" no-codegen" str= <> [if]
     ." Unknown codegen target: " codegen-target @ type cr
     abort
 [then] [then]
+
+( === open/close === )
+
+
+-62 s" CLOSE-FILE" def-error CLOSE-FILE-ERROR
+-69 s" OPEN-FILE" def-error OPEN-FILE-ERROR
+
+: open-file ( c-addr fam -- file e )
+    2dup (open-file) if
+        file% %allot
+        tuck file>obj !
+        tuck file>fam !
+        tuck file>name !
+        success
+    else
+        OPEN-FILE-ERROR throw
+    then
+;
+
+: close-file ( file -- e )
+    file>obj (close-file) unless
+        CLOSE-FILE-ERROR throw
+    then
+;
+
+s" bootstrap.fs" R/O open-file
 
 ." Ready" cr
