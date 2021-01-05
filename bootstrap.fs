@@ -461,6 +461,7 @@ alias-builtin xor       ^
 : c,        B ;
 : cmove,    m ;
 : strlen    z ;
+: str=      E ;
 : state     M ;
 : aligned   a ;
 : align     A ;
@@ -1642,5 +1643,46 @@ stdin_ push-inputstream
 ;
 
 switch-to-4th-stage
+
+( === [if]..[else]..[then] === )
+
+: [if] ( f -- )
+    unless
+        \ skip inputs until corresponding [else] or [then]
+        0 \ depth
+        begin
+            word throw
+            dup s" [if]" str= if
+                drop 1+
+            else dup s" [else]" str= if
+                drop
+                dup 0= if drop exit then
+            else s" [then]" str= if
+                dup 0= if drop exit then
+                1-
+            then then then
+        again
+    then
+; immediate
+
+: [else]
+    \ If the condition is false, [else] is skipped by [if].
+    \ So when the execution reaches [else] it means that
+    \ the condition was true.
+
+    \ skip inputs until corresponding [then]
+    0 \ depth
+    begin
+        word throw
+        dup s" [if]" str= if
+            drop 1+
+        else s" [then]" str= if
+            dup 0= if drop exit then
+            1-
+        then then
+    again
+; immediate
+
+: [then] ; immediate \ do nothing
 
 ." Ready" cr
