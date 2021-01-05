@@ -1319,7 +1319,12 @@ decimal
 
 : abort ABORTED-ERROR throw ;
 
+: orelse ( f e -- e )
+    swap if drop success then
+;
+
 ( === Dump of data stack === )
+
 : .s ( -- )
     sp0 sp@ - cell- cell /  ( depth of the stack )
     '<' emit 0 u.r '>' emit space
@@ -1956,29 +1961,21 @@ codegen-target @ s" i386-linux" str= [if]
 6 constant SYS_CLOSE
 
 : (open-file) ( c-addr fam -- obj f )
-    swap SYS_OPEN syscall2 dup 0>= if success else OPEN-FILE-ERROR then
+    swap SYS_OPEN syscall2 dup 0>= OPEN-FILE-ERROR orelse
 ;
 
 : (close-file) ( obj -- f )
-    SYS_CLOSE syscall1 0>= if success else CLOSE-FILE-ERROR then
+    SYS_CLOSE syscall1 0>= CLOSE-FILE-ERROR orelse
 ;
 
 : (read-file) ( c-addr u fd -- u2 f )
-    >r swap r> SYS_READ syscall3 dup 0>= if
-        success
-    else
-        READ-FILE-ERROR
-    then
+    >r swap r> SYS_READ syscall3 dup 0>= READ-LINE-ERROR orelse
 ;
 
 : (write-file) ( c-addr u1 fd -- f )
     >r swap >r dup r> r>    \ ( u1 u1 c-addr fd )
     SYS_WRITE syscall3      \ ( u1 u2 )
-    = if
-        success
-    else
-        WRITE-FILE-ERROR
-    then
+    = WRITE-FILE-ERROR orelse
 ;
 
 [else] \ i386-linux
