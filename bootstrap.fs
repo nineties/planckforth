@@ -1805,3 +1805,41 @@ v argc ! argv !
     1 arg
     shift-args
 ;
+
+( === Environment-Dependent Code === )
+
+\ Parse '--gen' option.
+\ $ ./planck < bootstrap --gen i386-linux ...
+
+: strn= ( c-addr1 c-addr2 u -- f )
+    begin dup 0> while
+        1- >r
+        over c@ over c@
+        <> if r> drop drop drop false exit then
+        1+ swap 1+ swap r>
+    repeat drop drop drop
+    true
+;
+
+variable codegen-target
+
+\ Parse command-line arguments.
+: read-commandline-args ( -- )
+    begin argc @ 1 > while
+        1 arg dup c@ '-' <> if drop exit then
+        dup s" --gen" 5 strn= if
+            dup 5 + c@ '=' = if
+                6 + codegen-target !
+                shift-args
+            else
+                shift-args
+                next-arg codegen-target !
+            then
+        else
+            ." Unknown option: " type cr
+            drop ABORTED-ERROR throw
+        then
+    repeat
+;
+
+read-commandline-args
