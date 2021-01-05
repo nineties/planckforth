@@ -1555,7 +1555,21 @@ stdin_ push-inputstream
     again
 ;
 
-: ' ( "name" -- xt ) word throw find >cfa ;
+: ' ( "name" -- xt )
+    word throw
+    find ?dup if
+        >cfa
+    else
+        UNDEFINED-WORD-ERROR throw
+    then
+;
+: [compile] ' , ; immediate
+: compile-helper
+    [compile] literal
+    [ ' , ] literal ,
+;
+: compile ' compile-helper ; immediate
+: ['] ' [compile] literal ; immediate
 
 : : ( "name -- )
     align
