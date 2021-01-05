@@ -2141,6 +2141,21 @@ need-defined allocate
     then
 ;
 
+( === Buffered File I/O === )
+
+1024 constant BUFSIZE
+
+struct
+    file% field file>head
+    cell% field file>rbuf
+    cell% field file>rbeg
+    cell% field file>rend
+    cell% field file>wbuf
+    cell% field file>wbeg
+    cell% field file>wend
+end-struct bufferedfile%
+
+
 ( === open/close === )
 
 need-defined (open-file)
@@ -2150,12 +2165,22 @@ need-defined (read-file)
 
 : open-file ( c-addr fam -- file e )
     2dup (open-file) throw
-    file% %allot
+    file% %allocate throw
     tuck file>obj !
     tuck file>fam !
     tuck file>name !
     ['] (read-file) over file>read-file !
     ['] (write-file) over file>write-file !
+    dup file>fam @ W/O <> if
+        BUFSIZE allocate throw over file>wbuf !
+        0 over file>rbeg !
+        BUFSIZE over file>rend !
+    then
+    dup file>fam @ R/O <> if
+        BUFSIZE allocate throw over file>wbuf !
+        0 over file>wbeg !
+        BUFSIZE over file>wend !
+    then
     success
 ;
 

@@ -219,6 +219,7 @@ def argv():
 add_simple_operator('v', argv)
 
 SUCCESS = 0
+ALLOCATE_ERROR = -59
 CLOSE_FILE_ERROR = -62
 OPEN_FILE_ERROR = -69
 READ_FILE_ERROR = -70
@@ -251,6 +252,14 @@ add_simple_operator('(open-file)', openfile)
 add_simple_operator('(close-file)', closefile)
 add_simple_operator('(write-file)', writefile)
 add_simple_operator('(read-file)', readfile)
+def allocate():
+    size = pop()
+    n = (size + 4 - 1) // 4
+    addr = len(memory)*4
+    mem.extend([0]*n)
+    push(addr)
+    push(SUCCESS)
+add_simple_operator('allocate', allocate)
 
 start = read(HERE_CELL)
 comma(find('k'))

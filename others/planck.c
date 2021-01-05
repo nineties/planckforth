@@ -160,6 +160,7 @@ defbinary("=", eq, ==, intptr_t)
 
 /* File IO */
 #define SUCCESS 0
+#define ALLOCATE_ERROR      -59
 #define CLOSE_FILE_ERROR    -62
 #define OPEN_FILE_ERROR     -69
 #define READ_FILE_ERROR     -70
@@ -193,6 +194,13 @@ defcode("(write-file)", writefile) {
     char *buf = (char*) pop();
     int r = write(fd, buf, size);
     push((r == size) ? SUCCESS : WRITE_FILE_ERROR);
+    next();
+}
+defcode("allocate", allocate) {
+    int size = pop();
+    void *p = malloc(size);
+    push((cell) p);
+    push(p ? SUCCESS : ALLOCATE_ERROR);
     next();
 }
 
