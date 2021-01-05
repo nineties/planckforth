@@ -1157,12 +1157,13 @@ char 0 char B - constant STRING-OVERFLOW-ERROR \ -18
     state @ if
         compile litstring
         here 0 ,    \ save location of length and fill dummy
-        0           \ length of the string
+        0           \ length of the string + 1 (\0)
         begin key dup '"' <> while
             c,      \ store character
             1+      \ increment length
         repeat drop
         0 c,        \ store \0
+        1+
         swap !      \ back-fill length
         align
     else
