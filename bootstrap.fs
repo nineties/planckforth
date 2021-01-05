@@ -1791,12 +1791,12 @@ v argc ! argv !
 \ Remove 1 arg, update argv and argc
 : shift-args ( -- )
     argc @ 1 = if exit then
-    1 argc -!
     argc @ 1 do
         i 1+ arg            \ argv[i+1]
         i cells argv @ +    \ &argv[i]
         !                   \ copy argv[i+1] to argv[i]
     loop
+    1 argc -!
 ;
 
 \ Take 1 arg and shift arguments
