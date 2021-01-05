@@ -549,7 +549,7 @@ alias-builtin xor       ^
 : nip   swap drop ;                 \ ( a b -- a )
 : over  >r dup r> swap ;            \ ( a b -- a b a )
 : tuck  dup -rot ;                  \ ( a b -- b a b )
-: pick  cells sp@ swap + cell + @ ; \ ( wu ... x0 u -- xu ... x0 xu )
+: pick  cells sp@ + cell + @ ;      \ ( wu ... x0 u -- xu ... x0 xu )
 
 : 2drop drop drop ;                 \ ( a b -- )
 : 2dup  over over ;                 \ ( a b -- a b a b )
