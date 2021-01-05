@@ -1123,7 +1123,9 @@ decimal \ set default to decimal
         \ ( c-from c-to c )
         over c!
         1+ swap 1+ swap
-    repeat drop drop drop
+    repeat
+    over c!
+    drop drop
 ;
 
 \ ( c-addr -- )
