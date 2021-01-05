@@ -1839,6 +1839,7 @@ variable codegen-target
 
 \ Parse command-line arguments.
 : read-commandline-args ( -- )
+    s" no-codegen" codegen-target !
     begin argc @ 1 > while
         1 arg dup c@ '-' <> if drop exit then
         dup s" --gen" 5 strn= if
