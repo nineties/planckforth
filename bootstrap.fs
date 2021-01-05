@@ -487,7 +487,7 @@ alias-builtin xor       ^
 
 \ ( xt -- )
 \ postpone compilation of xt
-: compile-helper
+: (compile)
     [compile] literal   \ compile 'literal'
     [ ' , ] literal ,   \ compile ,
 ;
@@ -495,7 +495,7 @@ alias-builtin xor       ^
 \ compile: ( "name" -- )
 \ 'compile word' compiles word *later* even if it is immediate
 : compile
-    ' compile-helper
+    ' (compile)
 ; immediate
 
 \ ( -- xt )
@@ -819,7 +819,7 @@ alias-builtin xor       ^
     ['] exit ,                  \ compile exit
 ;
 
-: does>-helper
+: (does>)
     latest >cfa
     3 cells + ! \ replace nop
 ;
@@ -830,7 +830,7 @@ alias-builtin xor       ^
     here cell-          \ save addr of xt
 
     \ replace nop with xt at runtime
-    compile does>-helper
+    compile (does>)
 
     [compile] ; \ finish compilation of initialization part
     :noname     \ start compilation of does> part
@@ -1573,11 +1573,11 @@ stdin_ push-inputstream
     then
 ;
 : [compile] ' , ; immediate
-: compile-helper
+: (compile)
     [compile] literal
     [ ' , ] literal ,
 ;
-: compile ' compile-helper ; immediate
+: compile ' (compile) ; immediate
 : ['] ' [compile] literal ; immediate
 
 : : ( "name -- )
