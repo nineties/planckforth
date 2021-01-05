@@ -1883,7 +1883,7 @@ codegen-target @ s" i386-linux" str= [if]
 \ overwrite code field by DFA
 : ;asm
     [compile] ; \ finish compilation
-    latest dup >dfa over >cfa !
+    latest dup >dfa swap >cfa !
 ; immediate
 
 : syscall0 ( n -- r )
