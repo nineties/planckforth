@@ -4,6 +4,7 @@
 #
 
 import sys
+import operator
 CELL = 4
 MEMORY_SIZE = 0x08000000
 STACK_SIZE = 0x400
@@ -15,10 +16,13 @@ memory = bytearray(MEMORY_SIZE)
 sp = MEMORY_SIZE
 rp = MEMORY_SIZE - STACK_SIZE
 ip = 0
-pc = 0
+np = 0
 
 def aligned(n):
     return (n + CELL - 1) & ~(CELL - 1)
+
+def align():
+    write(HERE_CELL, aligned(read(HERE_CELL)))
 
 def read(addr):
     return int.from_bytes(
@@ -27,28 +31,27 @@ def read(addr):
 def write(addr, v):
     memory[addr:addr+CELL] = v.to_bytes(4, 'little', signed=True)
 
+def comma(v):
+    here = read(HERE_CELL)
+    write(here, v)
+    write(HERE_CELL, here + CELL)
+
 def read_byte(addr):
     return memory[addr]
 
 def write_byte(addr, v):
     memory[addr] = v
 
-next_builtin_id = 1
-def add_builtin(c):
-    global next_builtin_id
-    builtin_id = next_builtin_id
-    next_builtin_id += 1
-
+def comma_byte(v):
     here = read(HERE_CELL)
-    latest = read(LATEST_CELL)
-    write(here, latest)
-    write_byte(here + CELL, 1)
-    write_byte(here + CELL + 1, ord(c))
-    write(here + 2*CELL, builtin_id)
+    memory[here] = v
+    write(HERE_CELL, here + 1)
 
-    write(HERE_CELL, here + 3*CELL)
-    write(LATEST_CELL, here)
-    return builtin_id
+def comma_string(s):
+    n = len(s)
+    here = read(HERE_CELL)
+    memory[here:here+n+1] = bytes(s+'\0', 'ascii')
+    write(HERE_CELL, here+n+1)
 
 def find(c):
     it = read(LATEST_CELL)
@@ -82,143 +85,99 @@ def rpop():
     rp += CELL
     return v
 
+operators = []
+def add_operator(name, func):
+    funcid = len(operators)
+    here = read(HERE_CELL)
+    latest = read(LATEST_CELL)
+    write(LATEST_CELL, here)
+
+    comma(latest)
+    comma_byte(len(name))
+    comma_string(name)
+    align()
+    comma(funcid)
+
+    operators.append(func)
+    return funcid
+
+def next(np):
+    return read(np), np + CELL
+
+def add_simple_operator(name, func):
+    def func_(ip, np):
+        func()
+        return next(np)
+    return add_operator(name, func_)
+
+def add_binary_operator(name, op):
+    def func():
+        b = pop()
+        push(op(pop(), b))
+    return add_simple_operator(name, func)
+
 write(HERE_CELL, 2*CELL)
 write(LATEST_CELL, 0)
 
-DOCOL_    = 0
-QUIT      = add_builtin('Q')
-CELLSIZE  = add_builtin('C')
-HERE      = add_builtin('h')
-LATEST    = add_builtin('l')
-KEY       = add_builtin('k')
-EMIT      = add_builtin('t')
-JUMP      = add_builtin('j')
-JUMP0     = add_builtin('J')
-FIND      = add_builtin('f')
-EXECUTE   = add_builtin('x')
-FETCH     = add_builtin('@')
-STORE     = add_builtin('!')
-CFETCH    = add_builtin('?')
-CSTORE    = add_builtin('$')
-DFETCH    = add_builtin('d')
-DSTORE    = add_builtin('D')
-RFETCH    = add_builtin('r')
-RSTORE    = add_builtin('R')
-DOCOL     = add_builtin('i')
-EXIT      = add_builtin('e')
-LIT       = add_builtin('L')
-LITSTRING = add_builtin('S')
-ADD       = add_builtin('+')
-SUB       = add_builtin('-')
-MUL       = add_builtin('*')
-DIV       = add_builtin('/')
-MOD       = add_builtin('%')
-AND       = add_builtin('&')
-OR        = add_builtin('|')
-XOR       = add_builtin('^')
-LESS      = add_builtin('<')
-EQUAL     = add_builtin('=')
+def docol(ip, np):
+    rpush(np)
+    return next(ip + CELL)
+DOCOL_ID = add_operator('', docol)
+add_simple_operator('Q', lambda: exit(0))
+add_simple_operator('C', lambda: push(CELL))
+add_simple_operator('h', lambda: push(HERE_CELL))
+add_simple_operator('l', lambda: push(LATEST_CELL))
+add_simple_operator('k', lambda: push(ord(sys.stdin.read(1))))
+add_simple_operator('t', lambda: sys.stdout.write(chr(pop())))
+add_operator('j', lambda ip,np: next(np + read(np)))
+add_operator('J', lambda ip,np: next(np + (CELL if pop() else read(np))))
+add_simple_operator('f', lambda: push(find(chr(pop()))))
+add_operator('x', lambda ip,np: (pop(), np))
+add_simple_operator('@', lambda: push(read(pop())))
 
-here = read(HERE_CELL)
-write(here, find('k'))
-write(here + CELL, find('f'))
-write(here + 2*CELL, find('x'))
-write(here + 3*CELL, find('j'))
-write(here + 4*CELL, -4*CELL)
-write(HERE_CELL, here + 5*CELL)
+# NB: Python evaluates expressions from left to right
+# https://docs.python.org/3/reference/expressions.html#evaluation-order
+add_simple_operator('!', lambda: write(pop(), pop()))
+add_simple_operator('?', lambda: push(read_byte(pop())))
+add_simple_operator('$', lambda: write_byte(pop(), pop()))
+add_simple_operator('d', lambda: push(sp))
+def set_sp():
+    global sp
+    sp = pop()
+add_simple_operator('D', set_sp)
+add_simple_operator('r', lambda: push(rp))
+def set_rp():
+    global rp
+    rp = pop()
+add_simple_operator('R', set_rp)
+add_simple_operator('i', lambda: push(DOCOL_ID))
+add_operator('e', lambda ip,np: next(rpop()))
+def lit(ip, np):
+    push(read(np))
+    return next(np + CELL)
+add_operator('L', lit)
+def litstring(ip, np):
+    push(np + CELL)
+    return next(aligned(np + CELL + read(np)))
+add_operator('S', litstring)
+add_binary_operator('+', operator.add)
+add_binary_operator('-', operator.sub)
+add_binary_operator('*', operator.mul)
+add_binary_operator('/', operator.floordiv)
+add_binary_operator('%', operator.mod)
+add_binary_operator('&', operator.and_)
+add_binary_operator('|', operator.or_)
+add_binary_operator('^', operator.xor)
+add_binary_operator('<', operator.lt)
+add_binary_operator('=', operator.eq)
 
-pc = here
-ip = read(pc)
-pc += CELL
+start = read(HERE_CELL)
+comma(find('k'))
+comma(find('f'))
+comma(find('x'))
+comma(find('j'))
+comma(-4*CELL)
+
+ip, np = next(start)
 while True:
-    code = read(ip)
-    if code == DOCOL_:
-        rpush(pc)
-        pc = ip + CELL
-    elif code == QUIT:
-        exit(0)
-    elif code == CELLSIZE:
-        push(CELL)
-    elif code == HERE:
-        push(HERE_CELL)
-    elif code == LATEST:
-        push(LATEST_CELL)
-    elif code == KEY:
-        push(ord(sys.stdin.read(1)))
-    elif code == EMIT:
-        sys.stdout.write(chr(pop()))
-    elif code == JUMP:
-        pc += read(pc)
-    elif code == JUMP0:
-        if pop() == 0:
-            pc += read(pc)
-        else:
-            pc += CELL
-    elif code == FIND:
-        push(find(chr(pop())))
-    elif code == EXECUTE:
-        ip = pop()
-        continue
-    elif code == FETCH:
-        push(read(pop()))
-    elif code == STORE:
-        addr = pop()
-        write(addr, pop())
-    elif code == CFETCH:
-        push(read_byte(pop()))
-    elif code == CSTORE:
-        addr = pop()
-        write_byte(addr, pop())
-    elif code == DFETCH:
-        push(sp)
-    elif code == DSTORE:
-        sp = pop()
-    elif code == RFETCH:
-        push(rp)
-    elif code == RSTORE:
-        rp = pop()
-    elif code == DOCOL:
-        push(DOCOL_)
-    elif code == EXIT:
-        pc = rpop()
-    elif code == LIT:
-        push(read(pc))
-        pc += CELL
-    elif code == LITSTRING:
-        n = read(pc)
-        push(pc + CELL)
-        pc = aligned(pc + CELL + n)
-    elif code == ADD:
-        b = pop()
-        push(pop() + b)
-    elif code == SUB:
-        b = pop()
-        push(pop() - b)
-    elif code == MUL:
-        b = pop()
-        push(pop() * b)
-    elif code == DIV:
-        b = pop()
-        push(pop() // b)
-    elif code == MOD:
-        b = pop()
-        push(pop() % b)
-    elif code == AND:
-        b = pop()
-        push(pop() & b)
-    elif code == OR:
-        b = pop()
-        push(pop() | b)
-    elif code == XOR:
-        b = pop()
-        push(pop() ^ b)
-    elif code == LESS:
-        b = pop()
-        push(pop() < b)
-    elif code == EQUAL:
-        b = pop()
-        push(pop() == b)
-    else:
-        raise Exception('Invalid Code Pointer: {}'.format(code))
-    ip = read(pc)
-    pc += CELL
+    ip, np = operators[read(ip)](ip, np)
