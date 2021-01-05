@@ -1793,6 +1793,28 @@ do-stack 16 cells + do-sp !
 : j 4 rpick ;
 : k 6 rpick ;
 
+( === Dictionary === )
+
+\ print the name of the word
+: id. ( nt -- )
+    cell+ dup c@ length-mask and
+    begin dup 0> while
+        swap 1+ dup c@ emit swap 1-
+    repeat
+    2drop
+;
+
+\ print all visible words
+: words
+    latest
+    begin ?dup while
+        dup cell+ c@ smudge-bit and unless
+            dup id. space
+        then
+        @
+    repeat
+    cr
+;
 
 ( === Command-line Arguments === )
 
@@ -1944,7 +1966,7 @@ codegen-target @ s" i386-linux" str= [if]
 
 [else] \ i386-linux
 
-codegen-target @ s" no-codegen" str= <> [if]
+codegen-target @ s" no-codegen" str= not [if]
     ." Unknown codegen target: " codegen-target @ type cr
     abort
 [then] [then]
