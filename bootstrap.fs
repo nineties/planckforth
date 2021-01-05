@@ -1723,9 +1723,15 @@ do-stack 16 cells + do-sp !
 
 \ compile: ( -- dest mark )
 : do
+    compile 2dup
     compile >r  \ save start
     compile >r  \ save limit
+    \ leave if start >= limit
+    compile >
+    compile 0branch
+    0 ,
     here >do do-mark >do
+    here cell- >do leave-mark >do
 ; immediate
 
 : leave ( -- orig mark )
