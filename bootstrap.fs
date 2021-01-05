@@ -1306,6 +1306,7 @@ main
 
 decimal
 -1 s" Aborted" def-error ABORTED-ERROR
+-37 s" File I/O exception" def-error FILE-IO-ERROR
 -39 s" Unexpected end of file" def-error UNEXPECTED-EOF-ERROR
 -68 s" FLUSH-FILE" def-error FLUSH-FILE-ERROR
 -70 s" READ-FILE" def-error READ-FILE-ERROR
@@ -1378,13 +1379,16 @@ decimal
 
 \ File
 struct
-    cell% field file>read-file  ( c-addr u1 file -- u2 e )
-    cell% field file>read-line  ( c-addr u1 file -- u2 flag e )
-    cell% field file>key-file   ( file -- c e )
-    cell% field file>write-file ( c-addr u1 file -- e )
-    cell% field file>flush-file ( file -- e )
+    cell% field file>read-file  ( c-addr u1 obj -- u2 e )
+    cell% field file>read-line  ( c-addr u1 obj -- u2 flag e )
+    cell% field file>key-file   ( obj -- c e )
+    cell% field file>write-file ( c-addr u obj -- e )
+    cell% field file>flush-file ( obj -- e )
     char% field file>fam
-    \ will add other fields later
+    cell% field file>name
+
+    \ implementation dependent file object
+    cell% field file>obj
 end-struct file%
 
 : writable? ( file -- f ) file>fam c@ R/O <> ;
@@ -1393,7 +1397,7 @@ end-struct file%
 \ Write bytes from buffer c-addr u1 to file, return error-code.
 : write-file ( c-addr u1 file -- e )
     dup writable? if
-        dup file>write-file @ execute
+        dup file>obj swap file>write-file @ execute
     else
         WRITE-FILE-ERROR
     then
@@ -1403,7 +1407,7 @@ end-struct file%
 \ Return number of bytes read and error-code.
 : read-file ( c-addr u1 file -- u2 e )
     dup readable? if
-        dup file>read-file @ execute
+        dup file>obj swap file>read-file @ execute
     else
         0 READ-FILE-ERROR
     then
@@ -1412,14 +1416,16 @@ end-struct file%
 \ Flush output buffer of file, return error-code.
 : flush-file ( file -- e )
     dup writable? if
-        dup file>flush-file @ execute
+        dup file>obj swap file>flush-file @ execute
     else
         FLUSH-FILE-ERROR
     then
 ;
 
 \ Read a character. Return EOF at end of input.
-: key-file ( file -- c ) dup file>key-file @ execute throw ;
+: key-file ( file -- c )
+    dup file>obj swap file>key-file @ execute throw
+;
 
 \ Read characters from 'file' to the buffer c-addr u1
 \ until reaches '\n' or end of file.
@@ -1429,7 +1435,7 @@ end-struct file%
 \ e is error code.
 : read-line ( c-addr u1 file -- u2 flag e )
     dup readable? if
-        dup file>read-line @ execute
+        dup file>obj swap file>read-line @ execute
     else
         READ-LINE-ERROR
     then
@@ -1447,7 +1453,7 @@ R/O stdin_ file>fam c!
 ' not-implemented stdin_ file>flush-file !
 
 \ Read u byte from stdin to c-addr.
-:noname ( c-addr u file -- u e )
+:noname ( c-addr u obj -- u e )
     drop
     dup >r
     begin dup 0> while
@@ -1459,7 +1465,7 @@ R/O stdin_ file>fam c!
     r> success  \ 0: no-error
 ; stdin_ file>read-file !
 
-:noname ( c-addr u1 file -- u2 flag e )
+:noname ( c-addr u1 obj -- u2 flag e )
     drop 0
     begin
         ( c-addr u1 u2 )
@@ -1478,7 +1484,7 @@ R/O stdin_ file>fam c!
     again
 ; stdin_ file>read-line !
 
-:noname ( file -- c e )
+:noname ( obj -- c e )
     drop key success
 ; stdin_ file>key-file !
 
@@ -1489,7 +1495,7 @@ W/O stdout_ file>fam c!
 ' not-implemented stdout_ file>key-file !
 
 \ Write u byte from c-addr to stdout.
-:noname ( c-addr u file -- e )
+:noname ( c-addr u obj -- e )
     drop type success
 ; stdout_ file>write-file !
 
