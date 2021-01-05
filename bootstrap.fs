@@ -1228,7 +1228,7 @@ s" -256" >number drop next-user-error !
 
 \ Create new user defined error and returns error code.
 : exception ( c-addr -- n )
-    next-user-error @ -rot add-error
+    next-user-error @ swap add-error
     next-user-error @
     1 next-user-error -!
 ;
