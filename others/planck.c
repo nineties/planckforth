@@ -56,12 +56,18 @@ static cfa find(char c) {
     return 0;
 }
 
+static int saved_argc = 0;
+static char **saved_argv = 0;
+
 #define defcode(name, label) \
 static void label()
 #include "planck.c"
 #undef defcode
 
-int main(void) {
+int main(int argc, char *argv[]) {
+    saved_argc = argc;
+    saved_argv = argv;
+
 #define defcode(c, label) \
     memcpy(here, &(builtin){ latest, 1, c, {0}, label }, 3*CELL); \
     latest = (builtin*)here; \
@@ -112,6 +118,7 @@ defcode('k', key) {
 defcode('t', type) { putchar(pop()); next(); }
 defcode('x', exec) { (*(ip = (cfa) pop()))(); }
 defcode('f', find_) { push((cell) find(pop())); next(); }
+defcode('v', argv_) { push((cell) saved_argv); push(saved_argc); next(); }
 #define defbinary(c, label, op, ty) \
 defcode(c, label) { \
     ty b = (ty) pop(); \
