@@ -137,7 +137,13 @@ add_simple_operator('Q', lambda: exit(0))
 add_simple_operator('C', lambda: push(CELL))
 add_simple_operator('h', lambda: push(HERE_CELL))
 add_simple_operator('l', lambda: push(LATEST_CELL))
-add_simple_operator('k', lambda: push(ord(sys.stdin.read(1))))
+def key():
+    c = sys.stdin.read(1)
+    if c:
+        push(ord(c))
+    else:
+        exit(0)
+add_simple_operator('k', key)
 add_simple_operator('t', lambda: sys.stdout.write(chr(pop())))
 add_operator('j', lambda ip,np: next(np + read(np)))
 add_operator('J', lambda ip,np: next(np + (CELL if pop() else read(np))))
