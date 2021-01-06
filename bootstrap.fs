@@ -2130,18 +2130,15 @@ codegen-target @ s" no-codegen" str= not [if]
     then drop
 ;
 
+
 ( === Heap Memory === )
 
 need-defined allocate
 
 \ allocate heap memory
 : %allocate ( align size -- addr e )
-    over + allocate ?dup if
-        \ ( align addr e )
-        >r 2drop 0 >r
-    else
-        swap 1- & success
-    then
+    over + allocate throw
+    swap 1- invert and success
 ;
 
 ( === Buffered File I/O === )
