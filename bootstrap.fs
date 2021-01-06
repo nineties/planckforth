@@ -1711,6 +1711,11 @@ switch-to-4th-stage
     then
 ; immediate
 
+: [unless] ( f -- )
+    not
+    [compile] [if]
+; immediate
+
 : [else]
     \ If the condition is false, [else] is skipped by [if].
     \ So when the execution reaches [else] it means that
