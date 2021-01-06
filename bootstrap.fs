@@ -2118,6 +2118,9 @@ codegen-target @ s" no-codegen" str= not [if]
     abort
 [then] [then] \ End of environment dependent code
 
+: defined? ( "name" -- f )
+    word throw find <> 0
+;
 
 : need-defined ( "name" -- )
     word throw dup find unless
