@@ -1107,6 +1107,12 @@ decimal \ set default to decimal
 
 ( === String === )
 
+\ c-addr2 = c-addr1+n
+\ u2 = u1-n
+: succ-buffer ( c-addr1 u1 n -- c-addr2 u2 )
+    dup -rot - >r + r>
+;
+
 \ ( c-from c-to u -- )
 \ Copy u bytes from c-from to c-to.
 \ The memory regions must not be overlapped.
