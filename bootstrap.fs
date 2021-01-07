@@ -1124,8 +1124,7 @@ decimal \ set default to decimal
         1+ >r   \ increment c-to, save
         1+      \ increment c-from
         r> r>
-    repeat
-    drop drop drop
+    repeat 3drop
 ;
 
 \ we already have cmove,
@@ -1139,7 +1138,7 @@ decimal \ set default to decimal
         1+ swap 1+ swap
     repeat
     over c!
-    drop drop
+    2drop
 ;
 
 \ ( c-addr -- )
