@@ -1,4 +1,4 @@
-# planckforth - 
+# planckforth -
 # Copyright (C) 2021 nineties
 
 default: x86hex

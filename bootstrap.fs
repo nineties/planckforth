@@ -553,7 +553,9 @@ alias-builtin xor       ^
 : pick  cells sp@ + cell + @ ;      \ ( wu ... x0 u -- xu ... x0 xu )
 
 : 2drop drop drop ;                 \ ( a b -- )
+: 3drop 2drop drop ;                \ ( a b c -- )
 : 2dup  over over ;                 \ ( a b -- a b a b )
+: 3dup  2 pick 2 pick 2 pick ;      \ ( a b c -- a b c a b c )
 : 2swap >r -rot r> -rot ;           \ ( a b c d -- c d a b )
 : 2nip  2swap 2drop ;               \ ( a b c d -- c d )
 : 2over 3 pick 3 pick ;             \ ( a b c d -- a b c d a b )
