@@ -1159,7 +1159,7 @@ decimal \ set default to decimal
 ;
 
 \ Allocate a buffer for string literal
-bl constant s-buffer-size  \ 1024
+bl bl * constant s-buffer-size  \ 1024
 create s-buffer s-buffer-size allot drop
 
 \ Will define the error message corresponds to this error later
@@ -1185,8 +1185,9 @@ char 0 char B - constant STRING-OVERFLOW-ERROR \ -18
     else
         s-buffer dup    \ save start address
         begin key dup '"' <> while
-            2dup swap - s-buffer-size >= if
-                throw STRING-OVERFLOW-ERROR
+            ( buf pos c pos-buf )
+            over 3 pick - s-buffer-size 1- >= if
+                STRING-OVERFLOW-ERROR throw
             then
             over c! \ store char
             1+      \ increment address
