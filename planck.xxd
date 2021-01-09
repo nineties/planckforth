@@ -40,9 +40,9 @@
 
 00000110: e880 0408 0174 0000   t: type
 00000118: 1c81 0408 ba01 0000   movl $1,%edx;
-00000120: 0089 e1bb 0100 0000   movl %esp,%ecx; movl $1,%ebx (STDOUT);
-00000128: b804 0000 00cd 8083   movl $SYS_WRITE,%eax; int $0x80;
-00000130: c404 adff 2000 0000   addl $4,%esp; next;
+00000120: 0089 e189 d3b8 0400   movl %esp,%ecx; movl $1,%ebx (STDOUT);
+00000128: 0000 cd80 83c4 04ad   movl $SYS_WRITE,%eax; int $0x80;
+00000130: ff20 0000 0000 0000   addl $4,%esp; next;
 
 00000138: 1081 0408 016a 0000   j: jump
 00000140: 4481 0408 0336 adff   addl (%esi),%esi; next;
