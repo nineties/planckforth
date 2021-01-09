@@ -37,10 +37,10 @@ static cell *rsp = rstack + RSTACK_SIZE;
 static cell memory[MEMORY_SIZE];
 static builtin *latest = 0;
 static cell *here = memory;
-static cell *pc = NULL;
+static cell *np = NULL;
 static cfa  ip = NULL;
 
-#define next()     (*(ip = (cfa)(*pc++)))()
+#define next()     (*(ip = (cfa)(*np++)))()
 
 static void push(cell v)  { *(--dsp) = v; }
 static cell pop(void)     { return *dsp++; }
@@ -48,8 +48,8 @@ static void rpush(cell v) { *(--rsp) = v; }
 static cell rpop(void)    { return *rsp++; }
 
 static void docol(void) {
-    rpush((cell) pc);
-    pc = (cell*)ip + 1;
+    rpush((cell) np);
+    np = (cell*)ip + 1;
     next();
 }
 
@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
     *here++ = (cell) find('x');
     *here++ = (cell) find('j');
     *here++ = (cell) -4 * CELL;
-    pc = (cell*) start;
+    np = (cell*) start;
     next();
     return 0;
 }
@@ -112,7 +112,7 @@ defcode("C", cell_) { push(CELL); next(); }
 defcode("h", here_) { push((cell)&here); next(); }
 defcode("l", latest_) { push((cell)&latest); next(); }
 defcode("i", docol_) { push((cell)docol); next(); }
-defcode("e", exit_) { pc = (cell*)rpop(); next(); }
+defcode("e", exit_) { np = (cell*)rpop(); next(); }
 defcode("@", fetch) { cell *p = (cell*)pop(); push(*p); next(); }
 defcode("!", store) { cell *p = (cell*)pop(); *p = pop(); next(); }
 defcode("?", cfetch) { char *p = (char*)pop(); push(*p); next(); }
@@ -121,13 +121,13 @@ defcode("d", dfetch) { push((cell)dsp); next(); }
 defcode("D", dstore) { dsp = (cell*) pop(); next(); }
 defcode("r", rfetch) { push((cell)rsp); next(); }
 defcode("R", rstore) { rsp = (cell*) pop(); next(); }
-defcode("j", jump) { pc += (int)*pc/CELL; next(); }
-defcode("J", jump0) { pc += (int)(pop()?1:*pc/CELL); next(); }
-defcode("L", lit) { push(*pc++); next(); }
+defcode("j", jump) { np += (int)*np/CELL; next(); }
+defcode("J", jump0) { np += (int)(pop()?1:*np/CELL); next(); }
+defcode("L", lit) { push(*np++); next(); }
 defcode("S", litstring) {
-    int n = *pc++;
-    push((cell)pc);
-    pc += (n + CELL - 1)/CELL;
+    int n = *np++;
+    push((cell)np);
+    np += (n + CELL - 1)/CELL;
     next();
 }
 defcode("k", key) {
