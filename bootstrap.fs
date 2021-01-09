@@ -433,8 +433,6 @@ alias-builtin bye       Q
 alias-builtin cell      C
 alias-builtin &here     h
 alias-builtin &latest   l
-alias-builtin key       k
-alias-builtin emit      t
 alias-builtin branch    j
 alias-builtin 0branch   J
 alias-builtin execute   x
@@ -453,6 +451,21 @@ alias-builtin mod       %
 alias-builtin and       &
 alias-builtin or        |
 alias-builtin xor       ^
+
+\ One-step indirection for key and emit. Since k and t are
+\ temporary implementations, we will allow them to be replaced later.
+&here @ # cell + &here !
+: key-func [ ' L , , ] ;
+' k key-func !
+: key key-func @ execute ;
+
+&here @ # cell + &here !
+: emit-func [ ' L , , ] ;
+' t emit-func !
+: emit emit-func @ execute ;
+
+
+
 
 \ Rename existing FORTH words
 : word      W ;
