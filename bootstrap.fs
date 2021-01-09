@@ -2068,27 +2068,7 @@ v argc ! argv !
 
 ( === Environment-Dependent Code === )
 
-\ Parse codegeneration option.
-\ $ ./planck < bootstrap --i386-linux ...
-
-variable codegen-target
-
-\ Parse command-line arguments.
-:noname ( -- )
-    s" no-codegen" codegen-target !
-    begin argc @ 1 > while
-        1 arg dup c@ '-' <> if drop exit then
-        dup s" --i386-linux" streq if
-            2 + codegen-target !
-            shift-args
-        else
-            ." Unknown option: " type cr
-            abort
-        then
-    repeat
-; execute
-
-codegen-target @ s" i386-linux" streq [if]
+implementation s" hand-written i386-linux" streq [if]
 
 %000 constant eax immediate
 %001 constant ecx immediate
@@ -2302,12 +2282,7 @@ BLOCK-SIZE remaining-size  !
     SYS-WRITE syscall3      \ ( u1 u2 )
 ;
 
-[else] \ i386-linux
-
-codegen-target @ s" no-codegen" streq not [if]
-    ." Unknown codegen target: " codegen-target @ type cr
-    abort
-[then] [then] \ End of environment dependent code
+[then] \ End of environment dependent code
 
 : defined? ( "name" -- f )
     word throw find <> 0
