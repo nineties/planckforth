@@ -452,7 +452,7 @@ alias-builtin and       &
 alias-builtin or        |
 alias-builtin xor       ^
 
-\ One-step indirect access for key and emit. Since k and t are
+\ One-step indirection for key and emit. Since k and t are
 \ temporary implementations, we will allow them to be replaced later.
 &here @ # cell + &here !
 : key-func [ ' L , , ] ;
