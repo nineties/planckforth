@@ -459,7 +459,7 @@ alias-builtin xor       ^
 : find      F ;
 : >cfa      G ;
 : c,        B ;
-: cmove,    m ;
+: memcpy,   m ;
 : strlen    z ;
 : str=      E ;
 : state     M ;
@@ -813,7 +813,7 @@ alias-builtin xor       ^
     latest ,                    \ fill link
     here cell- &latest !        \ update latest
     word dup strlen
-    dup c, cmove, 0 c, align    \ fill length, name and \0
+    dup c, memcpy, 0 c, align    \ fill length, name and \0
     docol ,                     \ compile docol
     ['] lit ,
     here 3 cells + ,            \ compile the address
@@ -1116,7 +1116,7 @@ decimal \ set default to decimal
 \ ( c-from c-to u -- )
 \ Copy u bytes from c-from to c-to.
 \ The memory regions must not be overlapped.
-: cmove
+: memcpy
     begin dup 0> while
         1- >r   \ decrement u, save
         over c@
@@ -1127,7 +1127,7 @@ decimal \ set default to decimal
     repeat 3drop
 ;
 
-\ we already have cmove,
+\ we already have memcpy,
 
 \ ( c-from c-to -- )
 \ copy nul terminated string from c-from to c-to
