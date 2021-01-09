@@ -85,3 +85,5 @@ $ ./planck < bootstrap.fs --i386-linux example/fib.fs
 | ^    | xor       | ( a b -- c )    | c = (a ^ b)                  |
 | <    | less      | ( a b -- c )    | c = (a < b)                  |
 | =    | equal     | ( a b -- c )    | c = (a == b)                 |
+| v    | argv      | ( -- a-addr u ) | argv and argc                |
+| V    | version   | ( -- c-addr )   | Version string
