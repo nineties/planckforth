@@ -7,6 +7,7 @@ import os
 import sys
 import operator
 
+VERSION = "Python 3.x implementation"
 MEMORY_SIZE = 0x20000
 STACK_SIZE = 0x400
 RSTACK_SIZE = 0x400
@@ -156,6 +157,11 @@ ARGV_ADDR = read(HERE_CELL)
 for addr in argv_addrs:
     comma(addr)
 
+# Version String
+VERSION_ADDR = read(HERE_CELL)
+comma_string(VERSION)
+align()
+
 def docol(ip, np):
     rpush(np)
     return next(ip + 4)
@@ -217,6 +223,7 @@ def argv():
     push(ARGV_ADDR)
     push(len(sys.argv))
 add_simple_operator('v', argv)
+add_simple_operator('V', lambda: push(VERSION_ADDR))
 
 SUCCESS = 0
 ALLOCATE_ERROR = -59
