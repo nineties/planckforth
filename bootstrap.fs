@@ -547,7 +547,7 @@ alias-builtin xor       ^
 : swap  sp@ cell + dup @ >r ! r> ;  \ ( a b -- b a )
 : rot   >r swap r> swap ;           \ ( a b c -- b c a )
 : -rot  swap >r swap r> ;           \ ( a b c -- c a b )
-: nip   swap drop ;                 \ ( a b -- a )
+: nip   swap drop ;                 \ ( a b -- b )
 : over  >r dup r> swap ;            \ ( a b -- a b a )
 : tuck  dup -rot ;                  \ ( a b -- b a b )
 : pick  cells sp@ + cell + @ ;      \ ( wu ... x0 u -- xu ... x0 xu )
@@ -1030,7 +1030,7 @@ decimal \ set default to decimal
         'a' 'z' rangeof 'a' - 10 + endof
         'A' 'Z' rangeof 'A' - 10 + endof
             \ failed to convert
-            2drop r> r> swap drop false
+            2drop r> r> nip false
             exit
         endcase
         2dup
@@ -1039,7 +1039,7 @@ decimal \ set default to decimal
         \ ( base n 0 base n )
         within unless
             \ failed to convert
-            2drop r> r> swap drop false
+            2drop r> r> nip false
             exit
         then
         \ ( base addr n acc )
@@ -1047,9 +1047,7 @@ decimal \ set default to decimal
         3 pick * +
     repeat
     \ success
-    swap drop
-    swap drop
-    true
+    nip nip true
 ;
 
 \ Parse string as number.
@@ -1258,7 +1256,7 @@ create word-buffer s" 64" >number drop cell+ allot drop
     dup find                \ lookup dictionary
     ?dup if
         \ Found the word
-        swap drop
+        nip
         state @ if
             \ compile mode
             dup cell+ c@ immediate-bit and if
@@ -1638,7 +1636,7 @@ stdin_ push-inputstream
     dup find                \ lookup dictionary
     ?dup if
         \ Found the word
-        swap drop
+        nip
         state @ if
             \ compile mode
             dup cell+ c@ immediate-bit and if
