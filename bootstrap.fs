@@ -453,6 +453,7 @@ alias-builtin mod       %
 alias-builtin and       &
 alias-builtin or        |
 alias-builtin xor       ^
+alias-builtin implementation V
 
 \ Rename existing FORTH words
 : word      W ;
@@ -2422,7 +2423,7 @@ need-defined (read)
 
         words id. name>string name>link
         include included
-        next-arg shift-args arg argv argc
+        next-arg shift-args arg argv argc implementation
 
         [if] [unless] [else] [then] defined?
         open-file close-file write-file flush-file
@@ -2477,6 +2478,7 @@ need-defined (read)
         next-arg dup argv @ !
         included
     else
+        ." PlanckForth (implementation: " implementation type ." )" cr
         ." Ready." cr
         s" /dev/tty" included
     then

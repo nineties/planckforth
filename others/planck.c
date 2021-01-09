@@ -13,7 +13,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#define VERSION "C implementation"
+#define IMPLEMENTATION "C"
 
 typedef uintptr_t cell;
 typedef void (**cfa)();
@@ -143,7 +143,7 @@ defcode("t", type) { putchar(pop()); next(); }
 defcode("x", exec) { (*(ip = (cfa) pop()))(); }
 defcode("f", find_) { push((cell) find(pop())); next(); }
 defcode("v", argv_) { push((cell) saved_argv); push(saved_argc); next(); }
-defcode("V", version) { push((cell) VERSION); next(); }
+defcode("V", impl) { push((cell) IMPLEMENTATION); next(); }
 #define defbinary(name, label, op, ty) \
 defcode(name, label) { \
     ty b = (ty) pop(); \
