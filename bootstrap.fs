@@ -461,7 +461,7 @@ alias-builtin xor       ^
 : c,        B ;
 : memcpy,   m ;
 : strlen    z ;
-: str=      E ;
+: streq     E ;
 : state     M ;
 : aligned   a ;
 : align     A ;
@@ -1706,12 +1706,12 @@ switch-to-4th-stage
         0 \ depth
         begin
             word throw
-            dup s" [if]" str= if
+            dup s" [if]" streq if
                 drop 1+
-            else dup s" [else]" str= if
+            else dup s" [else]" streq if
                 drop
                 dup 0= if drop exit then
-            else s" [then]" str= if
+            else s" [then]" streq if
                 dup 0= if drop exit then
                 1-
             then then then
@@ -1733,9 +1733,9 @@ switch-to-4th-stage
     0 \ depth
     begin
         word throw
-        dup s" [if]" str= if
+        dup s" [if]" streq if
             drop 1+
-        else s" [then]" str= if
+        else s" [then]" streq if
             dup 0= if drop exit then
             1-
         then then
@@ -1912,7 +1912,7 @@ variable codegen-target
 
 read-commandline-args
 
-codegen-target @ s" i386-linux" str= [if]
+codegen-target @ s" i386-linux" streq [if]
 
 %000 constant eax immediate
 %001 constant ecx immediate
@@ -2126,7 +2126,7 @@ BLOCK-SIZE remaining-size  !
 
 [else] \ i386-linux
 
-codegen-target @ s" no-codegen" str= not [if]
+codegen-target @ s" no-codegen" streq not [if]
     ." Unknown codegen target: " codegen-target @ type cr
     abort
 [then] [then] \ End of environment dependent code
