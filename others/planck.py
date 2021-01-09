@@ -201,7 +201,7 @@ def lit(ip, np):
 add_operator('L', lit)
 def litstring(ip, np):
     push(np + 4)
-    return next(aligned(np + 4 + read(np)))
+    return next(np + 4 + read(np))
 add_operator('S', litstring)
 add_binary_operator('+', operator.add)
 add_binary_operator('-', operator.sub)

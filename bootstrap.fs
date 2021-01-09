@@ -1182,7 +1182,7 @@ char 0 char B - constant STRING-OVERFLOW-ERROR \ -18
             1+      \ increment length
         repeat drop
         0 c,        \ store \0
-        1+
+        1+ aligned
         swap !      \ back-fill length
         align
     else
@@ -1842,7 +1842,7 @@ stdin_ push-inputstream
             1+      \ increment length
         repeat drop
         0 c,        \ store \0
-        1+
+        1+ aligned
         swap !      \ back-fill length
         align
     else

@@ -127,7 +127,7 @@ defcode("L", lit) { push(*np++); next(); }
 defcode("S", litstring) {
     int n = *np++;
     push((cell)np);
-    np += (n + CELL - 1)/CELL;
+    np += n/CELL;
     next();
 }
 defcode("k", key) {
