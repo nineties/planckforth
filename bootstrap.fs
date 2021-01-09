@@ -1511,7 +1511,7 @@ end-struct file%
 
 : empty-write-buffer ( file -- )
     dup file>wbuf @ over file>wbeg !
-    dup file>wbuf @ BUFSIZE + over file>wend !
+    dup file>wbuf @ over file>wend !
     drop
 ;
 
@@ -1551,17 +1551,16 @@ end-struct file%
 \ Flush output buffer of file, return error-code.
 : flush-file ( file -- e )
     dup writable? unless FLUSH-FILE-ERROR exit then
+    dup write-buffer-content ( file buf u )
     begin
-        ( file )
-        dup write-buffer-content ( file buf u )
-        dup 0= if 3drop success exit then
-        2 pick file>fd @ 3 pick file>write @ execute
-        ( file n )
+        ( file buf u )
+        dup 0= if 2drop empty-write-buffer success exit then
+        2dup 4 pick file>fd @ 5 pick file>write @ execute
+        ( file buf u n )
         dup 0< if 2drop FLUSH-FILE-ERROR exit then
-        over write-buffer-content
-        ( file n u )
-        over > if not-reachable then
-        over swap succ-write-buffer
+        ( file buf u n )
+        2dup < if not-reachable then
+        succ-write-buffer
     again
 ;
 
