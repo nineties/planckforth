@@ -1464,7 +1464,7 @@ do-stack 16 cells + do-sp !
     does> @ +
 ;
 
-( === File I/O Abstraction === )
+( === File I/O === )
 
 -1 constant EOF
 
@@ -1473,130 +1473,238 @@ do-stack 16 cells + do-sp !
 0x01 constant W/O  \ write-only
 0x02 constant R/W  \ read-write
 
+1024 constant BUFSIZE
+
 \ File
 struct
-    cell% field file>read-file  ( c-addr u1 obj -- u2 f )
-    cell% field file>read-line  ( c-addr u1 obj -- u2 flag f )
-    cell% field file>key-file   ( obj -- c f )
-    cell% field file>write-file ( c-addr u obj -- f )
-    cell% field file>flush-file ( obj -- f )
+    cell% field file>fd     \ file desctipro
+    cell% field file>read   ( c-addr u fd -- n )
+    cell% field file>write  ( c-addr u fd -- n )
+
     char% field file>fam
     cell% field file>name
 
-    \ implementation dependent file object
-    cell% field file>obj
+    \ read buffer
+    cell% field file>rbuf
+    cell% field file>rbeg   \ read head
+    cell% field file>rend
+
+    \ write buffer
+    cell% field file>wbuf
+    cell% field file>wbeg   \ write head
+    cell% field file>wend
 end-struct file%
 
 : writable? ( file -- f ) file>fam c@ R/O <> ;
 : readable? ( file -- f ) file>fam c@ W/O <> ;
 
-\ Write bytes from buffer c-addr u1 to file, return error-code.
-: write-file ( c-addr u1 file -- e )
-    dup writable? if
-        dup file>obj @ swap file>write-file @ execute
-    else
-        WRITE-FILE-ERROR
+\ Write buffer
+\ +-------------+-----+
+\ |aaaaaaaaaaaaa|     |
+\ +-------------+-----+
+\ ^             ^     ^
+\ wbuf          wbeg  wend
+
+: write-buffer-content ( file -- c-addr u )
+    dup file>wbeg @ swap file>wbuf tuck -
+;
+
+: empty-write-buffer ( file -- )
+    dup file>wbuf @ over file>wbeg !
+    dup file>wbuf @ BUFSIZE + over file>wend !
+    drop
+;
+
+: succ-write-buffer ( file n -- )
+    swap file>wbeg +!
+;
+
+: write-buffer-count ( file -- n )
+    dup file>wbeg @ swap file>wbuf @ -
+;
+
+\ Read buffer
+\ +-------------+-----+
+\ |     |aaaaaaa|     |
+\ +-------------+-----+
+\ ^     ^       ^
+\ rbuf  rbeg    rend
+
+: read-buffer-content ( file -- c-addr u)
+    dup file>rend @ swap file>rbeg @ tuck -
+;
+
+: empty-read-buffer ( file -- )
+    dup file>rbuf @ over file>rbeg !
+    dup file>rbuf @ over file>rend !
+    drop
+;
+
+: succ-read-buffer ( file n -- )
+    swap file>rbeg +!
+;
+
+: read-buffer-count ( file -- n )
+    dup file>rend @ swap file>rbeg @ -
+;
+
+\ Flush output buffer of file, return error-code.
+: flush-file ( file -- e )
+    dup writable? unless FLUSH-FILE-ERROR exit then
+    begin
+        ( file )
+        dup write-buffer-content ( file buf u )
+        dup 0= if 3drop success exit then
+        2 pick file>fd @ 3 pick file>write @ execute
+        ( file n )
+        dup 0< if 2drop FLUSH-FILE-ERROR exit then
+        over write-buffer-content
+        ( file n u )
+        over > if not-reachable then
+        over swap succ-write-buffer
+    again
+;
+
+\ Write bytes from c-addr u to file, return error-code.
+: write-file ( c-addr u file -- e )
+    dup writable? unless WRITE-FILE-ERROR exit then
+    over 0<= if 3drop WRITE-FILE-ERROR exit then
+
+    dup write-buffer-content BUFSIZE swap - ( space )
+    2 pick ( space u )
+    <= if
+        ( c-addr u file )
+        \ enough space, copy data
+        2 pick over file>wbeg @ 3 pick memcpy
+        \ increment wbeg
+        swap succ-write-buffer drop success exit
     then
+    ( c-addr u file )
+    dup flush-file throw
+
+    over BUFSIZE <= if
+        \ fill data to wbuf
+        2 pick over file>wbeg @ 3 pick memcpy
+        swap succ-write-buffer drop success exit
+    then
+
+    \ write large data directly to the file
+    begin
+        ( c-addr u file )
+        2 pick 2 pick 2 pick file>fd @ 3 pick file>write @ execute
+        ( c-addr u file n )
+        dup 0< if 2drop 2drop WRITE-FILE-ERROR exit then
+        swap >r succ-buffer r>
+        over 0>
+    until
+    empty-write-buffer 2drop success
 ;
 
 \ Read u1-bytes at most from file, write it to c-addr.
 \ Return number of bytes read and error-code.
 : read-file ( c-addr u1 file -- u2 e )
-    dup readable? if
-        dup file>obj @ swap file>read-file @ execute
-    else
-        0 READ-FILE-ERROR
-    then
-;
+    dup readable? unless READ-FILE-ERROR exit then
+    over 0<= if 3drop 0 success exit then
 
-\ Flush output buffer of file, return error-code.
-: flush-file ( file -- e )
-    dup writable? if
-        dup file>obj @ swap file>flush-file @ execute
+    dup read-buffer-count 2 pick ( count u1 )
+    >= if
+        \ enough data in read buffer
+        dup file>rbeg @ 3 pick 3 pick memcpy
+        \ increment rbeg
+        over succ-read-buffer
+        nip success exit
+    then
+
+    \ copy rbeg..rend to the buffer
+    dup read-buffer-content 4 pick swap memcpy
+    ( buf u file )
+    dup read-buffer-count dup >r
+    ( buf u file n , R:written )
+    swap >r succ-buffer r>
+    dup empty-read-buffer
+
+    ( buf u file , R:count )
+    over BUFSIZE <= if
+        \ read data to rbuf as much as BUFSIZE
+        dup file>rbuf @ BUFSIZE 2 pick file>fd @ 3 pick file>read @ execute
+        dup 0< if 2drop 2drop r> READ-FILE-ERROR exit then
+        ( buf u file n , R:count )
+        dup 2 pick file>rend +!
+        2 pick min
+        over file>rbeg @ 4 pick 2 pick memcpy
+        dup 2 pick file>rbeg +!
+        ( buf u file n , R:count )
+        >r 3drop r> r> + success
     else
-        FLUSH-FILE-ERROR
+        \ read large data directly from the file
+        dup file>fd @ swap file>read @ execute
+        ( n , R:count )
+        dup 0< if drop r> READ-FILE-ERROR exit then
+        r> + success
     then
 ;
 
 \ Read a character. Return EOF at end of input.
 : key-file ( file -- c )
-    dup file>obj @ swap file>key-file @ execute throw
+    0 sp@ 1 3 pick read-file throw
+    ( file c u )
+    1 = if
+        nip
+    else
+        2drop EOF
+    then
 ;
 
 \ Read characters from 'file' to the buffer c-addr u1
 \ until reaches '\n' or end of file.
-\ The last '\n' is not stored to the buffer.
+\ '\0' is stored at the last and '\n' is not stored.
 \ u2 is the number of characters written to the buffer.
 \ flag=true if it reaches '\n'.
 \ e is error code.
 : read-line ( c-addr u1 file -- u2 flag e )
-    dup readable? if
-        dup file>obj @ swap file>read-line @ execute
-    else
-        READ-LINE-ERROR
-    then
+    over 1- 0 do
+        2 pick i + 1 2 pick read-file
+        dup 0< if >r drop 2drop i false r> leave then
+        drop
+        ( c-addr u1 file u2 )
+        0= if 2drop i false success leave then \ EOF
+        2 pick i + c@ = '\n' if 2drop i true success leave then
+    loop
+    ( c-addr u2 flag e )
+    >r >r tuck + 0 swap c! r> r>
 ;
 
 \ Temporary implementation stdin and stdout using 'key' and 'type'
 
-s" Not implemented" exception constant NOT-IMPLEMENTED
-
-: not-implemented NOT-IMPLEMENTED throw ;
-
 create stdin_ file% %allot drop
 R/O stdin_ file>fam c!
-' not-implemented stdin_ file>write-file !
-' not-implemented stdin_ file>flush-file !
+' not-implemented stdin_ file>write !
+BUFSIZE allot stdin_ file>rbuf !
+stdin_ dup file>rbuf @ swap file>rbeg !
+stdin_ dup file>rbuf @ swap file>rend !
 
-\ Read u byte from stdin to c-addr.
-:noname ( c-addr u obj -- u e )
+\ Read just 1 byte from stdin to c-buffer
+:noname ( c-addr u obj -- n )
     drop
-    dup >r
-    begin dup 0> while
-        \ c-addr u c
-        key 2 pick c!
-        1- swap 1+ swap
-    repeat
-    2drop
-    r> success  \ 0: no-error
-; stdin_ file>read-file !
-
-:noname ( c-addr u1 obj -- u2 flag e )
-    drop 0
-    begin
-        ( c-addr u1 u2 )
-        over 0<= if
-            -rot dup dup false success
-            exit
-        then
-        key
-        dup '\n' = if
-            ( c-addr u1 u2 c )
-            drop -rot drop drop true success
-            exit
-        then
-        3 pick c!
-        1+ >r 1- swap 1+ swap r>
-    again
-; stdin_ file>read-line !
-
-:noname ( obj -- c e )
-    drop key success
-; stdin_ file>key-file !
+    1 < if
+        drop 0
+    else
+        key swap c!
+        1
+    then
+; stdin_ file>read !
 
 create stdout_ file% %allot drop
 W/O stdout_ file>fam c!
-' not-implemented stdout_ file>read-file !
-' not-implemented stdout_ file>read-line !
-' not-implemented stdout_ file>key-file !
+' not-implemented stdout_ file>read !
+BUFSIZE allot stdout_ file>wbuf !
+stdout_ dup file>wbuf @ swap file>wbeg !
+stdout_ dup file>wbuf @ BUFSIZE + swap file>wend !
 
 \ Write u byte from c-addr to stdout.
 :noname ( c-addr u obj -- e )
     drop type success
-; stdout_ file>write-file !
-
-\ do nothing
-:noname drop success ; stdout_ file>flush-file !
+; stdout_ file>write !
 
 ( === Input Stream === )
 
@@ -1618,8 +1726,10 @@ variable inputstreams
     inputstreams !
 ;
 
-: pop-inputstream ( -- )
-    inputstreams @ inputstreams !
+: pop-inputstream ( -- file )
+    inputstreams @ dup
+    input>next @ inputstreams !
+    input>file @
 ;
 
 stdin_ push-inputstream
@@ -1643,13 +1753,14 @@ stdin_ push-inputstream
     until
     dup EOF = if
         drop word-buffer UNEXPECTED-EOF-ERROR
+        exit
     then
     word-buffer tuck c!
     1+
     begin
         \ ( file p )
         over key-file
-        dup bl = over '\n' = or if
+        dup bl = over '\n' = or over EOF = or if
             drop
             0 swap c!   \ store \0
             drop word-buffer success
@@ -1699,8 +1810,85 @@ stdin_ push-inputstream
      compile exit
 ;
 
-
 : char ( "ccc" -- c ) word throw c@ ;
+
+: \
+    begin
+        key case
+        '\n' of exit endof
+        EOF of exit endof
+        endcase
+    again
+; immediate
+
+: (
+    1   \ depth counter
+    begin ?dup while
+        key case
+        '(' of 1+ endof \ increment depth
+        ')' of 1- endof \ decrement depth
+        EOF of UNEXPECTED-EOF-ERROR throw endof
+        endcase
+    repeat
+; immediate
+
+: s"
+    state @ if
+        compile litstring
+        here 0 ,    \ save location of length and fill dummy
+        0           \ length of the string + 1 (\0)
+        begin key dup '"' <> while
+            dup EOF = if UNEXPECTED-EOF-ERROR throw then
+            c,      \ store character
+            1+      \ increment length
+        repeat drop
+        0 c,        \ store \0
+        1+
+        swap !      \ back-fill length
+        align
+    else
+        s-buffer dup    \ save start address
+        begin key dup '"' <> while
+            dup EOF = if UNEXPECTED-EOF-ERROR throw then
+            ( buf pos c pos-buf )
+            over 3 pick - s-buffer-size 1- >= if
+                STRING-OVERFLOW-ERROR throw
+            then
+            over c! \ store char
+            1+      \ increment address
+        repeat drop
+        0 swap c!   \ store \0
+    then
+; immediate
+
+\ Print string delimited by "
+: ."
+    [compile] s"
+    state @ if
+        compile type
+    else
+        type
+    then
+; immediate
+
+\ ( "name" -- )
+: variable create 0 , ;
+
+\ ( n "name" -- )
+: constant create , does> @ ;
+
+: end-struct ( offset "name" -- )
+    create , does> @ cell swap
+;
+
+: field ( offset1 align size "name" -- offset2 )
+    \ align offset with 'align'
+    -rot aligned-by \ ( size offset )
+    create
+        dup ,   \ fill offset
+        +       \ return new offset
+    does> @ +
+;
 
 ( === 4th Stage Interpreter === )
 
@@ -1820,80 +2008,6 @@ stdin_ push-inputstream
 
 : [then] ; immediate \ do nothing
 
-( === Do-loop === )
-
-\ limit start do ... loop
-
-1 constant do-mark
-2 constant leave-mark
-
-create do-stack 16 cells allot drop
-variable do-sp
-do-stack 16 cells + do-sp !
-
-: >do ( w -- do: w )
-    cell do-sp -!
-    do-sp @ !
-;
-
-: do> ( do: w -- w )
-    do-sp @ @
-    cell do-sp +!
-;
-
-: do@ ( do: w -- w, do: w)
-    do-sp @ @
-;
-
-\ compile: ( -- dest mark )
-: do
-    compile 2dup
-    compile >r  \ save start
-    compile >r  \ save limit
-    \ leave if start >= limit
-    compile >
-    compile 0branch
-    0 ,
-    here >do do-mark >do
-    here cell- >do leave-mark >do
-; immediate
-
-: leave ( -- orig mark )
-    compile branch
-    here >do
-    0 ,        \ fill dummy offset
-    leave-mark >do
-; immediate
-
-: backpatch-leave ( dest , do: orig1 mark1 ... -- do: origN markN ... )
-    begin do@ leave-mark = while
-        do> drop do>
-        2dup -
-        swap !
-    repeat
-    drop
-;
-
-: loop
-    compile r>
-    compile r>
-    compile 1+
-    compile 2dup
-    compile >r
-    compile >r
-    compile =
-    compile 0branch
-    here cell + backpatch-leave     \ leave jumps to here
-    do> drop            \ do-mark
-    do> here - ,
-    compile rdrop
-    compile rdrop
-; immediate
-
-: i 2 rpick ;
-: j 4 rpick ;
-: k 6 rpick ;
-
 ( === Dictionary === )
 
 \ print the name of the word
@@ -1916,6 +2030,9 @@ do-stack 16 cells + do-sp !
     repeat
     cr
 ;
+
+: name>link ( nt -- nt ) @ ;
+: name>string ( nt -- c-addr ) cell+ 1+ ;
 
 ( === Command-line Arguments === )
 
@@ -1951,42 +2068,25 @@ v argc ! argv !
 
 ( === Environment-Dependent Code === )
 
-\ Parse '--gen' option.
-\ $ ./planck < bootstrap --gen i386-linux ...
-
-: strn= ( c-addr1 c-addr2 u -- f )
-    begin dup 0> while
-        1- >r
-        over c@ over c@
-        <> if r> drop drop drop false exit then
-        1+ swap 1+ swap r>
-    repeat drop drop drop
-    true
-;
+\ Parse codegeneration option.
+\ $ ./planck < bootstrap --i386-linux ...
 
 variable codegen-target
 
 \ Parse command-line arguments.
-: read-commandline-args ( -- )
+:noname ( -- )
     s" no-codegen" codegen-target !
     begin argc @ 1 > while
         1 arg dup c@ '-' <> if drop exit then
-        dup s" --gen" 5 strn= if
-            dup 5 + c@ '=' = if
-                6 + codegen-target !
-                shift-args
-            else
-                drop shift-args
-                next-arg codegen-target !
-            then
+        dup s" --i386-linux" streq if
+            2 + codegen-target !
+            shift-args
         else
             ." Unknown option: " type cr
             abort
         then
     repeat
-;
-
-read-commandline-args
+; execute
 
 codegen-target @ s" i386-linux" streq [if]
 
@@ -2150,7 +2250,11 @@ codegen-target @ s" i386-linux" streq [if]
     r> r> swap                              \ u addr1
     SYS-MMAP2
     syscall6
-    dup -1 <>  ALLOCATE-ERROR orelse
+    dup -1 = if
+        ALLOCATE-ERROR
+    else
+        success
+    then
 ;
 
 \ Secure a large heap memory block and cut memories from the block.
@@ -2164,14 +2268,13 @@ variable remaining-size
 block-addr @ next-addr !
 BLOCK-SIZE remaining-size  !
 
-: allocate ( u -- addr e )
+: (allocate) ( u -- addr )
     dup remaining-size @ <= if
         ( u addr )
         next-addr @
         swap dup next-addr +! remaining-size -!
-        success
     else
-        drop 0 ALLOCATE-ERROR
+        drop -1
     then
 ;
 
@@ -2182,22 +2285,21 @@ BLOCK-SIZE remaining-size  !
 5 constant SYS-OPEN
 6 constant SYS-CLOSE
 
-: (open-file) ( c-addr fam -- obj f )
-    swap SYS-OPEN syscall2 dup 0>= OPEN-FILE-ERROR orelse
+: (open) ( c-addr fam -- fd )
+    swap SYS-OPEN syscall2
 ;
 
-: (close-file) ( obj -- f )
-    SYS-CLOSE syscall1 0>= CLOSE-FILE-ERROR orelse
+: (close) ( obj -- n )
+    SYS-CLOSE syscall1
 ;
 
-: (read-file) ( c-addr u fd -- u2 f )
-    >r swap r> SYS-READ syscall3 dup 0>= READ-LINE-ERROR orelse
+: (read) ( c-addr u fd -- n )
+    >r swap r> SYS-READ syscall3
 ;
 
-: (write-file) ( c-addr u1 fd -- f )
-    >r swap >r dup r> r>    \ ( u1 u1 c-addr fd )
+: (write) ( c-addr u1 fd -- n )
+    >r swap r>              \ ( u1 u1 c-addr fd )
     SYS-WRITE syscall3      \ ( u1 u2 )
-    = WRITE-FILE-ERROR orelse
 ;
 
 [else] \ i386-linux
@@ -2219,63 +2321,164 @@ codegen-target @ s" no-codegen" streq not [if]
     then drop
 ;
 
-
 ( === Heap Memory === )
 
-need-defined allocate
+need-defined (allocate)
+
+: allocate ( size -- addr e )
+    (allocate) dup 0<> if success else ALLOCATE-ERROR then
+;
 
 \ allocate heap memory
 : %allocate ( align size -- addr e )
-    over + allocate throw
-    swap 1- invert and success
+    over + allocate ?dup unless
+        swap 1- invert and success
+    then
 ;
-
-( === Buffered File I/O === )
-
-1024 constant BUFSIZE
-
-struct
-    file% field file>head
-    cell% field file>rbuf
-    cell% field file>rbeg
-    cell% field file>rend
-    cell% field file>wbuf
-    cell% field file>wbeg
-    cell% field file>wend
-end-struct bufferedfile%
-
 
 ( === open/close === )
 
-need-defined (open-file)
-need-defined (close-file)
-need-defined (write-file)
-need-defined (read-file)
+need-defined (open)
+need-defined (close)
+need-defined (write)
+need-defined (read)
 
 : open-file ( c-addr fam -- file e )
-    2dup (open-file) throw
+    2dup (open) dup -1 = if
+        3drop 0 OPEN-FILE-ERROR exit
+    then
     file% %allocate throw
-    tuck file>obj !
+    tuck file>fd !
     tuck file>fam !
     tuck file>name !
-    ['] (read-file) over file>read-file !
-    ['] (write-file) over file>write-file !
+    ['] (read) over file>read !
+    ['] (write) over file>write !
     dup file>fam @ W/O <> if
-        BUFSIZE allocate throw over file>wbuf !
-        0 over file>rbeg !
-        BUFSIZE over file>rend !
+        BUFSIZE allocate throw over file>rbuf !
+        dup file>rbuf @ over file>rbeg !
+        dup file>rbuf @ over file>rend !
     then
     dup file>fam @ R/O <> if
         BUFSIZE allocate throw over file>wbuf !
-        0 over file>wbeg !
-        BUFSIZE over file>wend !
+        dup file>wbuf @ over file>wbeg !
+        dup file>wbuf @ BUFSIZE + over file>wend !
     then
     success
 ;
 
 : close-file ( file -- e )
-    file>obj (close-file) throw
-    success
+    file>fd @ (close) 0= if success else CLOSE-FILE-ERROR then
 ;
 
-." Ready" cr
+( === File Include === )
+
+: included ( c-addr -- )
+    R/O open-file throw
+    push-inputstream
+    ['] interpret-loop catch drop
+    pop-inputstream close-file throw
+;
+
+: include ( "name" -- )
+    word throw included
+;
+
+( === Instructions === )
+: DOCOL-INSN docol ;
+: EXIT-INSN ['] e ;
+: LIT-INSN ['] lit ;
+: LITSTRING-INSN ['] litstring ;
+: BRANCH-INSN ['] branch ;
+: 0BRANCH-INSN ['] 0branch ;
+
+( === Remove Unnecessary Words === )
+
+\ compile: ( "name" -- )
+\ runtime: ( nt1 -- nt2 )
+: update-dictionary ( "name1" "name" ... -- )
+    compile 0
+    begin
+        word throw
+        dup s" end-update-dictionary" streq if
+            drop
+            compile &latest
+            compile !
+            exit
+        then
+        find ?dup if
+            [compile] literal
+            compile tuck
+            compile !
+        else
+            UNDEFINED-WORD-ERROR throw
+        then
+    again
+; immediate
+
+\ rebuilt dictionary
+:noname
+    update-dictionary
+        DOCOL-INSN EXIT-INSN LIT-INSN LITSTRING-INSN
+        BRANCH-INSN 0BRANCH-INSN
+
+        words id. name>string name>link
+        include included
+        next-arg shift-args arg argv argc
+
+        [if] [unless] [else] [then] defined?
+        open-file close-file write-file flush-file
+        read-file key-file read-line
+        R/W W/O R/O EOF
+
+        abort ABORTED-ERROR
+        QUIT not-reachable NOT-REACHABLE
+        not-implemented NOT-IMPLEMENTED
+        WRITE-FILE-ERROR READ-FILE-ERROR OPEN-FILE-ERROR
+        FLUSH-FILE-ERROR CLOSE-FILE-ERROR
+        ALLOCATE-ERROR UNEXPECTED-EOF-ERROR FILE-IO-ERROR
+        STRING-OVERFLOW-ERROR UNDEFINED-WORD-ERROR
+        exception
+
+        %allocate %allot char% cell% field struct end-struct
+        sp0 sp@ sp! dup ?dup drop swap over tuck pick nip rot -rot
+        2rot -2rot 2tuck 2over 2nip 2swap 2dup 2drop 3dup 3drop
+        rp0 rp@ rp! r> >r rdrop rpick 
+
+        allocate allot memcpy strlen streq strcpy strcpy,
+        cell cell+ cell- cells align aligned +! -!
+
+        if else then unless begin until again while repeat
+        recurse case of rangeof endof endcase
+        do loop leave i j k
+
+        char [char] key
+        .s . .r u. u.r dec. hex. type
+        ." s" bl '\n' cr space base decimal hex
+        catch throw success
+        : ; create :noname does> variable constant
+        ' ['] compile [compile] literal
+        + - * div mod not and or xor invert within max min
+        < > <= >= = <> 0< 0> 0<= 0>= 0= 0<> 1+ 1-
+
+        true false
+
+        ( \
+        c@ c! c, @ ! ,
+        word find >cfa >dfa
+        bye emit execute exit here latest
+    end-update-dictionary
+; execute
+
+
+( === End of bootstrap === )
+
+:noname
+    rdrop
+    argc @ 1 > if
+        next-arg dup argv @ !
+        included
+    else
+        ." Ready." cr
+        s" /dev/tty" included
+    then
+; execute

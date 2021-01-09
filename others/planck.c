@@ -161,46 +161,36 @@ defbinary("=", eq, ==, intptr_t)
 /* File IO */
 #define SUCCESS 0
 #define ALLOCATE_ERROR      -59
-#define CLOSE_FILE_ERROR    -62
-#define OPEN_FILE_ERROR     -69
-#define READ_FILE_ERROR     -70
-#define WRITE_FILE_ERROR    -75
-defcode("(open-file)", openfile) {
+defcode("(open)", openfile) {
     int flags = pop();
     char *name = (char*) pop();
     int fd = open(name, flags);
     push(fd);
-    push((fd >= 0) ? SUCCESS : OPEN_FILE_ERROR);
     next();
 }
-defcode("(close-file)", closefile) {
+defcode("(close)", closefile) {
     int fd = pop();
-    int r = close(fd);
-    push((r >= 0) ? SUCCESS : CLOSE_FILE_ERROR);
+    push(close(fd));
     next();
 }
-defcode("(read-file)", readfile) {
+defcode("(read)", readfile) {
     int fd = pop();
     int size = pop();
     char *buf = (char*) pop();
-    int r = read(fd, buf, size);
-    push(r);
-    push((r >= 0) ? SUCCESS : READ_FILE_ERROR);
+    push(read(fd, buf, size));
     next();
 }
-defcode("(write-file)", writefile) {
+defcode("(write)", writefile) {
     int fd = pop();
     int size = pop();
     char *buf = (char*) pop();
-    int r = write(fd, buf, size);
-    push((r == size) ? SUCCESS : WRITE_FILE_ERROR);
+    push(write(fd, buf, size));
     next();
 }
-defcode("allocate", allocate) {
+defcode("(allocate)", allocate) {
     int size = pop();
     void *p = malloc(size);
     push((cell) p);
-    push(p ? SUCCESS : ALLOCATE_ERROR);
     next();
 }
 

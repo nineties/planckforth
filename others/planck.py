@@ -229,11 +229,10 @@ def openfile():
     name = read_string(pop())
     fd = os.open(name, flag)
     push(fd)
-    push(SUCCESS if (fd >= 0) else OPEN_FILE_ERROR)
 def closefile():
     fd = pop()
     os.close(fd)
-    push(SUCCESS if (fd >= 0) else CLOSE_FILE_ERROR)
+    push(0)
 def readfile():
     fd = pop()
     size = pop()
@@ -241,25 +240,23 @@ def readfile():
     s = os.read(fd, size)
     write_string(addr, s)
     push(len(s))
-    push(SUCCESS if (len(s) > 0) else READ_FILE_ERROR)
 def writefile():
     fd = pop()
     size = pop()
     addr = pop()
     n = os.write(fd, read_bytes(addr, size))
-    push(SUCCESS if (n == size) else WRITE_FILE_ERROR)
-add_simple_operator('(open-file)', openfile)
-add_simple_operator('(close-file)', closefile)
-add_simple_operator('(write-file)', writefile)
-add_simple_operator('(read-file)', readfile)
+    push(n)
+add_simple_operator('(open)', openfile)
+add_simple_operator('(close)', closefile)
+add_simple_operator('(write)', writefile)
+add_simple_operator('(read)', readfile)
 def allocate():
     size = pop()
     n = (size + 4 - 1) // 4
     addr = len(memory)*4
-    mem.extend([0]*n)
+    memory.extend([0]*n)
     push(addr)
-    push(SUCCESS)
-add_simple_operator('allocate', allocate)
+add_simple_operator('(allocate)', allocate)
 
 start = read(HERE_CELL)
 comma(find('k'))
