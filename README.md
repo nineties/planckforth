@@ -29,24 +29,20 @@ kHtketkltkltkotk tkWtkotkrtkltkdtk!tk:k0-tQ
 After bootstrapping by `bootstrap.fs`, it looks like this.
 
 ```
-$ ./planck < bootstrap.fs --i386-linux
+$ ./planck < bootstrap.fs
+PlanckForth (implementation: hand-written i386-linux)
 Ready.
 ." Hello World!" cr
 ```
 
-The option `--i386-linux` is to specify OS and hardware for dynamic
-code generation by `bootstrap.fs`.
-It is not necessay in case of implementations by other languages.
-
-
-`bootstrap.fs` also takes a file as an input like this.
+`bootstrap.fs` can also takes a file as an input program like this.
 
 ```
 $ cat example/fib.fs
 : fib dup 2 < unless 1- dup recurse swap 1- recurse + then ;
-38 fib . cr
-$ ./planck < bootstrap.fs --i386-linux example/fib.fs
-39088169
+20 fib . cr
+$ ./planck < bootstrap.fs example/fib.fs
+6765
 ```
 
 # Builtin Words
