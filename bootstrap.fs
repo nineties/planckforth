@@ -2343,10 +2343,7 @@ need-defined (close)
 need-defined (write)
 need-defined (read)
 
-: open-file ( c-addr fam -- file e )
-    2dup (open) dup -1 = if
-        3drop 0 OPEN-FILE-ERROR exit
-    then
+: make-file ( c-addr fam fd -- file e)
     file% %allocate throw
     tuck file>fd !
     tuck file>fam !
@@ -2366,9 +2363,23 @@ need-defined (read)
     success
 ;
 
+: open-file ( c-addr fam -- file e )
+    2dup (open) dup -1 = if
+        3drop 0 OPEN-FILE-ERROR exit
+    then
+    make-file
+;
+
 : close-file ( file -- e )
     file>fd @ (close) 0= if success else CLOSE-FILE-ERROR then
 ;
+
+s" <stdin>" R/O 0 make-file throw constant stdin
+s" <stdout>" W/O 1 make-file throw constant stdout
+s" <stderr>" W/O 2 make-file throw constant stderr
+
+\ replace stdin_ with stdin
+stdin inputstreams @ input>file !
 
 ( === File Include === )
 
@@ -2428,7 +2439,7 @@ need-defined (read)
         [if] [unless] [else] [then] defined?
         open-file close-file write-file flush-file
         read-file key-file read-line
-        R/W W/O R/O EOF
+        R/W W/O R/O EOF stdin stdout stderr
 
         abort ABORTED-ERROR
         QUIT not-reachable NOT-REACHABLE
