@@ -1287,7 +1287,7 @@ create word-buffer s" 64" >number drop cell+ allot drop
     then
 ;
 
-: main
+:noname
     rdrop   \ drop 2nd stage
     begin
         ['] interpret catch
@@ -1311,9 +1311,7 @@ create word-buffer s" 64" >number drop cell+ allot drop
             bye
         then
     again
-;
-
-main
+; execute
 
 ( === Error-codes === )
 
@@ -1693,13 +1691,11 @@ stdin_ push-inputstream
     again
 ;
 
-: switch-to-4th-stage
+:noname
     rdrop   \ drop 3rd stage
 
     ['] interpret-loop catch bye
-;
-
-switch-to-4th-stage
+; execute
 
 ( === [if]..[else]..[then] === )
 
