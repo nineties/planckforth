@@ -1329,9 +1329,86 @@ decimal
 
 : abort ABORTED-ERROR throw ;
 
-: orelse ( f e -- e )
-    swap if drop success then
+s" Not implemented" exception constant NOT-IMPLEMENTED
+: not-implemented NOT-IMPLEMENTED throw ;
+
+( 31 bytes )
+s" Not reachable here. may be a bug" exception constant NOT-REACHABLE
+: not-reachable NOT-REACHABLE throw ;
+
+( === Do-loop === )
+
+\ limit start do ... loop
+
+1 constant do-mark
+2 constant leave-mark
+
+create do-stack 16 cells allot drop
+variable do-sp
+do-stack 16 cells + do-sp !
+
+: >do ( w -- do: w )
+    cell do-sp -!
+    do-sp @ !
 ;
+
+: do> ( do: w -- w )
+    do-sp @ @
+    cell do-sp +!
+;
+
+: do@ ( do: w -- w, do: w)
+    do-sp @ @
+;
+
+\ compile: ( -- dest mark )
+: do
+    compile 2dup
+    compile >r  \ save start
+    compile >r  \ save limit
+    \ leave if start >= limit
+    compile >
+    compile 0branch
+    0 ,
+    here >do do-mark >do
+    here cell- >do leave-mark >do
+; immediate
+
+: leave ( -- orig mark )
+    compile branch
+    here >do
+    0 ,        \ fill dummy offset
+    leave-mark >do
+; immediate
+
+: backpatch-leave ( dest , do: orig1 mark1 ... -- do: origN markN ... )
+    begin do@ leave-mark = while
+        do> drop do>
+        2dup -
+        swap !
+    repeat
+    drop
+;
+
+: loop
+    compile r>
+    compile r>
+    compile 1+
+    compile 2dup
+    compile >r
+    compile >r
+    compile =
+    compile 0branch
+    here cell + backpatch-leave     \ leave jumps to here
+    do> drop            \ do-mark
+    do> here - ,
+    compile rdrop
+    compile rdrop
+; immediate
+
+: i 2 rpick ;
+: j 4 rpick ;
+: k 6 rpick ;
 
 ( === Dump of data stack === )
 
