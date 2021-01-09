@@ -769,6 +769,11 @@ alias-builtin xor       ^
     repeat
 ; immediate
 
+\ === Integer Arithmetic (that require control flow words) ===
+\ ( a b -- c )
+: max 2dup > if drop else nip then ;
+: min 2dup < if drop else nip then ;
+
 \ === Multiline Comment ===
 
 : '('   [ key ( ] literal ;
