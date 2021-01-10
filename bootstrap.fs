@@ -458,6 +458,9 @@ alias-builtin and       &
 alias-builtin or        |
 alias-builtin xor       ^
 alias-builtin u<        u
+alias-builtin lshift    (
+alias-builtin rshift    )
+alias-builtin arshift   %
 alias-builtin runtime-info_ V
 
 \ Rename existing FORTH words
@@ -657,6 +660,10 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
 
 \ ( a b c -- (a<=c & c<b) )
 : within tuck > -rot <= and ;
+
+\ arithmetic shift
+: 2* 1 lshift ;
+: 2/ 1 arshift ;
 
 \ === Conditional Branch ===
 \ <condition> if <if-true> then
@@ -2465,7 +2472,7 @@ need-defined (read)
         ' ['] compile [compile] literal
         + - * /mod / mod negate not and or xor invert within max min abs
         < > <= >= = <> 0< 0> 0<= 0>= 0= 0<> 1+ 1-
-        u< u> u<= u>=
+        u< u> u<= u>= lshift rshift 2* 2/
 
         true false
 

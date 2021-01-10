@@ -80,11 +80,11 @@
 000001f8: 6283 0408 0000 0000
 000001fc: f081 0408 013d 0000   =: equal
 00000204: 7083 0408 0000 0000
-00000208: fc81 0408 017b 0000   {: shl
+00000208: fc81 0408 0128 0000   (: shl
 00000210: 7e83 0408 0000 0000
-00000214: 0882 0408 017d 0000   }: shr
+00000214: 0882 0408 0129 0000   ): shr
 0000021c: 8683 0408 0000 0000
-00000220: 1482 0408 0129 0000   ): sar
+00000220: 1482 0408 0125 0000   %: sar
 00000228: 8e83 0408 0000 0000
 0000022c: 2082 0408 0176 0000   v: argv
 00000234: 9683 0408 0000 0000
@@ -174,9 +174,9 @@
 00000370: 585b 39c3 0f94 c00f   (equal) popl %eax; popl %ebx; cmpl %eax,%ebx
 00000378: b6c0 50ad ff20 0000   setl %al; movzbl %al, %eax; pushl %eax; next;
 
-0000037e: 5958 d3e0 50ad ff20   (shl) popl %ecx; popl %eax; shll %cl,%eax next;
+0000037e: 5958 d3e0 50ad ff20   (shl) popl %ecx; popl %eax; shll %cl,%eax;next;
 
-00000386: 5958 d3e8 50ad ff20   (shr) popl %ecx; popl %eax; shrl %cl,%eax next;
+00000386: 5958 d3e8 50ad ff20   (shr) popl %ecx; popl %eax; shrl %cl,%eax;next;
 
 0000038e: 5958 d3f8 50ad ff20   (sar) popl %ecx; popl %eax; sarl %cl,%eax; next;
 
