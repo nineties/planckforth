@@ -433,7 +433,6 @@ alias-builtin bye       Q
 alias-builtin cell      C
 alias-builtin &here     h
 alias-builtin &latest   l
-alias-builtin key       k
 alias-builtin emit      t
 alias-builtin branch    j
 alias-builtin 0branch   J
@@ -456,8 +455,6 @@ alias-builtin xor       ^
 alias-builtin implementation V
 
 \ Rename existing FORTH words
-: word      W ;
-: find      F ;
 : >cfa      G ;
 : c,        B ;
 : memcpy,   m ;
@@ -470,6 +467,42 @@ alias-builtin implementation V
 : here      &here @ ;
 : latest    &latest @ ;
 : >dfa >cfa cell + ;
+
+\ === Stub Functions ===
+\ Use 1-step indirect reference so that we can replace
+\ the implementation later.
+
+: allot-cell &here @ # cell + &here ! ;
+
+alias-builtin key-old   k
+
+allot-cell : &key  [ ' L , , ] ;
+allot-cell : &key! [ ' L , , ] ;
+
+: key   &key @ execute ;    \ ( -- c ) Push -1 at EOF
+' key-old &key !
+
+: key!  &key! @ execute ;   \ ( -- c ) Throw exception at EOF
+' key-old &key! !
+
+allot-cell : &word [ ' L , , ] ;
+: word  &word @ execute ;   \ ( "name" -- c-addr e )
+: stub-word W [ ' L , k 0 k 0 - , ] ;
+' stub-word &word !
+
+allot-cell : &word! [ ' L , , ] ;
+: word! &word! @ execute ;  \ ( "name" -- c-addr ) Throw exception at error
+' W &word! !
+
+allot-cell : &find [ ' L , , ] ;  \ ( c-addr -- nt|0 )
+allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
+
+: find  &find @ execute ;
+: find! &find! @ execute ;
+' F &find !
+' F &find! !
+
+: ' word! find! >cfa ;
 
 \ === Compilers ===
 
@@ -783,7 +816,7 @@ alias-builtin implementation V
 : (
     1   \ depth counter
     begin ?dup while
-        key case
+        key! case
         '(' of 1+ endof \ increment depth
         ')' of 1- endof \ decrement depth
         endcase
@@ -818,7 +851,7 @@ alias-builtin implementation V
     align
     latest ,                    \ fill link
     here cell- &latest !        \ update latest
-    word dup strlen
+    word! dup strlen
     dup c, memcpy, 0 c, align    \ fill length, name and \0
     docol ,                     \ compile docol
     ['] lit ,
@@ -924,7 +957,7 @@ create exception-marker
 ( === Printing Numbers === )
 
 \ Skip reading spaces, read characters and returns first character
-: char      ( <spces>ccc -- c ) word c@ ;
+: char      ( <spces>ccc -- c ) word! c@ ;
 
 \ compile-time version of char
 : [char]    ( compile: <spaces>ccc -- ; runtime: --- c )
@@ -1178,7 +1211,7 @@ char 0 char B - constant STRING-OVERFLOW-ERROR \ -18
         compile litstring
         here 0 ,    \ save location of length and fill dummy
         0           \ length of the string + 1 (\0)
-        begin key dup '"' <> while
+        begin key! dup '"' <> while
             c,      \ store character
             1+      \ increment length
         repeat drop
@@ -1188,7 +1221,7 @@ char 0 char B - constant STRING-OVERFLOW-ERROR \ -18
         align
     else
         s-buffer dup    \ save start address
-        begin key dup '"' <> while
+        begin key! dup '"' <> while
             ( buf pos c pos-buf )
             over 3 pick - s-buffer-size 1- >= if
                 STRING-OVERFLOW-ERROR throw
@@ -1239,7 +1272,6 @@ variable error-list
 
 decimal
 STRING-OVERFLOW-ERROR s" Too long string literal" add-error
-s" -13" >number drop s" Undefined word" def-error UNDEFINED-WORD-ERROR
 
 variable next-user-error
 s" -256" >number drop next-user-error !
@@ -1253,10 +1285,15 @@ s" -256" >number drop next-user-error !
 
 ( === 3rd Stage Interpreter === )
 
+s" -13" >number drop s" Undefined word" def-error UNDEFINED-WORD-ERROR
+:noname
+    find ?dup unless UNDEFINED-WORD-ERROR throw then
+; &find! !
+
 create word-buffer s" 64" >number drop cell+ allot drop
 
 : interpret
-    word                    \ read name from input
+    word!                   \ read name from input
     \ ( addr )
     dup word-buffer strcpy  \ save input
     dup find                \ lookup dictionary
@@ -1689,7 +1726,7 @@ stdin_ dup file>rbuf @ swap file>rend !
     1 < if
         drop 0
     else
-        key swap c!
+        key-old swap c!
         1
     then
 ; stdin_ file>read !
@@ -1736,13 +1773,20 @@ stdin_ push-inputstream
 
 \ Rewrite existing functions that reads inputs using inputstream.
 
-: key ( -- c )
+:noname ( -- c )
     inputstreams @ input>file @ key-file
-;
+; &key !
+
+\ Throw UNEXPECTED-EOF-ERROR
+:noname ( -- c )
+    key dup EOF = if drop UNEXPECTED-EOF-ERROR throw then
+; &key! !
+
+: \ begin key! '\n' = until ; immediate
 
 \ Read a word from input stream, return address of the string
 \ and error-code.
-: word ( -- c-addr e )
+:noname ( -- c-addr e )
     inputstreams @ input>file @
     \ skip leading spaces
     0
@@ -1769,23 +1813,11 @@ stdin_ push-inputstream
         over c!
         1+
     again
-;
+; &word !
 
-: ' ( "name" -- xt )
+:noname
     word throw
-    find ?dup if
-        >cfa
-    else
-        UNDEFINED-WORD-ERROR throw
-    then
-;
-: [compile] ' , ; immediate
-: (compile)
-    [compile] literal
-    [ ' , ] literal ,
-;
-: compile ' (compile) ; immediate
-: ['] ' [compile] literal ; immediate
+; &word! !
 
 : : ( "name -- )
     align
@@ -1796,98 +1828,6 @@ stdin_ push-inputstream
     align
     docol ,
     ]
-;
-
-: create ( "name" -- )
-     align
-     here latest , &latest !
-     word throw dup strlen c, strcpy,
-     align
-     docol ,
-     compile lit
-     here 3 cells + ,
-     compile nop
-     compile exit
-;
-
-: char ( "ccc" -- c ) word throw c@ ;
-
-: \
-    begin
-        key case
-        '\n' of exit endof
-        EOF of exit endof
-        endcase
-    again
-; immediate
-
-: (
-    1   \ depth counter
-    begin ?dup while
-        key case
-        '(' of 1+ endof \ increment depth
-        ')' of 1- endof \ decrement depth
-        EOF of UNEXPECTED-EOF-ERROR throw endof
-        endcase
-    repeat
-; immediate
-
-: s"
-    state @ if
-        compile litstring
-        here 0 ,    \ save location of length and fill dummy
-        0           \ length of the string + 1 (\0)
-        begin key dup '"' <> while
-            dup EOF = if UNEXPECTED-EOF-ERROR throw then
-            c,      \ store character
-            1+      \ increment length
-        repeat drop
-        0 c,        \ store \0
-        1+ aligned
-        swap !      \ back-fill length
-        align
-    else
-        s-buffer dup    \ save start address
-        begin key dup '"' <> while
-            dup EOF = if UNEXPECTED-EOF-ERROR throw then
-            ( buf pos c pos-buf )
-            over 3 pick - s-buffer-size 1- >= if
-                STRING-OVERFLOW-ERROR throw
-            then
-            over c! \ store char
-            1+      \ increment address
-        repeat drop
-        0 swap c!   \ store \0
-    then
-; immediate
-
-\ Print string delimited by "
-: ."
-    [compile] s"
-    state @ if
-        compile type
-    else
-        type
-    then
-; immediate
-
-\ ( "name" -- )
-: variable create 0 , ;
-
-\ ( n "name" -- )
-: constant create , does> @ ;
-
-: end-struct ( offset "name" -- )
-    create , does> @ cell swap
-;
-
-: field ( offset1 align size "name" -- offset2 )
-    \ align offset with 'align'
-    -rot aligned-by \ ( size offset )
-    create
-        dup ,   \ fill offset
-        +       \ return new offset
-    does> @ +
 ;
 
 ( === 4th Stage Interpreter === )
