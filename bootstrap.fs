@@ -2362,10 +2362,10 @@ need-defined (read)
         STRING-OVERFLOW-ERROR UNDEFINED-WORD-ERROR
         exception
 
-        %allocate %allot char% cell% field struct end-struct
+        %allocate %allot char% cell% byte% ptr% int% field struct end-struct
         sp0 sp@ sp! dup ?dup drop swap over tuck pick nip rot -rot
-        2rot -2rot 2tuck 2over 2nip 2swap 2dup 2drop 3dup 3drop
-        rp0 rp@ rp! r> >r rdrop rpick 
+        2rot -2rot 2tuck 2over 2nip 2swap 2dup 2drop 3dup 3drop depth
+        rp0 rp@ rp! r> >r rdrop rpick rdepth
 
         allocate allot memcpy strlen streq strcpy strcpy,
         cell cell+ cell- cells align aligned +! -!
