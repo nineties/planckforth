@@ -814,6 +814,8 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
 : max 2dup > if drop else nip then ;
 : min 2dup < if drop else nip then ;
 
+: abs dup 0< if negate then ;
+
 \ === Multiline Comment ===
 
 : '('   [ key ( ] literal ;
@@ -2424,7 +2426,7 @@ need-defined (read)
         catch throw success
         : ; create :noname does> variable constant
         ' ['] compile [compile] literal
-        + - * div mod negate not and or xor invert within max min
+        + - * div mod negate not and or xor invert within max min abs
         < > <= >= = <> 0< 0> 0<= 0>= 0= 0<> 1+ 1-
 
         true false
