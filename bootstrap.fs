@@ -1793,6 +1793,9 @@ variable source-buffer-end source-buffer source-buffer-end !
 
 : increment-lineno ( -- ) 1 inputstreams @ input>lineno +! ;
 
+: source ( -- c-addr) source-buffer ;
+: in> ( -- c-addr ) source-buffer-pos ;
+
 \ Throw UNEXPECTED-EOF-ERROR at EOF
 :noname ( -- c )
     key dup EOF = if drop UNEXPECTED-EOF-ERROR throw then
@@ -2388,7 +2391,7 @@ need-defined (read)
         insn:docol insn:exit insn:lit insn:litstring insn:branch insn:0branch
 
         words id. name>string name>link
-        include included
+        include included source in>
         next-arg shift-args arg argv argc implementation
 
         [if] [unless] [else] [then] defined?
