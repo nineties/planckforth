@@ -71,7 +71,7 @@
 000001b4: adff 2000 0000 0000   next;
 
 000001b8: a481 0408 013f 0000   ?: cfetch
-000001c0: c481 0408 580f b600   popl %eax; movzbl (%eax),%eax;
+000001c0: c481 0408 580f be00   popl %eax; movsbl (%eax),%eax;
 000001c8: 50ad ff20 0000 0000   pushl %eax; next;
 
 000001cc: b881 0408 0124 0000   $: cstore
