@@ -1331,7 +1331,7 @@ create word-buffer s" 64" >number drop cell+ allot drop
 ;
 
 :noname
-    rdrop   \ drop 2nd stage
+    rp0 rp! \ drop 2nd stage
     begin
         ['] interpret catch
         ?dup if
@@ -1902,7 +1902,7 @@ stdin_ push-inputstream
 ;
 
 :noname
-    rdrop   \ drop 3rd stage
+    rp0 rp! \ drop 3rd stage
 
     ['] interpret-loop catch bye
 ; execute
