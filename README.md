@@ -81,5 +81,8 @@ $ ./planck < bootstrap.fs example/fib.fs
 | <    | less      | ( a b -- c )    | c = (a < b)                  |
 | u    | uless     | ( a b -- c )    | c = (a unsigned< b)          |
 | =    | equal     | ( a b -- c )    | c = (a == b)                 |
+| {    | shl       | ( a b -- c )    | c = a << b (logical)         |
+| }    | shr       | ( a b -- c )    | c = a >> b (logical)         |
+| )    | sar       | ( a b -- c )    | c = a >> b (arithmetic)      |
 | v    | argv      | ( -- a-addr u ) | argv and argc                |
 | V    | impl      | ( -- c-addr )   | Implementation String        |
