@@ -54,7 +54,10 @@ l!
 \ '|' ( a b -- c )      c = (a | b)
 \ '^' ( a b -- c )      c = (a ^ b)
 \ '<' ( a b -- c )      c = (a < b)
+\ 'u' ( a b -- c )      c = (a unsigned< b)
 \ '=' ( a b -- c )      c = (a == b)
+\ 'v' ( -- a-addr u )   argv and argc
+\ 'V' ( -- c-addr )     Version text
 
 \ The 1st stage interpreter repeats execution of k, f and x.
 \ There following line is an example program of planckforth
