@@ -1836,42 +1836,47 @@ stdin_ push-inputstream
 : interpret
     word                    \ read name from input
 
-    \ EOF at this point is not an error
-    UNEXPECTED-EOF-ERROR = if QUIT throw then
+: interpret-inner
+    begin
+        word                    \ read name from input
 
-    dup word-buffer strcpy  \ save input
-    dup find                \ lookup dictionary
-    ?dup if
-        \ Found the word
-        nip
-        state @ if
-            \ compile mode
-            dup cell+ c@ immediate-bit and if
-                \ execute immediate word
-                >cfa execute
+        \ EOF at this point is not an error
+        UNEXPECTED-EOF-ERROR = if QUIT throw then
+
+        dup word-buffer strcpy  \ save input
+        dup find                \ lookup dictionary
+        ?dup if
+            \ Found the word
+            nip
+            state @ if
+                \ compile mode
+                dup cell+ c@ immediate-bit and if
+                    \ execute immediate word
+                    >cfa execute
+                else
+                    \ compile the word
+                    >cfa ,
+                then
             else
-                \ compile the word
-                >cfa ,
+                \ immediate mode
+                >cfa execute
             then
         else
-            \ immediate mode
-            >cfa execute
+            >number unless
+                UNDEFINED-WORD-ERROR throw
+            then
+            \ Not found
+            state @ if
+                \ compile mode
+                [compile] literal
+            then
         then
-    else
-        >number unless
-            UNDEFINED-WORD-ERROR throw
-        then
-        \ Not found
-        state @ if
-            \ compile mode
-            [compile] literal
-        then
-    then
+    again
 ;
 
-: interpret-loop
+: interpret-outer
     begin
-        ['] interpret catch
+        ['] interpret-inner catch
         ?dup if
             \ lookup error code
             dup QUIT = if throw then
@@ -1902,7 +1907,7 @@ stdin_ push-inputstream
 :noname
     rp0 rp! \ drop 3rd stage
 
-    ['] interpret-loop catch bye
+    ['] interpret-outer catch bye
 ; execute
 
 ( === [if]..[else]..[then] === )
@@ -2293,7 +2298,7 @@ need-defined (read)
 : included ( c-addr -- )
     R/O open-file throw
     push-inputstream
-    ['] interpret-loop catch drop
+    ['] interpret-outer catch drop
     pop-inputstream close-file throw
 ;
 
