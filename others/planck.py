@@ -10,45 +10,47 @@ import array
 import ctypes
 
 IMPLEMENTATION = "Python 3.x"
-MEMORY_SIZE = 0x20000
-STACK_SIZE = 0x400
-RSTACK_SIZE = 0x400
+MEMORY_SIZE = 0x10000
+
+memory = array.array('i', [0]*MEMORY_SIZE)
+CELL = memory.itemsize
+STACK_SIZE = 0x100
+RSTACK_SIZE = 0x100
+
 HERE_CELL = 0
-LATEST_CELL = 4
+LATEST_CELL = CELL
 
-memory = array.array('l', [0]*(MEMORY_SIZE>>2))
-
-sp = MEMORY_SIZE>>2
-rp = (MEMORY_SIZE - STACK_SIZE)>>2
+sp = MEMORY_SIZE * CELL
+rp = (MEMORY_SIZE - STACK_SIZE) * CELL
 ip = 0
 np = 0
 
 def aligned(n):
-    return (n + 4 - 1) & ~(4 - 1)
+    return (n + CELL - 1) & ~(CELL - 1)
 
 def align():
     write(HERE_CELL, aligned(read(HERE_CELL)))
 
 def read(addr):
-    return memory[addr>>2]
+    return memory[addr//CELL]
 
 def write(addr, v):
-    memory[addr>>2] = v
+    memory[addr//CELL] = ctypes.c_int(v).value
 
 def comma(v):
     here = read(HERE_CELL)
     write(here, v)
-    write(HERE_CELL, here + 4)
+    write(HERE_CELL, here + CELL)
 
 def read_byte(addr):
-    i = addr>>2
-    m = (addr&0x3)*8
+    i = addr // CELL
+    m = (addr % CELL)*8
     v = memory[i]
-    return (v >> m) & 0xff
+    return ctypes.c_int8((v >> m) & 0xff).value # sign extension
 
 def write_byte(addr, c):
-    i = addr>>2
-    m = (addr&0x3)*8
+    i = addr // CELL
+    m = (addr % CELL)*8
     v = memory[i]
     memory[i] = (v & ~(0xff << m)) | (c&0xff) << m
 
@@ -86,33 +88,33 @@ def read_bytes(addr, n):
 def find(c):
     it = read(LATEST_CELL)
     while it != 0:
-        n = read_byte(it + 4)
-        C = chr(read_byte(it + 4 + 1))
+        n = read_byte(it + CELL)
+        C = chr(read_byte(it + CELL + 1))
         if (c == C and n == 1):
-            return it + 2*4
+            return it + 2*CELL
         it = read(it)
     raise Exception('Unknown word: {}'.format(c))
 
 def push(v):
     global sp
-    sp -= 4
+    sp -= CELL
     write(sp, v)
 
 def pop():
     global sp
     v = read(sp)
-    sp += 4
+    sp += CELL
     return v
 
 def rpush(v):
     global rp
-    rp -= 4
+    rp -= CELL
     write(rp, v)
 
 def rpop():
     global rp
     v = read(rp)
-    rp += 4
+    rp += CELL
     return v
 
 operators = []
@@ -132,7 +134,7 @@ def add_operator(name, func):
     return funcid
 
 def next(np):
-    return read(np), np + 4
+    return read(np), np + CELL
 
 def add_simple_operator(name, func):
     def func_(ip, np):
@@ -140,13 +142,20 @@ def add_simple_operator(name, func):
         return next(np)
     return add_operator(name, func_)
 
-def add_binary_operator(name, op):
+def add_uint_operator(name, op):
+    def func():
+        b = ctypes.c_uint(pop()).value
+        a = ctypes.c_uint(pop()).value
+        push(op(a, b))
+    return add_simple_operator(name, func)
+def add_int_operator(name, op):
     def func():
         b = pop()
-        push(op(pop(), b))
+        a = pop()
+        push(op(a, b))
     return add_simple_operator(name, func)
 
-write(HERE_CELL, 2*4)
+write(HERE_CELL, 2*CELL)
 write(LATEST_CELL, 0)
 
 # Store command line arguments
@@ -166,10 +175,10 @@ align()
 
 def docol(ip, np):
     rpush(np)
-    return next(ip + 4)
+    return next(ip + CELL)
 DOCOL_ID = add_operator('', docol)
 add_simple_operator('Q', lambda: exit(0))
-add_simple_operator('C', lambda: push(4))
+add_simple_operator('C', lambda: push(CELL))
 add_simple_operator('h', lambda: push(HERE_CELL))
 add_simple_operator('l', lambda: push(LATEST_CELL))
 def key():
@@ -181,7 +190,7 @@ def key():
 add_simple_operator('k', key)
 add_simple_operator('t', lambda: sys.stdout.write(chr(pop())))
 add_operator('j', lambda ip,np: next(np + read(np)))
-add_operator('J', lambda ip,np: next(np + (4 if pop() else read(np))))
+add_operator('J', lambda ip,np: next(np + (CELL if pop() else read(np))))
 add_simple_operator('f', lambda: push(find(chr(pop()))))
 add_operator('x', lambda ip,np: (pop(), np))
 add_simple_operator('@', lambda: push(read(pop())))
@@ -205,32 +214,27 @@ add_simple_operator('i', lambda: push(DOCOL_ID))
 add_operator('e', lambda ip,np: next(rpop()))
 def lit(ip, np):
     push(read(np))
-    return next(np + 4)
+    return next(np + CELL)
 add_operator('L', lit)
 def litstring(ip, np):
-    push(np + 4)
-    return next(np + 4 + read(np))
+    push(np + CELL)
+    return next(np + CELL + read(np))
 add_operator('S', litstring)
 def divmod():
-    b = pop()
-    a = pop()
+    b = ctypes.c_int(pop()).value
+    a = ctypes.c_int(pop()).value
     push(a%b)
     push(a//b)
 add_simple_operator('/', divmod)
-add_binary_operator('+', operator.add)
-add_binary_operator('-', operator.sub)
-add_binary_operator('*', operator.mul)
-add_binary_operator('%', operator.mod)
-add_binary_operator('&', operator.and_)
-add_binary_operator('|', operator.or_)
-add_binary_operator('^', operator.xor)
-add_binary_operator('<', operator.lt)
-add_binary_operator('=', operator.eq)
-def uless():
-    b = ctypes.c_ulong(pop()).value
-    a = ctypes.c_ulong(pop()).value
-    push(a < b)
-add_simple_operator('u', uless)
+add_int_operator('+', operator.add)
+add_int_operator('-', operator.sub)
+add_int_operator('*', operator.mul)
+add_uint_operator('&', operator.and_)
+add_uint_operator('|', operator.or_)
+add_uint_operator('^', operator.xor)
+add_int_operator('<', operator.lt)
+add_uint_operator('u', operator.lt)
+add_uint_operator('=', operator.eq)
 def argv():
     push(ARGV_ADDR)
     push(len(sys.argv))
@@ -271,8 +275,8 @@ add_simple_operator('(write)', writefile)
 add_simple_operator('(read)', readfile)
 def allocate():
     size = pop()
-    n = (size + 4 - 1) // 4
-    addr = len(memory)*4
+    n = (size + CELL - 1) // CELL
+    addr = len(memory) * CELL
     memory.extend([0]*n)
     push(addr)
 add_simple_operator('(allocate)', allocate)
@@ -282,7 +286,7 @@ comma(find('k'))
 comma(find('f'))
 comma(find('x'))
 comma(find('j'))
-comma(-4*4)
+comma(-4*CELL)
 
 ip, np = next(start)
 while True:
