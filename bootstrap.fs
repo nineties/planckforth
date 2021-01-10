@@ -1435,8 +1435,14 @@ do-stack 16 cells + do-sp !
     compile 2dup
     compile >r  \ save start
     compile >r  \ save limit
-    \ leave if start >= limit
-    compile >
+    \ Leave if start >= limit.
+    \ Have to write 'limit start swap 1- <= 0branch ...' but not
+    \ 'limit start > 0branch ...'
+    \ Since iteration range [start...limit) and [start...limit-1] is
+    \ different when limit-1 is the maximum unsigned integer.
+    compile swap
+    compile 1-
+    compile <=
     compile 0branch
     0 ,
     here >do do-mark >do
