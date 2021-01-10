@@ -74,8 +74,7 @@ $ ./planck < bootstrap.fs example/fib.fs
 | +    | add       | ( a b -- c )    | c = (a + b)                  |
 | -    | sub       | ( a b -- c )    | c = (a - b)                  |
 | *    | mul       | ( a b -- c )    | c = (a * b)                  |
-| /    | div       | ( a b -- c )    | c = (a / b)                  |
-| %    | mod       | ( a b -- c )    | c = (a % b)                  |
+| /    | divmod    | ( a b -- c d )  | c = (a mod b), d = (a / b)   |
 | &    | and       | ( a b -- c )    | c = (a & b)                  |
 | \|   | or        | ( a b -- c )    | c = (a \| b)                 |
 | ^    | xor       | ( a b -- c )    | c = (a ^ b)                  |
