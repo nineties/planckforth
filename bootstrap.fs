@@ -1727,6 +1727,7 @@ R/O stdin_ file>fam c!
 BUFSIZE allot stdin_ file>rbuf !
 stdin_ dup file>rbuf @ swap file>rbeg !
 stdin_ dup file>rbuf @ swap file>rend !
+s" <stdin>" stdin_ file>name !
 
 \ Read just 1 byte from stdin to c-buffer
 :noname ( c-addr u obj -- n )
@@ -1770,7 +1771,10 @@ stdin_ push-inputstream
 \ Rewrite existing functions that reads inputs using inputstream.
 
 :noname ( -- c )
-    inputstreams @ input>file @ key-file
+    inputstreams @ input>file @ key-file dup '\n' = if
+        \ increment line count
+        1 inputstreams @ input>lineno +!
+    then
 ; &key !
 
 \ Throw UNEXPECTED-EOF-ERROR
@@ -1783,12 +1787,11 @@ stdin_ push-inputstream
 \ Read a word from input stream, return address of the string
 \ and error-code.
 :noname ( -- c-addr e )
-    inputstreams @ input>file @
     \ skip leading spaces
     0
     begin
         drop
-        dup key-file    \ ( file c )
+        key
         dup bl <> over '\n' <> and
     until
     dup EOF = if
@@ -1798,12 +1801,12 @@ stdin_ push-inputstream
     word-buffer tuck c!
     1+
     begin
-        \ ( file p )
-        over key-file
+        \ ( p )
+        key
         dup bl = over '\n' = or over EOF = or if
             drop
             0 swap c!   \ store \0
-            drop word-buffer success
+            word-buffer success
             exit
         then
         over c!
@@ -1872,6 +1875,10 @@ stdin_ push-inputstream
         ?dup if
             \ lookup error code
             dup QUIT = if throw then
+
+            '[' emit inputstreams @ input>file @ file>name @ type ':' emit
+            inputstreams @ input>lineno @ 0 u.r ." ] " emit
+
             error-list @
             begin ?dup while
                 \ ( error-code error-entry )
