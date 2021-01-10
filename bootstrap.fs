@@ -1739,18 +1739,6 @@ stdin_ dup file>rbuf @ swap file>rend !
     then
 ; stdin_ file>read !
 
-create stdout_ file% %allot drop
-W/O stdout_ file>fam c!
-' not-implemented stdout_ file>read !
-BUFSIZE allot stdout_ file>wbuf !
-stdout_ dup file>wbuf @ swap file>wbeg !
-stdout_ dup file>wbuf @ BUFSIZE + swap file>wend !
-
-\ Write u byte from c-addr to stdout.
-:noname ( c-addr u obj -- e )
-    drop type success
-; stdout_ file>write !
-
 ( === Input Stream === )
 
 \ input stream stack
