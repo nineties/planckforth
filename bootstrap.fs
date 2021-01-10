@@ -60,7 +60,7 @@ l!
 \ '}' ( a b -- c )      c = a >> b (logical)
 \ ')' ( a b -- c )      c = a >> b (arithmetic)
 \ 'v' ( -- a-addr u )   argv and argc
-\ 'V' ( -- c-addr )     Version text
+\ 'V' ( -- c-addr )     Runtime information string
 
 \ The 1st stage interpreter repeats execution of k, f and x.
 \ There following line is an example program of planckforth

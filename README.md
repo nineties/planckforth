@@ -30,8 +30,9 @@ After bootstrapping by `bootstrap.fs`, it looks like this.
 
 ```
 $ ./planck < bootstrap.fs
-PlanckForth (implementation: hand-written i386-linux)
-Ready.
+Welcome to PlanckForth 0.0.1 [i386-linux handwrite]
+Copyright (c) 2021 Koichi Nakamura <koichi@idein.jp>
+Type 'bye' to exit.
 ." Hello World!" cr
 ```
 
@@ -85,4 +86,4 @@ $ ./planck < bootstrap.fs example/fib.fs
 | }    | shr       | ( a b -- c )    | c = a >> b (logical)         |
 | )    | sar       | ( a b -- c )    | c = a >> b (arithmetic)      |
 | v    | argv      | ( -- a-addr u ) | argv and argc                |
-| V    | version   | ( -- c-addr )   | Version String               |
+| V    | version   | ( -- c-addr )   | Runtime infomation stringe   |
