@@ -1807,6 +1807,7 @@ variable source-buffer-end source-buffer source-buffer-end !
         \ the buffer is empty
         source-buffer source-buffer-pos !
         source-buffer source-buffer-end !
+        increment-lineno
 
         source-buffer BUFSIZE inputstreams @ input>file @ read-line throw
         if
