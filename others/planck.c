@@ -144,6 +144,13 @@ defcode("x", exec) { (*(ip = (cfa) pop()))(); }
 defcode("f", find_) { push((cell) find(pop())); next(); }
 defcode("v", argv_) { push((cell) saved_argv); push(saved_argc); next(); }
 defcode("V", impl) { push((cell) IMPLEMENTATION); next(); }
+defcode("/", divmod) {
+    intptr_t b = pop();
+    intptr_t a = pop();
+    push(a%b);
+    push(a/b);
+    next();
+}
 #define defbinary(name, label, op, ty) \
 defcode(name, label) { \
     ty b = (ty) pop(); \
@@ -153,8 +160,6 @@ defcode(name, label) { \
 defbinary("+", add, +, intptr_t)
 defbinary("-", sub, -, intptr_t)
 defbinary("*", mul, *, intptr_t)
-defbinary("/", div_, /, uintptr_t)
-defbinary("%", mod, %, uintptr_t)
 defbinary("&", and, &, uintptr_t)
 defbinary("|", or, |, uintptr_t)
 defbinary("^", xor, ^, uintptr_t)
