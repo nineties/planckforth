@@ -623,11 +623,6 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
 : sp0 [ sp@ ] literal ;
 : rp0 [ rp@ ] literal ;
 
-\ ( -- n )
-\ Number of elemtns in the stack
-: depth     sp0 sp@ - cell- cell / ;
-: rdepth    rp0 rp@ - cell / ;
-
 \ === Integer Arithmetic ===
 
 : 1+ 1 + ;
@@ -1485,6 +1480,11 @@ do-stack 16 cells + do-sp !
 : k 6 rpick ;
 
 ( === Dump of data stack === )
+
+\ ( -- n )
+\ Number of elemtns in the stack
+: depth     sp0 sp@ - cell- cell / ;
+: rdepth    rp0 rp@ - cell / ;
 
 : .s ( -- )
     sp0 sp@ - cell- cell /  ( depth of the stack )
