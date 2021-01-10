@@ -1486,6 +1486,11 @@ do-stack 16 cells + do-sp !
     compile rdrop
 ; immediate
 
+: unloop ( R:a b -- )
+    compile rdrop
+    compile rdrop
+; immediate
+
 : i 2 rpick ;
 : j 4 rpick ;
 : k 6 rpick ;
@@ -2477,7 +2482,7 @@ need-defined (read)
 
         if else then unless begin until again while repeat
         recurse case of rangeof endof endcase
-        do loop +loop leave i j k
+        do loop +loop unloop leave i j k
 
         char [char] key
         .s . .r u. u.r dec. hex. type
