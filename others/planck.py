@@ -6,6 +6,8 @@
 import os
 import sys
 import operator
+import array
+import ctypes
 
 IMPLEMENTATION = "Python 3.x"
 MEMORY_SIZE = 0x20000
@@ -14,7 +16,7 @@ RSTACK_SIZE = 0x400
 HERE_CELL = 0
 LATEST_CELL = 4
 
-memory = [0]*(MEMORY_SIZE>>2)
+memory = array.array('l', [0]*(MEMORY_SIZE>>2))
 
 sp = MEMORY_SIZE>>2
 rp = (MEMORY_SIZE - STACK_SIZE)>>2
@@ -224,6 +226,11 @@ add_binary_operator('|', operator.or_)
 add_binary_operator('^', operator.xor)
 add_binary_operator('<', operator.lt)
 add_binary_operator('=', operator.eq)
+def uless():
+    b = ctypes.c_ulong(pop()).value
+    a = ctypes.c_ulong(pop()).value
+    push(a < b)
+add_simple_operator('u', uless)
 def argv():
     push(ARGV_ADDR)
     push(len(sys.argv))
