@@ -1770,21 +1770,23 @@ variable inputstreams
 
 stdin_ push-inputstream
 
-\ Rewrite existing functions that reads inputs using inputstream.
+\ Replacing parser functions using input stream.
 
+\ Throw UNEXPECTED-EOF-ERROR at EOF
+:noname ( -- c )
+    key dup EOF = if drop UNEXPECTED-EOF-ERROR throw then
+; &key! !
+
+\ New version of single line comment
+: \ begin key! '\n' = until ; immediate
+
+\ New version of 'key'.
 :noname ( -- c )
     inputstreams @ input>file @ key-file dup '\n' = if
         \ increment line count
         1 inputstreams @ input>lineno +!
     then
 ; &key !
-
-\ Throw UNEXPECTED-EOF-ERROR
-:noname ( -- c )
-    key dup EOF = if drop UNEXPECTED-EOF-ERROR throw then
-; &key! !
-
-: \ begin key! '\n' = until ; immediate
 
 \ Read a word from input stream, return address of the string
 \ and error-code.
@@ -1831,12 +1833,10 @@ stdin_ push-inputstream
     ]
 ;
 
+
 ( === 4th Stage Interpreter === )
 
 -56 s" Bye" def-error QUIT
-
-: interpret
-    word                    \ read name from input
 
 : interpret-inner
     begin
