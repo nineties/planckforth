@@ -2472,7 +2472,7 @@ need-defined (read)
         .s . .r u. u.r dec. hex. type
         ." s" bl '\n' cr space base decimal hex
         catch throw success
-        : ; create :noname does> variable constant
+        : ; [ ] immediate create :noname does> variable constant
         ' ['] compile [compile] literal
         + - * /mod / mod negate not and or xor invert within max min abs
         < > <= >= = <> 0< 0> 0<= 0>= 0= 0<> 1+ 1-
