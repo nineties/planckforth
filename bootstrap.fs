@@ -577,6 +577,7 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
 
 : >r rp@ rp@ @ rp@ cell - dup rp! ! ! ;         \ ( w -- R:w )
 : r> rp@ cell + @ rp@ @ rp@  cell + dup rp! ! ; \ ( R:w -- w)
+: r@ rp@ cell + @ ; \ ( -- w, R: w -- w )
 
 : swap  sp@ cell + dup @ >r ! r> ;  \ ( a b -- b a )
 : rot   >r swap r> swap ;           \ ( a b c -- b c a )
@@ -2408,7 +2409,7 @@ need-defined (read)
         %allocate %allot char% cell% byte% ptr% int% field struct end-struct
         sp0 sp@ sp! dup ?dup drop swap over tuck pick nip rot -rot
         2rot -2rot 2tuck 2over 2nip 2swap 2dup 2drop 3dup 3drop depth
-        rp0 rp@ rp! r> >r rdrop rpick rdepth
+        rp0 rp@ rp! r> >r r@ rdrop rpick rdepth
 
         allocate allot memcpy strlen streq strcpy strcpy,
         cell cell+ cell- cells align aligned +! -!
