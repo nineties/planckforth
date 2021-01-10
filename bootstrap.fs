@@ -1492,6 +1492,9 @@ do-stack 16 cells + do-sp !
 
 : cell% ( -- align size ) cell cell ;
 : char% ( -- align size ) 1 1 ;
+: byte% cell% ;
+: ptr% cell% ;
+: int% cell% ;
 
 \ allocate user memory
 : %allot ( align size -- addr )
