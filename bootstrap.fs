@@ -1786,6 +1786,13 @@ stdin_ push-inputstream
 
 \ Replacing parser functions using input stream.
 
+variable source-buffer BUFSIZE allot drop
+BUFSIZE constant source-buffer-size
+variable source-buffer-pos source-buffer source-buffer-pos !
+variable source-buffer-end source-buffer source-buffer-end !
+
+: increment-lineno ( -- ) 1 inputstreams @ input>lineno +! ;
+
 \ Throw UNEXPECTED-EOF-ERROR at EOF
 :noname ( -- c )
     key dup EOF = if drop UNEXPECTED-EOF-ERROR throw then
@@ -1795,12 +1802,30 @@ stdin_ push-inputstream
 : \ begin key! '\n' = until ; immediate
 
 \ New version of 'key'.
-:noname ( -- c )
-    inputstreams @ input>file @ key-file dup '\n' = if
-        \ increment line count
-        1 inputstreams @ input>lineno +!
+: new-key ( -- c )
+    source-buffer-pos @ source-buffer-end @ = if
+        \ the buffer is empty
+        source-buffer source-buffer-pos !
+        source-buffer source-buffer-end !
+
+        source-buffer BUFSIZE inputstreams @ input>file @ read-line throw
+        if
+            \ reached end of line
+            dup 0= if
+                drop '\n' exit \ empty line
+            then
+            source-buffer-end +!
+        else
+            \ reached EOF
+            dup 0= if
+                drop EOF exit
+            then
+            source-buffer-end +!
+        then
     then
-; &key !
+    source-buffer-pos @ c@
+    1 source-buffer-pos +!
+;
 
 \ Read a word from input stream, return address of the string
 \ and error-code.
@@ -1847,14 +1872,13 @@ stdin_ push-inputstream
     ]
 ;
 
-
 ( === 4th Stage Interpreter === )
 
 -56 s" Bye" def-error QUIT
 
 : interpret-inner
     begin
-        word                    \ read name from input
+        word \ read name from input
 
         \ EOF at this point is not an error
         UNEXPECTED-EOF-ERROR = if QUIT throw then
@@ -1922,6 +1946,7 @@ stdin_ push-inputstream
 
 :noname
     rp0 rp! \ drop 3rd stage
+    ['] new-key &key !
 
     ['] interpret-outer catch bye
 ; execute
