@@ -168,7 +168,7 @@
 000003b8: 0408 89c3 83c3 0453   movl %eax,%ebx; addl $4,%ebx; pushl %ebx
 000003c0: ff30 adff 2000 0000   pushl (%eax); next;
 
-000003c8: a883 0408 0156 0000   V: implementation
+000003c8: a883 0408 0156 0000   V: version
 000003d0: d483 0408 68dc 8304   pushl $version
 000003d8: 08ad ff20 6861 6e64   next; <version>hand
 000003e0: 2d77 7269 7474 656e   -written

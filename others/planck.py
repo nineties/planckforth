@@ -9,7 +9,7 @@ import operator
 import array
 import ctypes
 
-IMPLEMENTATION = "Python 3.x"
+VERSION = "Python 3.x"
 MEMORY_SIZE = 0x10000
 
 memory = array.array('i', [0]*MEMORY_SIZE)
@@ -169,8 +169,8 @@ for addr in argv_addrs:
     comma(addr)
 
 # Version String
-IMPLEMENTATION_ADDR = read(HERE_CELL)
-comma_string(IMPLEMENTATION)
+VERSION_ADDR = read(HERE_CELL)
+comma_string(VERSION)
 align()
 
 def docol(ip, np):
@@ -239,7 +239,7 @@ def argv():
     push(ARGV_ADDR)
     push(len(sys.argv))
 add_simple_operator('v', argv)
-add_simple_operator('V', lambda: push(IMPLEMENTATION_ADDR))
+add_simple_operator('V', lambda: push(VERSION_ADDR))
 
 SUCCESS = 0
 ALLOCATE_ERROR = -59

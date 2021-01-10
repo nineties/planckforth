@@ -85,4 +85,4 @@ $ ./planck < bootstrap.fs example/fib.fs
 | }    | shr       | ( a b -- c )    | c = a >> b (logical)         |
 | )    | sar       | ( a b -- c )    | c = a >> b (arithmetic)      |
 | v    | argv      | ( -- a-addr u ) | argv and argc                |
-| V    | impl      | ( -- c-addr )   | Implementation String        |
+| V    | version   | ( -- c-addr )   | Version String               |

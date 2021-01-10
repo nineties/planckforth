@@ -458,7 +458,7 @@ alias-builtin and       &
 alias-builtin or        |
 alias-builtin xor       ^
 alias-builtin u<        u
-alias-builtin implementation V
+alias-builtin version   V
 
 \ Rename existing FORTH words
 : >cfa      G ;
@@ -2070,7 +2070,7 @@ v argc ! argv !
 
 ( === Environment-Dependent Code === )
 
-implementation s" hand-written i386-linux" streq [if]
+version s" hand-written i386-linux" streq [if]
 
 %000 constant eax immediate
 %001 constant ecx immediate
@@ -2401,7 +2401,7 @@ need-defined (read)
 
         words id. name>string name>link
         include included source >in
-        next-arg shift-args arg argv argc implementation
+        next-arg shift-args arg argv argc version
 
         [if] [unless] [else] [then] defined?
         open-file close-file write-file flush-file
@@ -2457,7 +2457,7 @@ need-defined (read)
         next-arg dup argv @ !
         included
     else
-        ." PlanckForth (implementation: " implementation type ." )" cr
+        ." PlanckForth (" version type ." )" cr
         ." Ready." cr
         s" /dev/tty" included
     then
