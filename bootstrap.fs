@@ -2358,14 +2358,14 @@ need-defined (read)
     word throw included
 ;
 
-( === Instructions === )
+( === Primitive Instructions === )
 
-: DOCOL-INSN docol ;
-: EXIT-INSN ['] e ;
-: LIT-INSN ['] lit ;
-: LITSTRING-INSN ['] litstring ;
-: BRANCH-INSN ['] branch ;
-: 0BRANCH-INSN ['] 0branch ;
+: insn:docol docol ;
+: insn:exit ['] e ;
+: insn:lit ['] lit ;
+: insn:litstring ['] litstring ;
+: insn:branch ['] branch ;
+: insn:0branch ['] 0branch ;
 
 ( === Remove Unnecessary Words === )
 
@@ -2394,8 +2394,7 @@ need-defined (read)
 \ rebuilt dictionary
 :noname
     update-dictionary
-        DOCOL-INSN EXIT-INSN LIT-INSN LITSTRING-INSN
-        BRANCH-INSN 0BRANCH-INSN
+        insn:docol insn:exit insn:lit insn:litstring insn:branch insn:0branch
 
         words id. name>string name>link
         include included
