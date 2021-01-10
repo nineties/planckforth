@@ -838,10 +838,7 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
 : -! ( n a-addr -- ) tuck @ swap - swap ! ;
 
 \ allocate n bytes
-: allot ( n -- c-addr )
-    here swap
-    &here +!
-;
+: allot ( n -- ) &here +!  ;
 
 ( === create and does> === )
 
@@ -1214,7 +1211,7 @@ decimal \ set default to decimal
 
 \ Allocate a buffer for string literal
 bl bl * constant s-buffer-size  \ 1024
-create s-buffer s-buffer-size allot drop
+create s-buffer s-buffer-size allot
 
 \ Will define the error message corresponds to this error later
 \ because we can't write string literal yet.
@@ -1307,7 +1304,7 @@ s" -13" >number drop s" Undefined word" def-error UNDEFINED-WORD-ERROR
     find ?dup unless UNDEFINED-WORD-ERROR throw then
 ; &find! !
 
-create word-buffer s" 64" >number drop cell+ allot drop
+create word-buffer s" 64" >number drop cell+ allot
 
 : interpret
     word!                   \ read name from input
@@ -1398,7 +1395,7 @@ s" Not reachable here. may be a bug" exception constant NOT-REACHABLE
 1 constant do-mark
 2 constant leave-mark
 
-create do-stack 16 cells allot drop
+create do-stack 16 cells allot
 variable do-sp
 do-stack 16 cells + do-sp !
 
@@ -1510,7 +1507,7 @@ do-stack 16 cells + do-sp !
 
 \ allocate user memory
 : %allot ( align size -- addr )
-    swap align-by allot
+    here -rot swap align-by allot
 ;
 
 : field ( offset1 align size "name" -- offset2 )
@@ -1740,7 +1737,7 @@ end-struct file%
 create stdin_ file% %allot drop
 R/O stdin_ file>fam c!
 ' not-implemented stdin_ file>write !
-BUFSIZE allot stdin_ file>rbuf !
+here BUFSIZE allot stdin_ file>rbuf !
 stdin_ dup file>rbuf @ swap file>rbeg !
 stdin_ dup file>rbuf @ swap file>rend !
 s" <stdin>" stdin_ file>name FILENAME-MAX strncpy
@@ -1786,7 +1783,7 @@ stdin_ push-inputstream
 
 \ Replacing parser functions using input stream.
 
-variable source-buffer BUFSIZE allot drop
+variable source-buffer BUFSIZE allot
 BUFSIZE constant source-buffer-size
 variable source-buffer-pos source-buffer source-buffer-pos !
 variable source-buffer-end source-buffer source-buffer-end !
