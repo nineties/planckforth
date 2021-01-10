@@ -458,7 +458,7 @@ alias-builtin and       &
 alias-builtin or        |
 alias-builtin xor       ^
 alias-builtin u<        u
-alias-builtin version   V
+alias-builtin runtime-info_ V
 
 \ Rename existing FORTH words
 : >cfa      G ;
@@ -476,7 +476,7 @@ alias-builtin version   V
 
 \ === Stub Functions ===
 \ Use 1-step indirect reference so that we can replace
-\ the implementation later.
+\ the runtime later.
 
 : allot-cell &here @ # cell + &here ! ;
 
@@ -613,7 +613,7 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
 
 \ ( -- a-addr )
 \ The bottom address of stacks.
-\ sp@ and rp@ points bottom if implementation so far is correct.
+\ sp@ and rp@ points bottom if runtime so far is correct.
 : sp0 [ sp@ ] literal ;
 : rp0 [ rp@ ] literal ;
 
@@ -1744,7 +1744,7 @@ end-struct file%
     >r 3drop r> r> r> swap
 ;
 
-\ Temporary implementation stdin and stdout using 'key' and 'type'
+\ Temporary runtime stdin and stdout using 'key' and 'type'
 
 create stdin_ file% %allot drop
 R/O stdin_ file>fam c!
@@ -2068,9 +2068,37 @@ v argc ! argv !
     shift-args
 ;
 
-( === Environment-Dependent Code === )
+( === Version and Copyright === )
 
-version s" hand-written i386-linux" streq [if]
+\ The version of planckforth (not runtime)
+: version s" 0.0.1" ;
+
+: strchr ( c-addr2 c -- c-addr2 )
+    begin over c@ while
+        over c@ over = if drop exit then
+        swap 1+ swap
+    repeat
+    2drop 0
+;
+
+\ The version string is colon separated
+\ <runtime name>:<copyright>
+
+create runtime-info runtime-info_ strcpy,
+
+runtime-info constant runtime
+runtime-info ':' strchr 0 over c! 1+ constant copyright-text
+
+: copyright
+    copyright-text type cr
+;
+
+\ The version of PlanckForth (not runtime)
+: version s" 0.0.1" ;
+
+( === Environment Dependent Code === )
+
+runtime  s" i386-linux handwrite" streq [if]
 
 %000 constant eax immediate
 %001 constant ecx immediate
@@ -2401,7 +2429,7 @@ need-defined (read)
 
         words id. name>string name>link
         include included source >in
-        next-arg shift-args arg argv argc version
+        next-arg shift-args arg argv argc version runtime copyright
 
         [if] [unless] [else] [then] defined?
         open-file close-file write-file flush-file
@@ -2457,8 +2485,10 @@ need-defined (read)
         next-arg dup argv @ !
         included
     else
-        ." PlanckForth (" version type ." )" cr
-        ." Ready." cr
+        ." Welcome to PlanckForth " version type
+        ."  [" runtime type ." ]" cr
+        copyright
+        ." Type 'bye' to exit." cr
         s" /dev/tty" included
     then
 ; execute

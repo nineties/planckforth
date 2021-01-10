@@ -8,8 +8,13 @@ import sys
 import operator
 import array
 import ctypes
+import platform
 
-VERSION = "Python 3.x"
+RUNTIME_NAME = "Python {}".format(platform.python_version())
+COPYRIGHT = "Copyright (c) 2021 Koichi Nakamura <koichi@idein.jp>"
+
+VERSION = "{}:{}".format(RUNTIME_NAME, COPYRIGHT)
+
 MEMORY_SIZE = 0x10000
 
 memory = array.array('i', [0]*MEMORY_SIZE)

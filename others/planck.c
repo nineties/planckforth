@@ -13,7 +13,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#define VERSION "C"
+#define COPYRIGHT "Copyright (c) 2021 Koichi Nakamura <koichi@idein.jp>"
+#define RUNTIME_NAME COMPILER
+
+#define VERSION RUNTIME_NAME ":" COPYRIGHT
 
 typedef uintptr_t cell;
 typedef void (**cfa)();
