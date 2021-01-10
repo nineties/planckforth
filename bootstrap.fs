@@ -1192,6 +1192,18 @@ decimal \ set default to decimal
     0 c,
 ;
 
+\ ( c-from c-to u -- )
+: strncpy
+    begin dup 0> while
+        >r
+        \ ( c-from c-to )
+        over c@ over c!
+        over c@ unless r> 3drop exit then
+        1+ swap 1+ swap r> 1-
+    repeat
+    drop 1- 0 swap c! drop
+;
+
 \ Print string
 : type ( c-addr -- )
     begin dup c@ dup while  \ while c<>\0
@@ -1520,6 +1532,7 @@ do-stack 16 cells + do-sp !
 0x02 constant R/W  \ read-write
 
 1024 constant BUFSIZE
+128 constant FILENAME-MAX
 
 \ File
 struct
@@ -1528,7 +1541,7 @@ struct
     cell% field file>write  ( c-addr u fd -- n )
 
     char% field file>fam
-    cell% field file>name
+    char% FILENAME-MAX * field file>name
 
     \ read buffer
     cell% field file>rbuf
@@ -1729,7 +1742,7 @@ R/O stdin_ file>fam c!
 BUFSIZE allot stdin_ file>rbuf !
 stdin_ dup file>rbuf @ swap file>rbeg !
 stdin_ dup file>rbuf @ swap file>rend !
-s" <stdin>" stdin_ file>name !
+s" <stdin>" stdin_ file>name FILENAME-MAX strncpy
 
 \ Read just 1 byte from stdin to c-buffer
 :noname ( c-addr u obj -- n )
@@ -1883,8 +1896,8 @@ stdin_ push-inputstream
             \ lookup error code
             dup QUIT = if throw then
 
-            '[' emit inputstreams @ input>file @ file>name @ type ':' emit
-            inputstreams @ input>lineno @ 0 u.r ." ] " emit
+            '[' emit inputstreams @ input>file @ file>name type ':' emit
+            inputstreams @ input>lineno @ 0 u.r ." ] "
 
             error-list @
             begin ?dup while
@@ -2270,12 +2283,13 @@ need-defined (read)
 
 : open-file ( c-addr fam -- file e )
     2dup (open) dup -1 = if
+        ( c-addr fam fd )
         3drop 0 OPEN-FILE-ERROR exit
     then
     file% %allocate throw
     tuck file>fd !
     tuck file>fam !
-    tuck file>name !
+    tuck file>name FILENAME-MAX strncpy
     ['] (read) over file>read !
     ['] (write) over file>write !
     dup file>fam @ W/O <> if
