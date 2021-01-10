@@ -732,21 +732,21 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
     here - ,    \ fill offset
 ; immediate
 
-\ compile: ( dest -- dest orig )
+\ compile: ( dest -- orig dest )
 \ runtime: ( n -- )
 \ dest=location of begin
 \ orig=location of while
 : while
     compile 0branch
-    here 0 ,        \ save location, fill dummy
+    here swap
+    0 ,        \ save location, fill dummy
 ; immediate
 
-\ compile: ( dest orig -- )
+\ compile: ( orig dest -- )
 \ runtime: ( -- )
 \ dest=location of begin
 \ orig=location of while
 : repeat
-    swap
     compile branch
     here - ,                \ fill offset from here to begin
     here over - swap !      \ backfill offset from while to here
