@@ -1714,19 +1714,20 @@ end-struct file%
 ;
 
 \ Read characters from 'file' to the buffer c-addr u1
-\ until reaches '\n' or end of file.
-\ '\0' is stored at the last and '\n' is not stored.
+\ until reaches '\n' or end of file, null character is
+\ stored at last.
 \ u2 is the number of characters written to the buffer.
-\ flag=true if it reaches '\n'.
-\ e is error code.
-: read-line ( c-addr u1 file -- u2 flag e )
+\ flag=true if it reads '\n'. e is error code.
+: read-line ( c-addr u1 file -- u2 e )
     over 1- 0 do
         2 pick i + 1 2 pick read-file
         dup 0< if false leave then
         drop
         ( c-addr u1 file u2 )
         0= if i success false leave then \ EOF
-        2 pick i + c@ '\n' = if i success true leave then
+        2 pick i + c@ '\n' = if
+            i 1+ success true leave
+        then
     loop
     ( c-addr u1 file u2 e flag )
     >r >r
