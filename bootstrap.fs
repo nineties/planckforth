@@ -1944,6 +1944,7 @@ variable source-buffer-end source-buffer source-buffer-end !
             \ lookup error code
             dup QUIT = if throw then
 
+            decimal
             '[' emit inputstreams @ input>file @ file>name type ':' emit
             inputstreams @ input>lineno @ 0 u.r ." ] "
 
