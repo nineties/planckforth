@@ -1017,8 +1017,7 @@ decimal \ set default to decimal
 : print-uint ( u1 u2 -- )
     over /mod   ( base mod quot )
     ?dup if
-        \ mod base quot base
-        >r over r>
+        >r over r> \ ( base mod base quot )
         recurse
     then
     dup 10 < if '0' + else 10 - 'a' + then emit
