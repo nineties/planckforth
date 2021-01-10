@@ -1709,14 +1709,16 @@ end-struct file%
 : read-line ( c-addr u1 file -- u2 flag e )
     over 1- 0 do
         2 pick i + 1 2 pick read-file
-        dup 0< if >r drop 2drop i false r> leave then
+        dup 0< if false leave then
         drop
         ( c-addr u1 file u2 )
-        0= if 2drop i false success leave then \ EOF
-        2 pick i + c@ = '\n' if 2drop i true success leave then
+        0= if i success false leave then \ EOF
+        2 pick i + c@ '\n' = if i success true leave then
     loop
-    ( c-addr u2 flag e )
-    >r >r tuck + 0 swap c! r> r>
+    ( c-addr u1 file u2 e flag )
+    >r >r
+    3 pick over + 0 swap c! \ fill '\0'
+    >r 3drop r> r> r> swap
 ;
 
 \ Temporary implementation stdin and stdout using 'key' and 'type'
