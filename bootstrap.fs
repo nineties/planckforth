@@ -447,8 +447,7 @@ alias-builtin docol     i
 alias-builtin exit      e
 alias-builtin lit       L
 alias-builtin litstring S
-alias-builtin div       /
-alias-builtin mod       %
+alias-builtin /mod      /
 alias-builtin and       &
 alias-builtin or        |
 alias-builtin xor       ^
@@ -621,8 +620,8 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
 : 1+ 1 + ;
 : 1- 1 - ;
 
-\ ( a b -- (a mod b) (a / b) )
-: /mod 2dup mod -rot / ;
+: /     /mod swap drop ;
+: mod   /mod drop ;
 
 \ ( n -- -n )
 : negate 0 swap - ;
@@ -2426,7 +2425,7 @@ need-defined (read)
         catch throw success
         : ; create :noname does> variable constant
         ' ['] compile [compile] literal
-        + - * div mod negate not and or xor invert within max min abs
+        + - * /mod / mod negate not and or xor invert within max min abs
         < > <= >= = <> 0< 0> 0<= 0>= 0= 0<> 1+ 1-
 
         true false
