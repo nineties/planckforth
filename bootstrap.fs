@@ -2396,7 +2396,7 @@ need-defined (read)
         catch throw success
         : ; create :noname does> variable constant
         ' ['] compile [compile] literal
-        + - * div mod not and or xor invert within max min
+        + - * div mod negate not and or xor invert within max min
         < > <= >= = <> 0< 0> 0<= 0>= 0= 0<> 1+ 1-
 
         true false
