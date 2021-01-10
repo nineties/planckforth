@@ -2479,7 +2479,7 @@ need-defined (read)
         ." s" bl '\n' cr space base decimal hex
         catch throw success
         : ; [ ] immediate create :noname does> variable constant
-        ' ['] compile [compile] literal
+        ' ['] compile [compile] literal state
         + - * /mod / mod negate not and or xor invert within max min abs
         < > <= >= = <> 0< 0> 0<= 0>= 0= 0<> 1+ 1-
         u< u> u<= u>= lshift rshift 2* 2/
