@@ -578,6 +578,9 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
 : cell+ cell + ;
 : cell- cell - ;
 : cells cell * ;
+: char+ 1 + ;
+: char- 1 - ;
+: chars ;
 
 \ === Stack Manipulation ===
 
@@ -2458,7 +2461,7 @@ need-defined (read)
         rp0 rp@ rp! r> >r r@ rdrop rpick rdepth
 
         allocate allot memcpy strlen streq strcpy strcpy,
-        cell cell+ cell- cells align aligned +! -!
+        cell cell+ cell- cells char+ char- chars align aligned +! -!
 
         if else then unless begin until again while repeat
         recurse case of rangeof endof endcase
