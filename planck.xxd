@@ -6,10 +6,10 @@
 00000028: 3400 2000 0100 0000   e_ehsize,e_phentsize,e_phnum,e_shentsize
 00000030: 0000 0000 0100 0000   e_shnum,e_shstrndx,<phdr>p_type=PT_LOAD
 00000038: 0000 0000 0080 0408   p_offset,p_vaddr=0x08048000
-00000040: 0000 0000 9c03 0000   p_paddr,p_filesz
+00000040: 0000 0000 b803 0000   p_paddr,p_filesz
 00000048: 0000 2000 0700 0000   p_memsz(128KB),p_flags=PF_X|PF_W|PF_R
-00000050: 0010 0000 9c83 0408   p_align, <here>
-00000058: 7083 0408 0000 0000   <latest:init="V">, <sp0>
+00000050: 0010 0000 b883 0408   p_align, <here>
+00000058: 8c83 0408 0000 0000   <latest:init="V">, <sp0>
 00000060: e480 0408 5c81 0408   <interpreter>key, find
 00000068: 8881 0408 3081 0408   execute, jump
 00000070: f0ff ffff be60 8004   -16, movl $interpreter, %esi
@@ -141,19 +141,24 @@
 00000328: 0f9c c00f b6c0 50ad   setl %al; movzbl %al, %eax; pushl %eax; next;
 00000330: ff20 0000 0000 0000
 
-00000334: 1883 0408 013d 0000   =: equal
+00000334: 1883 0408 0175 0000   u: less (unsigned)
 0000033c: 4083 0408 585b 39c3   popl %eax; popl %ebx; cmpl %eax,%ebx
-00000344: 0f94 c00f b6c0 50ad   setl %al; movzbl %al, %eax; pushl %eax; next;
+00000344: 0f92 c00f b6c0 50ad   setb %al; movzbl %al, %eax; pushl %eax; next;
 0000034c: ff20 0000 0000 0000
 
-00000350: 3483 0408 0176 0000   v: argv
-00000358: 5c83 0408 8b05 5c80   movl sp0,%eax;
-00000360: 0408 89c3 83c3 0453   movl %eax,%ebx; addl $4,%ebx; pushl %ebx
-00000368: ff30 adff 2000 0000   pushl (%eax); next;
+00000350: 3483 0408 013d 0000   =: equal
+00000358: 5c83 0408 585b 39c3   popl %eax; popl %ebx; cmpl %eax,%ebx
+00000360: 0f94 c00f b6c0 50ad   setl %al; movzbl %al, %eax; pushl %eax; next;
+00000368: ff20 0000 0000 0000
 
-00000370: 5083 0408 0156 0000   V: implementation
-00000378: 7c83 0408 6884 8304   pushl $version
-00000380: 08ad ff20 6861 6e64   next; <version>hand
-00000388: 2d77 7269 7474 656e   -written
-00000390: 2069 3338 362d 6c69    i386-li
-00000398: 6e75 7800             nux
+0000036c: 5083 0408 0176 0000   v: argv
+00000374: 7883 0408 8b05 5c80   movl sp0,%eax;
+0000037c: 0408 89c3 83c3 0453   movl %eax,%ebx; addl $4,%ebx; pushl %ebx
+00000384: ff30 adff 2000 0000   pushl (%eax); next;
+
+0000038c: 6c83 0408 0156 0000   V: implementation
+00000394: 9883 0408 68a0 8304   pushl $version
+0000039c: 08ad ff20 6861 6e64   next; <version>hand
+000003a4: 2d77 7269 7474 656e   -written
+000003ac: 2069 3338 362d 6c69    i386-li
+000003b4: 6e75 7800             nux

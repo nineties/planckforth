@@ -451,6 +451,7 @@ alias-builtin /mod      /
 alias-builtin and       &
 alias-builtin or        |
 alias-builtin xor       ^
+alias-builtin u<        u
 alias-builtin implementation V
 
 \ Rename existing FORTH words
@@ -636,6 +637,9 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
 : >     swap < ;
 : <=    > not ;
 : >=    < not ;
+: u>    swap u< ;
+: u<=   u> not ;
+: u>=   u< not ;
 : <>    = not ;
 
 : 0=    0 = ;
@@ -2427,6 +2431,7 @@ need-defined (read)
         ' ['] compile [compile] literal
         + - * /mod / mod negate not and or xor invert within max min abs
         < > <= >= = <> 0< 0> 0<= 0>= 0= 0<> 1+ 1-
+        u< u> u<= u>=
 
         true false
 

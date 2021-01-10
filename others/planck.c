@@ -164,6 +164,7 @@ defbinary("&", and, &, uintptr_t)
 defbinary("|", or, |, uintptr_t)
 defbinary("^", xor, ^, uintptr_t)
 defbinary("<", lt, <, intptr_t)
+defbinary("u", ult, <, uintptr_t)
 defbinary("=", eq, ==, intptr_t)
 
 /* File IO */
