@@ -610,6 +610,11 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
 : sp0 [ sp@ ] literal ;
 : rp0 [ rp@ ] literal ;
 
+\ ( -- n )
+\ Number of elemtns in the stack
+: depth     sp0 sp@ - cell- cell / ;
+: rdepth    rp0 rp@ - cell / ;
+
 \ === Integer Arithmetic ===
 
 : 1+ 1 + ;
