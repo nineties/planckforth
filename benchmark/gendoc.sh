@@ -2,6 +2,10 @@
 
 TARGETS="i386-linux-handwritten c python"
 TIMEFORMAT='%U'
+CPU_MODEL=`cat /proc/cpuinfo | grep 'model name' | cut -d: -f2 | sed "s/^ *//g"`
+MEM_SIZE="`cat /proc/meminfo | grep 'MemTotal' | awk '{ print $2/1024/1024 }'` GB"
+UNAME=`uname -a`
+
 function benchmark () {
     sum=0
     for i in `seq $2`; do
@@ -13,7 +17,7 @@ function benchmark () {
 }
 
 function generate-table {
-    echo "# $1"
+    echo "## $1"
     echo "\`$2\`"
     echo
     #echo "Average of $3 execution times."
@@ -28,6 +32,15 @@ function generate-table {
     done
     echo
 }
+
+echo "# Environment"
+echo
+echo "- $CPU_MODEL"
+echo "- $MEM_SIZE"
+echo "- $UNAME"
+echo
+
+echo "# Benchmarks"
 
 generate-table "Bootstrap Time" "./planck < bootstrap.fs benchmark/nop.fs" 1
 generate-table "Fib(30)" "./planck < bootstrap.fs benchmark/fib.fs" 1
