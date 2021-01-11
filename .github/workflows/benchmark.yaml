@@ -13,6 +13,6 @@ jobs:
     - name: upload to wiki
       uses: SwiftDocOrg/github-wiki-publish-action@v1
       with:
-        path: "documentation"
+        path: "document"
       env:
         GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
