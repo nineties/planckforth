@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TARGETS="i386-linux-handwritten c"
+TARGETS="i386-linux-handwritten c python"
 TIMEFORMAT='%U'
 function benchmark () {
     sum=0
@@ -12,21 +12,20 @@ function benchmark () {
     echo $average
 }
 
-function bootstrap {
-    time ./planck < bootstrap.fs benchmark/nop.fs 2>&1 > /dev/null
-}
-
 function generate-table {
     echo "## $1"
+    echo "\`$2\`"
     echo
     echo "| implementation | sec |"
     echo "|:---------------|----:|"
     for impl in $TARGETS; do
         make $impl 2>&1 > /dev/null
-        t=`benchmark $2 $3`
+        t=`benchmark "time $2 2>&1 > /dev/null" $3`
         echo "| $impl | $t |"
     done
+    echo
 }
 
 echo "# Benchmarks"
-generate-table "Bootstrap Time" bootstrap 5
+generate-table "Bootstrap Time" "./planck < bootstrap.fs benchmark/nop.fs" 1
+generate-table "Fib(20)" "./planck < bootstrap.fs benchmark/fib.fs" 1
