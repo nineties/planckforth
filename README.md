@@ -46,6 +46,12 @@ $ ./planck < bootstrap.fs example/fib.fs
 6765
 ```
 
+# Running Tests
+
+```
+$ ./planck < bootstrap.fs runtests.fs
+```
+
 # Builtin Words
 
 | code | name      | stack effect    | semantics                    |
