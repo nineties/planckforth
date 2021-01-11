@@ -1836,8 +1836,8 @@ stdin_ push-inputstream
 
 variable source-buffer BUFSIZE allot
 BUFSIZE constant source-buffer-size
-variable source-buffer-pos source-buffer source-buffer-pos !
-variable source-buffer-end source-buffer source-buffer-end !
+variable source-buffer-pos 0 source-buffer-pos !
+variable source-buffer-end 0 source-buffer-end !
 
 : increment-lineno ( -- ) 1 inputstreams @ input>lineno +! ;
 
@@ -1856,8 +1856,8 @@ variable source-buffer-end source-buffer source-buffer-end !
 : new-key ( -- c )
     source-buffer-pos @ source-buffer-end @ = if
         \ the buffer is empty
-        source-buffer source-buffer-pos !
-        source-buffer source-buffer-end !
+        0 source-buffer-pos !
+        0 source-buffer-end !
         increment-lineno
 
         source-buffer BUFSIZE inputstreams @ input>file @ read-line throw
@@ -1875,7 +1875,7 @@ variable source-buffer-end source-buffer source-buffer-end !
             source-buffer-end +!
         then
     then
-    source-buffer-pos @ c@
+    source-buffer source-buffer-pos @ + c@
     1 source-buffer-pos +!
 ;
 
