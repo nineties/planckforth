@@ -1,9 +1,9 @@
 # planckforth -
 # Copyright (C) 2021 nineties
 
-default: i386-linux-handwrite
+default: i386-linux-handwritten
 	
-i386-linux-handwrite: planck.xxd
+i386-linux-handwritten: planck.xxd
 	xxd -r -c 8 $< > planck
 	chmod +x planck
 
