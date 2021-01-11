@@ -2,7 +2,7 @@
 
 TARGETS="i386-linux-handwritten c python"
 TIMEFORMAT='%U'
-CPU_MODEL=`cat /proc/cpuinfo | grep 'model name' | cut -d: -f2 | sed "s/^ *//g"`
+CPU_MODEL=`cat /proc/cpuinfo | grep -m1 'model name' | cut -d: -f2 | sed "s/^ *//g"`
 MEM_SIZE="`cat /proc/meminfo | grep 'MemTotal' | awk '{ print $2/1024/1024 }'` GB"
 UNAME=`uname -a`
 
