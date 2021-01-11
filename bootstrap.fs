@@ -1112,6 +1112,14 @@ decimal \ set default to decimal
     nip nip true
 ;
 
+: parse-int ( u c-addr -- n f )
+    dup c@ '-' = if
+        1+ parse-uint swap negate swap
+    else
+        parse-uint
+    then
+;
+
 \ Parse string as number.
 \ This function interprets prefixes that specifies number base.
 : >number ( c-addr -- n f )
@@ -1129,9 +1137,10 @@ decimal \ set default to decimal
             false
         then
     endof
-    '&' of 1+ 10 swap parse-uint endof
-    '#' of 1+ 10 swap parse-uint endof
-    '%' of 1+ 2 swap parse-uint endof
+    '&' of 1+ 10 swap parse-int endof
+    '#' of 1+ 10 swap parse-int endof
+    '$' of 1+ 16 swap parse-int endof
+    '%' of 1+ 2 swap parse-int endof
     '0' of
         \ hexadecimal
         \ ( addr )
