@@ -44,3 +44,4 @@ echo "# Benchmarks"
 
 generate-table "Bootstrap Time" "./planck < bootstrap.fs benchmark/nop.fs" 1
 generate-table "Fib(30)" "./planck < bootstrap.fs benchmark/fib.fs" 1
+generate-table "Matmul" "./planck < bootstrap.fs benchmark/matmul.fs" 1
