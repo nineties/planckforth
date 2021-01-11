@@ -29,7 +29,7 @@ function generate-table {
         t=`benchmark $2 $3`
         echo "| $impl | $t |"
     done
-}
+} | tee -a $FILE
 
-echo "# Benchmarks" >> $FILE
+echo "# Benchmarks" | tee $FILE
 generate-table "Bootstrap Time" bootstrap 5
