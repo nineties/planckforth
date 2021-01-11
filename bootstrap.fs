@@ -2497,7 +2497,7 @@ need-defined (read)
         recurse case of rangeof endof endcase
         do loop +loop unloop leave i j k
 
-        char [char] key
+        char [char] key emit spaces
         .s . .r u. u.r dec. hex. type
         ." s" bl '\n' cr space base decimal hex
         catch throw success
@@ -2512,7 +2512,7 @@ need-defined (read)
         ( \
         c@ c! c, @ ! ,
         word find >cfa >dfa
-        bye emit execute exit here latest
+        bye execute exit here latest
     end-update-dictionary
 ; execute
 
