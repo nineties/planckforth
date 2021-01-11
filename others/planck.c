@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 #else
-defcode("Q", quit) { exit(0); }
+defcode("Q", quit) { exit(pop()); }
 defcode("C", cell_) { push(CELL); next(); }
 defcode("h", here_) { push((cell)&here); next(); }
 defcode("l", latest_) { push((cell)&latest); next(); }

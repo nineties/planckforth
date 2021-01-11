@@ -23,7 +23,7 @@ l!
 \ In the 1st stage, only single character words are registered
 \ in the dictionary.
 \ List of builtin words:
-\ 'Q' ( -- )            Exit the process
+\ 'Q' ( n -- )          Exit the process
 \ 'C' ( -- n )          The size of Cells
 \ 'h' ( -- a-addr )     The address of 'here' cell
 \ 'l' ( -- a-addr )     The address of 'latest' cell
@@ -435,7 +435,7 @@ set-immediate \
 \ Primitive operators which manipulate program counter and return stack
 \ can not be defined as a FORTH word.
 
-alias-builtin bye       Q
+alias-builtin quit      Q
 alias-builtin cell      C
 alias-builtin &here     h
 alias-builtin &latest   l
@@ -462,6 +462,8 @@ alias-builtin lshift    (
 alias-builtin rshift    )
 alias-builtin arshift   %
 alias-builtin runtime-info_ V
+
+: bye [ ' L , k 0 k 0 - , ] quit ;
 
 \ Rename existing FORTH words
 : >cfa      G ;
@@ -1994,14 +1996,14 @@ variable source-buffer-end 0 source-buffer-end !
                     error>message type
                     ." : "
                     word-buffer type cr
-                    bye
+                    1 quit
                 then
                 error>next
             repeat
             ." Unknown error code: "
             word-buffer type
             ."  (" 0 .r ." )" cr
-            bye
+            1 quit
         then
     again
 ;

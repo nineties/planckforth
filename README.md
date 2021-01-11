@@ -55,7 +55,7 @@ $ ./planck < bootstrap.fs runtests.fs
 
 | code | name      | stack effect    | semantics                    |
 |:----:|:----------|:----------------|:-----------------------------|
-| Q    | quit      | ( -- )          | Exit the process             |
+| Q    | quit      | ( n -- )        | Exit the process             |
 | C    | cell      | ( -- n )        | The size of Cells            |
 | h    | &here     | ( -- a-addr )   | The address of 'here' cell   |
 | l    | &latest   | ( -- a-addr )   | The address of 'latest' cell |

@@ -182,7 +182,7 @@ def docol(ip, np):
     rpush(np)
     return next(ip + CELL)
 DOCOL_ID = add_operator('', docol)
-add_simple_operator('Q', lambda: exit(0))
+add_simple_operator('Q', lambda: exit(pop()))
 add_simple_operator('C', lambda: push(CELL))
 add_simple_operator('h', lambda: push(HERE_CELL))
 add_simple_operator('l', lambda: push(LATEST_CELL))
