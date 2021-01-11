@@ -16,8 +16,8 @@ function generate-table {
     echo "# $1"
     echo "\`$2\`"
     echo
-    echo "Average of $3 execution times."
-    echo
+    #echo "Average of $3 execution times."
+    #echo
     echo "| implementation | sec |"
     echo "|:---------------|----:|"
     for impl in $TARGETS; do
@@ -28,5 +28,5 @@ function generate-table {
     echo
 }
 
-generate-table "Bootstrap Time" "./planck < bootstrap.fs benchmark/nop.fs" 3
-generate-table "Fib(20)" "./planck < bootstrap.fs benchmark/fib.fs" 3
+generate-table "Bootstrap Time" "./planck < bootstrap.fs benchmark/nop.fs" 1
+generate-table "Fib(30)" "./planck < bootstrap.fs benchmark/fib.fs" 1
