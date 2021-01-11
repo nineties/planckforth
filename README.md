@@ -15,8 +15,10 @@ xxd -r -c 8 planck.xxd > planck
 chmod +x planck
 ```
 
-There are implementations in C and Python 3 as a reference in `others`.
-Try `make c` or `make python`
+There are implementations in other languages in `others`.
+
+- C: type `make c`
+- Python 3.x: type `make python`
 
 ## Hello World
 
