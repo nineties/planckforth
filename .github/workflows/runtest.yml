@@ -1,0 +1,14 @@
+name: run basic tests
+
+on:
+    push:
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        stes:
+        - uses: actions/checkpoint@v1
+        - name: i386-linux handwrite
+          run: |
+              make
+              ./planck < bootstrap.fs runtests.fs
+
