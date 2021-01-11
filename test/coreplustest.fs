@@ -175,8 +175,8 @@ T{ 111 iw6 iw7 iw7 -> 112 }T
 T{ : iw8 iw7 literal 1+ ; iw8 -> 113 }T
 T{ : iw9 create , does> @ 2 + immediate ; -> }T
 \ : find-iw bl word find nip ;  ( -- 0 | 1 | -1 )
-\ T{ 222 iw9 iw10 find-iw iw10 -> -1 }T   \ iw10 IS NOT IMMEDIATE
-\ T{ iw10 find-iw iw10 -> 224 1 }T        \ iw10 BECOMES IMMEDIATE
+skip T{ 222 iw9 iw10 find-iw iw10 -> -1 }T   \ iw10 IS NOT IMMEDIATE
+skip T{ iw10 find-iw iw10 -> 224 1 }T        \ iw10 BECOMES IMMEDIATE
 
 \ ------------------------------------------------------------------------------
 testing that immediate doesn't toggle a flag
@@ -241,19 +241,19 @@ T{ _`abcdefghijklmnopqrstuvwxyz{|~ -> 4 }T
 T{ _`abcdefghijklmnopqrstuvwxyz{|} -> 3 }T
 
 \ ------------------------------------------------------------------------------
-\ testing find with a zero length string and a non-existent word
-\ 
+testing find with a zero length string and a non-existent word
+
 \ create emptystring 0 c,
 \ : emptystring-find-check ( C-ADDR 0 | XT 1 | XT -1 -- T|F )
 \     dup if ." FIND returns a TRUE value for an empty string!" cr then
 \     0= swap emptystring = = ;
-\ T{ emptystring find emptystring-find-check -> <true> }T
-\ 
+skip T{ emptystring find emptystring-find-check -> <true> }T
+
 \ create non-existent-word   \ Same as in exceptiontest.fth
 \        15 c, char $ c, char $ c, char q c, char w c, char e c, char q c,
 \    char w c, char e c, char q c, char w c, char e c, char r c, char t c,
 \    char $ c, char $ c,
-\ T{ non-existent-word find -> non-existent-word 0 }T
+skip T{ non-existent-word find -> non-existent-word 0 }T
 
 \ ------------------------------------------------------------------------------
 testing if ... begin ... repeat (unstructured)
@@ -263,10 +263,10 @@ T{ -6 uns1 -> -6 }T
 T{  1 uns1 -> 9 4 }T
 
 \ ------------------------------------------------------------------------------
-\ testing does> doesn't cause a problem with a created address
-\ 
+testing does> doesn't cause a problem with a created address
+
 \ : make-2const does> 2@ ;
-\ T{ create 2k 3 , 2k , make-2const 2k -> ' 2k >body 3 }T
+skip T{ create 2k 3 , 2k , make-2const 2k -> ' 2k >body 3 }T
 
 \ ------------------------------------------------------------------------------
 testing allot ( n -- ) where n <= 0

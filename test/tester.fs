@@ -2,19 +2,24 @@
 \ Copyright (C) 2021 nineties
 
 variable verbose
-true verbose !
+\ true verbose !
+false verbose !
 
 : empty-stack sp0 sp! ;
 
-variable #errors 0 #errors !
+variable #ok 0 #ok !
+variable #error 0 #error !
+variable #skip 0 #skip !
 
 : ESC [ 0x1b ] literal ;
+: red ESC emit ." [31m" ;
+: green ESC emit ." [32m" ;
+: yellow ESC emit ." [33m" ;
+: reset ESC emit ." [m" ;
 : error ( c-addr -- )
-    ESC emit ." [31m"
-    type source type
-    ESC emit ." [m"
+    red type source type reset
     empty-stack
-    1 #errors +!
+    1 #error +!
 ;
 
 variable actual-depth
@@ -33,12 +38,18 @@ create actual-results 20 cells allot
     depth actual-depth @ <> if
         s" wrong number of results: " error exit
     then
+    true >r
     depth ?dup if
         0 do
             actual-results i cells + @ <> if
-                s" incorrect result: " error leave
+                s" incorrect result: " error
+                r> drop false >r
+                leave
             then
         loop
+    then
+    r> if
+        1 #ok +!
     then
 ;
 
@@ -49,4 +60,24 @@ create actual-results 20 cells allot
         '.' emit
     then
     strlen >in !  \ sking this line
+;
+
+: skip
+    source verbose @ if
+        dup type
+    then
+    strlen >in !  \ skip this line
+    1 #skip +!
+;
+
+: print-report
+    decimal
+
+    cr ." --------------------------------"
+    cr ." Run " #ok @ #error @ + #skip @ + . ." tests" cr
+    ." ok:" #ok @ .
+    ." failed:" #error @ .
+    ." skipped:" #skip @ .
+    cr ." --------------------------------"
+    cr
 ;
