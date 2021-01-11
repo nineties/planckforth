@@ -1,4 +1,4 @@
-name: run basic tests
+name: C
 
 on:
     push:
@@ -7,8 +7,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
         - uses: actions/checkout@v1
-        - name: i386-linux handwrite
+        - name: run tests
           run: |
-              make
+              make c
               ./planck < bootstrap.fs runtests.fs
-
