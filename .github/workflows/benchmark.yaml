@@ -1,18 +1,21 @@
 name: benchmark
 
 on:
-    push:
+  workflow_run:
+    workflows: ["i386-linux-handwritten", "C", "python"]
+    types:
+      - completed
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-        - uses: actions/checkout@v1
-        - name: take benchmarks
-          run: |
-              ./benchmark/gendoc.sh
-        - name: upload to wiki
-          uses: SwiftDocOrg/github-wiki-publish-action@v1
-          with:
-            path: "documentation"
-          env:
-            GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: take benchmarks
+      run: |
+        ./benchmark/gendoc.sh
+    - name: upload to wiki
+      uses: SwiftDocOrg/github-wiki-publish-action@v1
+      with:
+        path: "documentation"
+      env:
+        GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
