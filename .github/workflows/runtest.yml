@@ -5,7 +5,7 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
-        stes:
+        steps:
         - uses: actions/checkpoint@v1
         - name: i386-linux handwrite
           run: |
