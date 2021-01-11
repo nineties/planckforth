@@ -954,7 +954,8 @@ skip T{ seebuf -> 12 34 34 }T
 testing output: . ." cr emit space spaces type u.
 
 : output-test
-   ." you should see the standard graphic characters:" cr
+   cr
+    ." you should see the standard graphic characters:" cr
    41 bl do i emit loop cr
    61 41 do i emit loop cr
    7f 61 do i emit loop cr
