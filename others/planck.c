@@ -15,9 +15,9 @@
 
 #define COPYRIGHT "Copyright (c) 2021 Koichi Nakamura <koichi@idein.jp>"
 #define STRINGIFY(s) #s
-#define RUNTIME_NAME STRINGIFY(COMPILER)
+#define RUNTIME_NAME(c) STRINGIFY(c)
 
-#define VERSION RUNTIME_NAME ":" COPYRIGHT
+#define VERSION RUNTIME_NAME(COMPILER) ":" COPYRIGHT
 
 typedef uintptr_t cell;
 typedef void (**cfa)();
