@@ -148,8 +148,8 @@ defcode("f", find_) { push((cell) find(pop())); next(); }
 defcode("v", argv_) { push((cell) saved_argv); push(saved_argc); next(); }
 defcode("V", impl) { push((cell) VERSION); next(); }
 defcode("/", divmod) {
-    intptr_t b = pop();
-    intptr_t a = pop();
+    uintptr_t b = pop();
+    uintptr_t a = pop();
     push(a%b);
     push(a/b);
     next();
