@@ -1,10 +1,7 @@
 name: benchmark
 
 on:
-  workflow_run:
-    workflows: ["i386-linux-handwritten", "C"]
-    types:
-      - completed
+  push:
 jobs:
   build:
     runs-on: ubuntu-latest
