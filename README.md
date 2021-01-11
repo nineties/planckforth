@@ -100,4 +100,4 @@ $ ./planck < bootstrap.fs runtests.fs
 
 # Benchmarks
 
-See [Wiki/benchmark](https://github.com/nineties/planckforth/wiki/benchmark)
+See [Wiki/Benchmarks](https://github.com/nineties/planckforth/wiki/Benchmarks)
