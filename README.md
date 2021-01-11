@@ -15,7 +15,7 @@ xxd -r -c 8 planck.xxd > planck
 chmod +x planck
 ```
 
-There are implementations in other languages in `others`.
+Implementations in other languages are in `others`.
 
 - C: type `make c`
 - Python 3.x: type `make python`
@@ -32,9 +32,6 @@ After bootstrapping by `bootstrap.fs`, it looks like this.
 
 ```
 $ ./planck < bootstrap.fs
-Welcome to PlanckForth 0.0.1 [i386-linux handwrite]
-Copyright (c) 2021 Koichi Nakamura <koichi@idein.jp>
-Type 'bye' to exit.
 ." Hello World!" cr
 ```
 
