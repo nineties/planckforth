@@ -70,14 +70,16 @@ create actual-results 20 cells allot
     1 #skip +!
 ;
 
-: print-report
+: report-and-exit
     decimal
 
     cr ." --------------------------------"
     cr ." Run " #ok @ #error @ + #skip @ + . ." tests" cr
-    ." ok:" #ok @ .
-    ." failed:" #error @ .
-    ." skipped:" #skip @ .
+    green ." ok:" #ok @ .
+    red ." failed:" #error @ .
+    yellow ." skipped:" #skip @ .
+    reset
     cr ." --------------------------------"
     cr
+    #error @ 0= if bye else abort then
 ;

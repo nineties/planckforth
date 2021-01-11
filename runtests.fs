@@ -10,4 +10,4 @@ include test/tester.fs
 include test/core.fs
 include test/coreplustest.fs
 
-print-report
+report-and-exit
