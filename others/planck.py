@@ -226,8 +226,8 @@ def litstring(ip, np):
     return next(np + CELL + read(np))
 add_operator('S', litstring)
 def divmod():
-    b = pop()
-    a = pop()
+    b = ctypes.c_uint(pop()).value
+    a = ctypes.c_uint(pop()).value
     push(a%b)
     push(a//b)
 add_simple_operator('/', divmod)
