@@ -1,10 +1,10 @@
 # PlanckForth: Bootstrapping Forth from Handwritten Binary
 
-This project aims to bootstrap a Forth interpreter from hand-written tiny ELF binary.
+This project aims to bootstrap a Forth interpreter from hand-written tiny ELF binary, for fun.
+No practical use.
 
 ## How to build
 
-You can create a binary for x86 linux environment by following steps.
 Only `xxd` is needed to build PlanckForth.
 
 ```
