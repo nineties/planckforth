@@ -8,7 +8,7 @@ i386-linux-handwrite: planck.xxd
 	chmod +x planck
 
 c: others/planck.c
-	gcc -Wall -O2 $< -o planck -DCOMPILER="\"`gcc --version | head -n1`\""
+	gcc -Wall -O2 $< -o planck -DCOMPILER="$(shell gcc --version | head -n1)"
 
 python: others/planck.py
 	cp others/planck.py planck

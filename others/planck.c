@@ -14,7 +14,8 @@
 #include <unistd.h>
 
 #define COPYRIGHT "Copyright (c) 2021 Koichi Nakamura <koichi@idein.jp>"
-#define RUNTIME_NAME COMPILER
+#define STRINGIFY(s) #s
+#define RUNTIME_NAME STRINGIFY(COMPILER)
 
 #define VERSION RUNTIME_NAME ":" COPYRIGHT
 
