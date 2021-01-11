@@ -17,9 +17,6 @@ chmod +x planck
 
 Implementations in other languages are in `others`.
 
-- C: type `make c`
-- Python 3.x: type `make python`
-
 ## Hello World
 
 The hello world program at the beginning looks like this.
@@ -92,3 +89,11 @@ $ ./planck < bootstrap.fs runtests.fs
 | )    | sar       | ( a b -- c )    | c = a >> b (arithmetic)      |
 | v    | argv      | ( -- a-addr u ) | argv and argc                |
 | V    | version   | ( -- c-addr )   | Runtime infomation string    |
+
+# Implementations
+
+| Implementation of runtime         | build             | test status |
+|:----------------------------------|:------------------|:------------|
+| Handwritten binary for i386-linux | `make`            | [![i386-linux-handwrite](https://github.com/nineties/planckforth/workflows/i386-linux-handwrite/badge.svg)](https://github.com/nineties/planckforth/workflows/i386-linux-handwrite) |
+| C                                 | `make c`          | [![C](https://github.com/nineties/planckforth/workflows/C/badge.svg)](https://github.com/nineties/planckforth/workflows/C) |
+| Python 3.x                        | `make python`     | [![python](https://github.com/nineties/planckforth/workflows/python/badge.svg)](https://github.com/nineties/planckforth/workflows/python) |
