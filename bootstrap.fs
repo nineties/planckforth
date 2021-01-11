@@ -1233,6 +1233,18 @@ decimal \ set default to decimal
     drop 1- 0 swap c! drop
 ;
 
+\ ( c-addr1 c-addr2 u -- f )
+: strneq
+    begin dup 0> while
+        1- >r
+        dup 1+ >r c@
+        swap dup 1+ >r c@
+        <> if rdrop rdrop rdrop false exit then
+        r> r> r>
+    repeat
+    3drop true
+;
+
 \ Print string
 : type ( c-addr -- )
     begin dup c@ dup while  \ while c<>\0
@@ -2501,7 +2513,7 @@ need-defined (read)
         2rot -2rot 2tuck 2over 2nip 2swap 2dup 2drop 3dup 3drop depth
         rp0 rp@ rp! r> >r r@ rdrop rpick rdepth
 
-        allocate allot memcpy strlen streq strcpy strcpy,
+        allocate allot memcpy strlen streq strneq strcpy strcpy,
         cell cell+ cell- cells char+ char- chars align aligned +! -!
 
         if else then unless begin until again while repeat
@@ -2529,6 +2541,15 @@ need-defined (read)
 
 
 ( === End of bootstrap === )
+
+:noname
+    1 arg s" --version" 10 strneq if
+        ." PlanckForth " version type cr bye
+    else 1 arg s" --runtime" 10 strneq if
+        runtime type cr bye
+    then then
+; execute
+
 
 :noname
     rdrop
