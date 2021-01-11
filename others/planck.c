@@ -169,6 +169,9 @@ defbinary("^", xor, ^, uintptr_t)
 defbinary("<", lt, <, intptr_t)
 defbinary("u", ult, <, uintptr_t)
 defbinary("=", eq, ==, intptr_t)
+defbinary("(", shl, <<, uintptr_t)
+defbinary(")", shr, >>, uintptr_t)
+defbinary("%", sar, >>, intptr_t)
 
 /* File IO */
 #define SUCCESS 0
