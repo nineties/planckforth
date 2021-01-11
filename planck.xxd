@@ -101,8 +101,8 @@
 
 00000261: 31c0 50ba 0100 0000   (key) xorl %eax,%eax; pushl %eax; movl $1,%edx;
 00000269: 89e1 31db b803 0000   movl %esp,%ecx; xorl %ebx,%ebx (STDIN=0);
-00000271: 00cd 8085 c076 cbad   movl $SYS_READ,%eax; int $0x80; test %eax,%eax;
-00000279: ff20 0000 0000 0000   jbe 0x08048244(-53); next;
+00000271: 00cd 8085 c076 ccad   movl $SYS_READ,%eax; int $0x80; test %eax,%eax;
+00000279: ff20 0000 0000 0000   jbe 0x08048244(-52); next;
 
 0000027b: ba01 0000 0089 e189   (type) movl $1,%edx; movl %esp,%ecx;
 00000283: d3b8 0400 0000 cd80   movl $1,%ebx (STDOUT=1);movl $SYS_WRITE,%eax;
