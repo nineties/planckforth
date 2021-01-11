@@ -91,4 +91,4 @@ $ ./planck < bootstrap.fs runtests.fs
 | }    | shr       | ( a b -- c )    | c = a >> b (logical)         |
 | )    | sar       | ( a b -- c )    | c = a >> b (arithmetic)      |
 | v    | argv      | ( -- a-addr u ) | argv and argc                |
-| V    | version   | ( -- c-addr )   | Runtime infomation stringe   |
+| V    | version   | ( -- c-addr )   | Runtime infomation string    |
