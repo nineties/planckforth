@@ -9,7 +9,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: take benchmarks
       run: |
-        ./benchmark/gendoc.sh
+        ./benchmark/gendoc.sh | tee document/benchmark.md
     - name: upload to wiki
       uses: SwiftDocOrg/github-wiki-publish-action@v1
       with:

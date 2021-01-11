@@ -1,8 +1,5 @@
 #!/bin/bash
 
-mkdir -p document
-
-FILE=document/benchmark.md
 TARGETS="i386-linux-handwritten c"
 TIMEFORMAT='%U'
 function benchmark () {
@@ -29,7 +26,7 @@ function generate-table {
         t=`benchmark $2 $3`
         echo "| $impl | $t |"
     done
-} | tee -a $FILE
+}
 
-echo "# Benchmarks" | tee $FILE
+echo "# Benchmarks"
 generate-table "Bootstrap Time" bootstrap 5
