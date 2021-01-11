@@ -2149,7 +2149,7 @@ runtime-info ':' strchr 0 over c! 1+ constant copyright-text
 
 ( === Environment Dependent Code === )
 
-runtime  s" i386-linux handwrite" streq [if]
+runtime  s" i386-linux-handwritten" streq [if]
 
 %000 constant eax immediate
 %001 constant ecx immediate

@@ -94,6 +94,6 @@ $ ./planck < bootstrap.fs runtests.fs
 
 | Implementation of runtime         | build             | test status |
 |:----------------------------------|:------------------|:------------|
-| Handwritten binary for i386-linux | `make`            | [![i386-linux-handwrite](https://github.com/nineties/planckforth/workflows/i386-linux-handwrite/badge.svg)](https://github.com/nineties/planckforth/actions?query=workflow:i386-linux-handwrite) |
+| Handwritten binary for i386-linux | `make`            | [![i386-linux-handwritten](https://github.com/nineties/planckforth/workflows/i386-linux-handwritten/badge.svg)](https://github.com/nineties/planckforth/actions?query=workflow:i386-linux-handwritten) |
 | C                                 | `make c`          | [![C](https://github.com/nineties/planckforth/workflows/C/badge.svg)](https://github.com/nineties/planckforth/actions?query=workflow:C) |
 | Python 3.x                        | `make python`     | [![python](https://github.com/nineties/planckforth/workflows/python/badge.svg)](https://github.com/nineties/planckforth/actions?query=workflow:python) |
