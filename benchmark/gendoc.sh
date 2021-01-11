@@ -18,12 +18,13 @@ function generate-table {
     echo
     #echo "Average of $3 execution times."
     #echo
-    echo "| implementation | sec |"
-    echo "|:---------------|----:|"
+    echo "| runtime implementation | execution time (sec) |"
+    echo "|:-----------------------|---------------------:|"
     for impl in $TARGETS; do
         make $impl 2>&1 > /dev/null
+        runtime=`./planck < bootstrap.fs --runtime`
         t=`benchmark "time $2 2>&1 > /dev/null" $3`
-        echo "| $impl | $t |"
+        echo "| $runtime | $t |"
     done
     echo
 }
