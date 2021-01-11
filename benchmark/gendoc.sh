@@ -3,7 +3,7 @@
 mkdir -p document
 
 FILE=document/benchmark.md
-TARGETS="i386-linux-handwritten c python"
+TARGETS="i386-linux-handwritten c"
 TIMEFORMAT='%U'
 function benchmark () {
     sum=0
