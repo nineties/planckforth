@@ -566,6 +566,7 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
 : 2     [ key 2 key 0 - ] literal ;
 : 3     [ key 3 key 0 - ] literal ;
 : 4     [ key 4 key 0 - ] literal ;
+: 5     [ key 5 key 0 - ] literal ;
 : 10    [ key : key 0 - ] literal ;
 : 16    [ key @ key 0 - ] literal ;
 : -1    [ key 0 key 1 - ] literal ;
@@ -877,6 +878,10 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
     here 3 cells + ,            \ compile the address
     ['] nop ,                   \ does>, if any, will fill this cell
     ['] exit ,                  \ compile exit
+;
+
+: >body ( xt -- a-addr )
+    5 cells +
 ;
 
 : (does>)
@@ -2488,7 +2493,7 @@ need-defined (read)
         .s . .r u. u.r dec. hex. type
         ." s" bl '\n' cr space base decimal hex
         catch throw success
-        : ; [ ] immediate create :noname does> variable constant
+        : ; [ ] immediate create >body :noname does> variable constant
         ' ['] compile [compile] literal state
         + - * /mod / mod negate not and or xor invert within max min abs
         < > <= >= = <> 0< 0> 0<= 0>= 0= 0<> 1+ 1-
