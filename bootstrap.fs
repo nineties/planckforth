@@ -1473,16 +1473,24 @@ do-stack 16 cells + do-sp !
     compile rdrop
 ; immediate
 
+\ This code is take from Gforth
+: crossed-boundary? ( d n i )
+    swap -      ( d i-n )
+    2dup +      ( d i-n i+d-n )
+    over xor    ( d i-n (i-n)^(i+d-n) )
+    >r xor r>   ( d^(i-n) (i^n)^(i+d-n) )
+    and 0<
+;
+
 : +loop
     compile r>
     compile r>
+    compile 3dup
     compile rot
-    compile over
     compile +
     compile >r
-    compile over
     compile >r
-    compile =
+    compile crossed-boundary?
     compile 0branch
     here cell + backpatch-leave     \ leave jumps to here
     do> drop            \ do-mark
