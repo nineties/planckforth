@@ -1253,6 +1253,17 @@ decimal \ set default to decimal
     2drop
 ;
 
+\ Print string up to u characters
+: typen ( c-addr u -- )
+    begin dup 0> while
+        1- swap dup c@ dup unless
+            2drop exit
+        then
+        emit 1+ swap
+    repeat
+;
+
+
 \ Allocate a buffer for string literal
 bl bl * constant s-buffer-size  \ 1024
 create s-buffer s-buffer-size allot
@@ -2521,7 +2532,7 @@ need-defined (read)
         do loop +loop unloop leave i j k
 
         char [char] key emit spaces
-        .s . .r u. u.r dec. hex. type
+        .s . .r u. u.r dec. hex. type typen
         ." s" bl '\n' cr space base decimal hex
         catch throw success
         : ; [ ] immediate create >body :noname does> variable constant
