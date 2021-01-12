@@ -2543,6 +2543,7 @@ need-defined (read)
 ( === End of bootstrap === )
 
 :noname
+    argc @ 1 < 2 if exit then
     1 arg s" --version" 10 strneq if
         ." PlanckForth " version type cr bye
     else 1 arg s" --runtime" 10 strneq if
