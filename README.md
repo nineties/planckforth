@@ -1,4 +1,4 @@
-# PlanckForth: Bootstrapping Forth from Handwritten Binary
+# PlanckForth: Bootstrapping Forth from Handwritten ELF Binary
 
 This project aims to bootstrap a Forth interpreter from hand-written tiny ELF binary, for fun.
 No practical use.
@@ -94,7 +94,7 @@ $ ./planck < bootstrap.fs runtests.fs
 
 | Implementation of runtime         | build             | test status |
 |:----------------------------------|:------------------|:------------|
-| Handwritten binary for i386-linux | `make`            | [![i386-linux-handwritten](https://github.com/nineties/planckforth/workflows/i386-linux-handwritten/badge.svg)](https://github.com/nineties/planckforth/actions?query=workflow:i386-linux-handwritten) |
+| Handwritten ELF binary for i386-linux | `make`            | [![i386-linux-handwritten](https://github.com/nineties/planckforth/workflows/i386-linux-handwritten/badge.svg)](https://github.com/nineties/planckforth/actions?query=workflow:i386-linux-handwritten) |
 | C                                 | `make c`          | [![C](https://github.com/nineties/planckforth/workflows/C/badge.svg)](https://github.com/nineties/planckforth/actions?query=workflow:C) |
 | Python 3.x                        | `make python`     | [![python](https://github.com/nineties/planckforth/workflows/python/badge.svg)](https://github.com/nineties/planckforth/actions?query=workflow:python) |
 
