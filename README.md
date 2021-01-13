@@ -1,6 +1,6 @@
-# PlanckForth: Bootstrapping Forth from Handwritten ELF Binary
+# PlanckForth: Bootstrapping from Handwritten 1KB Binary
 
-This project aims to bootstrap a Forth interpreter from hand-written tiny ELF binary.
+This project aims to bootstrap a Forth interpreter from hand-written tiny (1KB) ELF binary.
 This is just for fun. No practical use.
 
 ## How to build
