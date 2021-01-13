@@ -3,7 +3,7 @@ name: i386-linux-handwritten
 on:
   push:
 jobs:
-  build:
+  runtests:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
