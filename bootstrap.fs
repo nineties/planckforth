@@ -2562,6 +2562,7 @@ need-defined (read)
     then then
 ; execute
 
+include lib/core.fs
 
 :noname
     rdrop
