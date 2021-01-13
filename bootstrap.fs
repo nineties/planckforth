@@ -659,8 +659,11 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
 : 0<=   0 <= ;
 : 0>=   0 >= ;
 
-\ ( a b c -- (a<=c & c<b) )
-: within tuck > -rot <= and ;
+\ ( x a b -- f )
+\ Returns a <= x & x < b if a <= b.
+\ It is equivalent to x-a u< b-a. See chapter 4 of
+\ Hacker's delight.
+: within over - >r - r> u< ;
 
 \ arithmetic shift
 : 2* 1 lshift ;
@@ -1099,8 +1102,8 @@ decimal \ set default to decimal
         endcase
         2dup
         \ ( base n base n )
-        0 -rot
-        \ ( base n 0 base n )
+        swap 0 swap
+        \ ( base n n 0 base )
         within unless
             \ failed to convert
             2drop r> r> nip false
