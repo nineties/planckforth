@@ -2392,7 +2392,7 @@ BLOCK-SIZE remaining-size  !
 [then] \ End of environment dependent code
 
 : defined? ( "name" -- f )
-    word throw find <> 0
+    word throw find 0 <>
 ;
 
 : need-defined ( "name" -- )
