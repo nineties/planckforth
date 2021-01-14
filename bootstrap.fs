@@ -63,7 +63,7 @@ l!
 \ 'V' ( -- c-addr )     Runtime information string
 
 \ The 1st stage interpreter repeats execution of k, f and x.
-\ There following line is an example program of planckforth
+\ The following line is an example program of planckforth
 \ which prints "Hello World!\n"
 \ --
 \ kHtketkltkltkotk tkWtkotkrtkltkdtk!tk:k0-tQ
@@ -79,7 +79,7 @@ l!
 \ - length of the name (6 bits)
 \ - smudge bit (1 bit)
 \ - immediate bit (1 bit)
-\ - characters of the name (N bits)
+\ - characters of the name (N bytes)
 \ - padding to align CELL boundary if necessary.
 \ - codewords and datawords (CELL-bye aligned)
 
