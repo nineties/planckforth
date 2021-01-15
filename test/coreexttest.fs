@@ -324,22 +324,22 @@ skip T{ 111 BUF:TEST ! 222 BUF:TEST CELL+ ! -> }T
 skip T{ BUF:TEST @ BUF:TEST CELL+ @ -> 111 222 }T
 
 \ -----------------------------------------------------------------------------
-testing VALUE TO
+testing value to
 
-T{ 111 VALUE VAL1 -999 VALUE VAL2 -> }T
+T{ 111 value VAL1 -999 value VAL2 -> }T
 T{ VAL1 -> 111 }T
 T{ VAL2 -> -999 }T
-T{ 222 TO VAL1 -> }T
+T{ 222 to VAL1 -> }T
 T{ VAL1 -> 222 }T
 T{ : VD1 VAL1 ; -> }T
 T{ VD1 -> 222 }T
-T{ : VD2 TO VAL2 ; -> }T
+T{ : VD2 to VAL2 ; -> }T
 T{ VAL2 -> -999 }T
 T{ -333 VD2 -> }T
 T{ VAL2 -> -333 }T
 T{ VAL1 -> 222 }T
-T{ 123 VALUE VAL3 IMMEDIATE VAL3 -> 123 }T
-T{ : VD3 VAL3 LITERAL ; VD3 -> 123 }T
+T{ 123 value VAL3 immediate VAL3 -> 123 }T
+T{ : VD3 VAL3 literal ; VD3 -> 123 }T
 
 \ -----------------------------------------------------------------------------
 testing CASE OF ENDOF ENDCASE

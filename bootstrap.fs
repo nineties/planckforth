@@ -915,6 +915,22 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
 \ ( n "name" -- )
 : constant create , does> @ ;
 
+( === Value === )
+
+\ ( n "name" -- )
+: value create , does> @ ;
+
+\ ( n "name" -- )
+: to
+    word! find! >cfa >body
+    state @ if
+        [compile] literal
+        compile !
+    else
+        !
+    then
+; immediate
+
 ( === Throw and Catch === )
 
 \ 'xt catch' saves data stack pointer and a marker
@@ -2561,7 +2577,8 @@ need-defined (read)
         .s . .r u. u.r dec. hex. type typen
         ." s" bl '\n' cr space base decimal hex
         catch throw success
-        : ; [ ] immediate create >body :noname does> variable constant
+        : ; [ ] immediate create >body :noname does>
+        variable constant value to
         ' ['] compile [compile] literal state
         + - * /mod / mod negate not and or xor invert within max min abs
         < > <= >= = <> 0< 0> 0<= 0>= 0= 0<> 1+ 1-
