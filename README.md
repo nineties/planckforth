@@ -90,6 +90,10 @@ $ ./planck < bootstrap.fs runtests.fs
 | v    | argv      | ( -- a-addr u ) | argv and argc                           |
 | V    | version   | ( -- c-addr )   | Runtime infomation string               |
 
+# Binary Layout
+
+![binary layout](https://user-images.githubusercontent.com/172570/104666244-c0c58800-5716-11eb-9798-847ea2fe76b8.jpeg)
+
 # Implementations
 
 | Implementation of runtime         | build             | test status |
