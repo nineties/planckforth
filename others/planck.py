@@ -249,12 +249,6 @@ def argv():
 add_simple_operator('v', argv)
 add_simple_operator('V', lambda: push(VERSION_ADDR))
 
-SUCCESS = 0
-ALLOCATE_ERROR = -59
-CLOSE_FILE_ERROR = -62
-OPEN_FILE_ERROR = -69
-READ_FILE_ERROR = -70
-WRITE_FILE_ERROR = -75
 def openfile():
     flag = pop()
     name = read_string(pop())

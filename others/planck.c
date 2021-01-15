@@ -175,8 +175,6 @@ defbinary(")", shr, >>, uintptr_t)
 defbinary("%", sar, >>, intptr_t)
 
 /* File IO */
-#define SUCCESS 0
-#define ALLOCATE_ERROR      -59
 defcode("(open)", openfile) {
     int flags = pop();
     char *name = (char*) pop();
