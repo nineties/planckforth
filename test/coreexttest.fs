@@ -316,12 +316,12 @@ T{ -1  2  1 QD6 -> 2 3 4 5 6 7 6 }T
 T{  2 -1  1 QD6 -> -1 0 1 3 }T
 
 \ -----------------------------------------------------------------------------
-testing BUFFER:
+testing buffer:
 
-T{ 8 BUFFER: BUF:TEST -> }T
-T{ BUF:TEST dup ALIGNED = -> true }T
-T{ 111 BUF:TEST ! 222 BUF:TEST CELL+ ! -> }T
-T{ BUF:TEST @ BUF:TEST CELL+ @ -> 111 222 }T
+skip T{ 8 buffer: BUF:TEST -> }T
+skip T{ BUF:TEST dup ALIGNED = -> true }T
+skip T{ 111 BUF:TEST ! 222 BUF:TEST CELL+ ! -> }T
+skip T{ BUF:TEST @ BUF:TEST CELL+ @ -> 111 222 }T
 
 \ -----------------------------------------------------------------------------
 testing VALUE TO
