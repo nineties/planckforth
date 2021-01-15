@@ -1478,6 +1478,18 @@ do-stack 16 cells + do-sp !
     here >do do-mark >do
 ; immediate
 
+\ compile: ( -- ... )
+: ?do
+    compile 2dup
+    compile >r  \ save start
+    compile >r  \ save limit
+    compile <>
+    compile 0branch
+    0 ,
+    here >do do-mark >do
+    here cell- >do leave-mark >do
+; immediate
+
 : leave ( -- do: orig mark )
     compile branch
     here >do
@@ -2543,7 +2555,7 @@ need-defined (read)
 
         if else then unless begin until again while repeat
         recurse case of rangeof endof endcase
-        do loop +loop unloop leave i j k
+        do ?do loop +loop unloop leave i j k
 
         char [char] key emit spaces
         .s . .r u. u.r dec. hex. type typen

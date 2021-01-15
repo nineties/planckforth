@@ -267,7 +267,7 @@ T{ 5 0 QD -> 0 1 2 3 4 }T
 T{ 50 1 QD1 -> 1 11 21 31 41 }T
 T{ 50 0 QD1 -> 0 10 20 30 40 }T
 
-: QD2 ?do i 3 > if LEAVE else i then loop ;
+: QD2 ?do i 3 > if leave else i then loop ;
 T{ 5 -1 QD2 -> -1 0 1 2 3 }T
 
 : QD3 ?do i 1 +loop ;
@@ -294,7 +294,7 @@ variable INCRMNT
    ?do
       1 ITERS +!
       i
-      ITERS @  6 = if LEAVE then
+      ITERS @  6 = if leave then
       INCRMNT @
    +loop ITERS @
 ;
