@@ -1471,14 +1471,14 @@ do-stack 16 cells + do-sp !
     do-sp @ @
 ;
 
-\ compile: ( -- dest mark )
+\ compile: ( -- do: dest mark )
 : do
     compile >r  \ save start
     compile >r  \ save limit
     here >do do-mark >do
 ; immediate
 
-: leave ( -- orig mark )
+: leave ( -- do: orig mark )
     compile branch
     here >do
     0 ,        \ fill dummy offset
