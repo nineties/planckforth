@@ -2466,6 +2466,17 @@ need-defined (read)
     word throw included
 ;
 
+( === Forget === )
+
+\ Define a word "name". The word forgets itself and everything
+\ defined after when executed.
+: marker ( "name" -- )
+    create
+        latest name>link ,    \ save latest
+    does>
+        @ &latest !
+;
+
 ( === Primitive Instructions === )
 
 : insn:docol docol ;
@@ -2548,7 +2559,7 @@ need-defined (read)
 
         ( \
         c@ c! c, @ ! ,
-        word find >cfa >dfa
+        word find >cfa >dfa marker
         bye execute exit here latest
     end-update-dictionary
 ; execute
