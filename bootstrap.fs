@@ -1285,7 +1285,7 @@ decimal \ set default to decimal
             2drop exit
         then
         emit 1+ swap
-    repeat
+    repeat 2drop
 ;
 
 
