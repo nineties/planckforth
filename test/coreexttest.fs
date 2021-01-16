@@ -455,13 +455,13 @@ testing SAVE-INPUT and RESTORE-INPUT with a string source
 variable SI_INC 0 SI_INC !
 
 : SI1
-   SI_INC @ >IN +!
+   SI_INC @ >in +!
    15 SI_INC !
 ;
 
-: S$ S" SAVE-INPUT SI1 RESTORE-INPUT 12345" ;
+: s$ s" SAVE-INPUT SI1 RESTORE-INPUT 12345" ;
 
-T{ S$ EVALUATE SI_INC @ -> 0 2345 15 }T
+T{ s$ EVALUATE SI_INC @ -> 0 2345 15 }T
 
 \ -----------------------------------------------------------------------------
 testing .(
@@ -615,9 +615,9 @@ T{ 1 DEFER2 -> 1 1 }T
 \ -----------------------------------------------------------------------------
 testing HOLDS  (Forth 2012)
 
-: HTEST S" Testing HOLDS" ;
-: HTEST2 S" works" ;
-: HTEST3 S" Testing HOLDS works 123" ;
+: HTEST s" Testing HOLDs" ;
+: HTEST2 s" works" ;
+: HTEST3 s" Testing HOLDS works 123" ;
 T{ 0 0 <#  HTEST HOLDS #> HTEST S= -> true }T
 T{ 123 0 <# #S bl HOLD HTEST2 HOLDS bl HOLD HTEST HOLDS #>
    HTEST3 S= -> true }T
@@ -629,8 +629,8 @@ testing REFILL SOURCE-ID
 \ REFILL and SOURCE-ID from the user input device can't be tested from a file,
 \ can only be tested from a string via EVALUATE
 
-T{ : RF1  S" REFILL" EVALUATE ; RF1 -> false }T
-T{ : SID1  S" SOURCE-ID" EVALUATE ; SID1 -> -1 }T
+T{ : RF1  s" REFILL" EVALUATE ; RF1 -> false }T
+T{ : SID1  s" SOURCE-ID" EVALUATE ; SID1 -> -1 }T
 
 \ ------------------------------------------------------------------------------
 testing S\"  (Forth 2012 compilation mode)
@@ -639,7 +639,7 @@ testing S\"  (Forth 2012 compilation mode)
 \ interpretation semantics. S\" in interpretation mode is tested in the tests on
 \ the File-Access word set
 
-T{ : SSQ1 S\" abc" S" abc" S= ; -> }T  \ No escapes
+T{ : SSQ1 S\" abc" s" abc" S= ; -> }T  \ No escapes
 T{ SSQ1 -> true }T
 T{ : SSQ2 S\" " ; SSQ2 swap drop -> 0 }T    \ Empty string
 
@@ -674,7 +674,7 @@ CR .( another line)
 T{ : SSQ4 S\" \nOne line...\nanotherLine\n" TYPE ; SSQ4 -> }T
 
 \ Test bare escapable characters appear as themselves
-T{ : SSQ5 S\" abeflmnqrtvxz" S" abeflmnqrtvxz" S= ; SSQ5 -> true }T
+T{ : SSQ5 S\" abeflmnqrtvxz" s" abeflmnqrtvxz" S= ; SSQ5 -> true }T
 
 T{ : SSQ6 S\" a\""2drop 1111 ; SSQ6 -> 1111 }T \ Parsing behaviour
 
