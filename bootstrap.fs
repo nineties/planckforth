@@ -546,6 +546,9 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
 \ ( -- xt )
 : :noname
     align
+    here latest , &latest !
+    smudge-bit c,       \ length 0
+    align
     here
     [ docol ] literal , \ compile docol
     ]                   \ enter compile mode

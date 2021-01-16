@@ -401,34 +401,34 @@ T{ : CS6 case 1 of endof 2 endcase ; 1 CS6 -> }T
 T{ : CS7 case 3 of endof 2 endcase ; 1 CS7 -> 1 }T
 
 \ -----------------------------------------------------------------------------
-testing :NONAME RECURSE
+testing :noname recurse
 
 variable NN1
 variable NN2
-:NONAME 1234 ; NN1 !
-:NONAME 9876 ; NN2 !
-T{ NN1 @ EXECUTE -> 1234 }T
-T{ NN2 @ EXECUTE -> 9876 }T
+:noname 1234 ; NN1 !
+:noname 9876 ; NN2 !
+T{ NN1 @ execute -> 1234 }T
+T{ NN2 @ execute -> 9876 }T
 
-T{ :NONAME ( n -- 0,1,..n ) dup if dup >r 1- RECURSE r> then ;
+T{ :noname ( n -- 0,1,..n ) dup if dup >r 1- recurse r> then ;
    constant RN1 -> }T
-T{ 0 RN1 EXECUTE -> 0 }T
-T{ 4 RN1 EXECUTE -> 0 1 2 3 4 }T
+T{ 0 RN1 execute -> 0 }T
+T{ 4 RN1 execute -> 0 1 2 3 4 }T
 
-:NONAME  ( n -- n1 )    \ Multiple RECURSEs in one definition
+:noname  ( n -- n1 )    \ Multiple RECURSEs in one definition
    1- dup
-   CASE 0 OF exit ENDOF
-        1 OF 11 swap RECURSE ENDOF
-        2 OF 22 swap RECURSE ENDOF
-        3 OF 33 swap RECURSE ENDOF
-        drop ABS RECURSE exit
-   ENDCASE
+   case 0 of exit endof
+        1 of 11 swap recurse endof
+        2 of 22 swap recurse endof
+        3 of 33 swap recurse endof
+        drop abs recurse exit
+   endcase
 ; constant RN2
 
-T{  1 RN2 EXECUTE -> 0 }T
-T{  2 RN2 EXECUTE -> 11 0 }T
-T{  4 RN2 EXECUTE -> 33 22 11 0 }T
-T{ 25 RN2 EXECUTE -> 33 22 11 0 }T
+T{  1 RN2 execute -> 0 }T
+T{  2 RN2 execute -> 11 0 }T
+T{  4 RN2 execute -> 33 22 11 0 }T
+T{ 25 RN2 execute -> 33 22 11 0 }T
 
 \ -----------------------------------------------------------------------------
 testing C"
@@ -442,7 +442,7 @@ T{ : CQ3 C" 2345"COUNT EVALUATE ; CQ3 -> 2345 }T
 \ -----------------------------------------------------------------------------
 testing COMPILE,
 
-:NONAME dup + ; constant dup+
+:noname dup + ; constant dup+
 T{ : Q dup+ COMPILE, ; -> }T
 T{ : AS1 [ Q ] ; -> }T
 T{ 123 AS1 -> 246 }T
