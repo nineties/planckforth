@@ -8,6 +8,7 @@
 
 include test/tester.fs
 include test/core.fs
+include test/utilities.fs
 include test/errorreport.fs
 include test/coreexttest.fs
 

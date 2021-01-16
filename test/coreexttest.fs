@@ -286,16 +286,16 @@ T{   0 50 QD5 -> 50 40 30 20 10 0 }T
 T{ -25 10 QD5 -> 10 0 -10 -20 }T
 
 variable ITERS
-variable INCRMNT
+variable INcrMNT
 
 : QD6 ( limit start increment -- )
-   INCRMNT !
+   INcrMNT !
    0 ITERS !
    ?do
       1 ITERS +!
       i
       ITERS @  6 = if leave then
-      INCRMNT @
+      INcrMNT @
    +loop ITERS @
 ;
 
@@ -318,10 +318,10 @@ T{  2 -1  1 QD6 -> -1 0 1 3 }T
 \ -----------------------------------------------------------------------------
 testing buffer:
 
-skip T{ 8 buffer: BUF:TEST -> }T
-skip T{ BUF:TEST dup ALIGNED = -> true }T
-skip T{ 111 BUF:TEST ! 222 BUF:TEST CELL+ ! -> }T
-skip T{ BUF:TEST @ BUF:TEST CELL+ @ -> 111 222 }T
+skip T{ 8 buffer: BUF:test -> }T
+skip T{ BUF:test dup ALIGNED = -> true }T
+skip T{ 111 BUF:test ! 222 BUF:test CELL+ ! -> }T
+skip T{ BUF:test @ BUF:test CELL+ @ -> 111 222 }T
 
 \ -----------------------------------------------------------------------------
 testing value to
@@ -434,10 +434,10 @@ T{ 25 RN2 execute -> 33 22 11 0 }T
 testing C"
 
 skip T{ : CQ1 C" 123" ; -> }T
-skip T{ CQ1 COUNT EVALUATE -> 123 }T
+skip T{ CQ1 count evaluate -> 123 }T
 skip T{ : CQ2 C" " ; -> }T
-skip T{ CQ2 COUNT EVALUATE -> }T
-skip T{ : CQ3 C" 2345"COUNT EVALUATE ; CQ3 -> 2345 }T
+skip T{ CQ2 count evaluate -> }T
+skip T{ : CQ3 C" 2345"count evaluate ; CQ3 -> 2345 }T
 
 \ -----------------------------------------------------------------------------
 testing compile,
@@ -461,231 +461,231 @@ variable SI_INC 0 SI_INC !
 
 : s$ s" SAVE-INPUT SI1 RESTORE-INPUT 12345" ;
 
-T{ s$ EVALUATE SI_INC @ -> 0 2345 15 }T
+skip T{ s$ evaluate SI_INC @ -> 0 2345 15 }T
 
 \ -----------------------------------------------------------------------------
 testing .(
 
-CR CR .( Output from .() 
-T{ CR .( You should see -9876: ) -9876 . -> }T
-T{ CR .( and again: ).( -9876)CR -> }T
+cr cr .( Output from .() 
+T{ cr .( You should see -9876: ) -9876 . -> }T
+T{ cr .( and again: ).( -9876)cr -> }T
 
-CR CR .( On the next 2 lines you should see First then Second messages:)
-T{ : DOTP  CR ." Second message via ." [char] " EMIT    \ Check .( is immediate
-     [ CR ] .( First message via .( ) ; DOTP -> }T
-CR CR
-T{ : IMM? bl word find nip ; IMM? .( -> 1 }T
+cr cr .( On the next 2 lines you should see First then Second messages:)
+T{ : DOTP  cr ." Second message via ." [char] " emit    \ Check .( is immediate
+     [ cr ] .( First message via .( ) ; DOTP -> }T
+cr cr
+skip T{ : IMM? word throw find nip ; IMM? .( -> 1 }T
 
 \ -----------------------------------------------------------------------------
-testing .R and U.R - has to handle different cell sizes
+testing .r and u.r - has to handle different cell sizes
 
 \ Create some large integers just below/above MAX and Min INTs
-max-int 73 79 */ constant LI1
-min-int 71 73 */ constant LI2
+\ max-int 73 79 */ constant LI1
+\ min-int 71 73 */ constant LI2
+\ 
+\ LI1 0 <# #S #> nip constant LENLI1
 
-LI1 0 <# #S #> nip constant LENLI1
-
-: (.R&U.R)  ( u1 u2 -- )  \ u1 <= string length, u2 is required indentation
-   tuck + >r
-   LI1 over SPACES  . CR r@    LI1 swap  .R CR
-   LI2 over SPACES  . CR r@ 1+ LI2 swap  .R CR
-   LI1 over SPACES U. CR r@    LI1 swap U.R CR
-   LI2 swap SPACES U. CR r>    LI2 swap U.R CR
-;
-
-: .R&U.R  ( -- )
-   CR ." You should see lines duplicated:" CR
-   ." indented by 0 spaces" CR 0      0 (.R&U.R) CR
-   ." indented by 0 spaces" CR LENLI1 0 (.R&U.R) CR \ Just fits required width
-   ." indented by 5 spaces" CR LENLI1 5 (.R&U.R) CR
-;
-
-CR CR .( Output from .R and U.R)
-T{ .R&U.R -> }T
+\ : (.r&u.r)  ( u1 u2 -- )  \ u1 <= string length, u2 is required indentation
+\    tuck + >r
+\    LI1 over SPACES  . cr r@    LI1 swap  .r cr
+\    LI2 over SPACES  . cr r@ 1+ LI2 swap  .r cr
+\    LI1 over SPACES u. cr r@    LI1 swap u.r cr
+\    LI2 swap SPACES u. cr r>    LI2 swap u.r cr
+\ ;
+\ 
+\ : .r&u.r  ( -- )
+\    cr ." You should see lines duplicated:" cr
+\    ." indented by 0 spaces" cr 0      0 (.r&u.r) cr
+\    ." indented by 0 spaces" cr LENLI1 0 (.r&u.r) cr \ Just fits required width
+\    ." indented by 5 spaces" cr LENLI1 5 (.r&u.r) cr
+\ ;
+\ 
+\ cr cr .( Output from .r and u.r)
+skip T{ .r&u.r -> }T
 
 \ -----------------------------------------------------------------------------
-testing PAD ERASE
-\ Must handle different size characters i.e. 1 CHARS >= 1 
+testing pad erase
+\ Must handle different size characters i.e. 1 chars >= 1 
 
-84 constant CHARS/PAD      \ Minimum size of PAD in chars
-CHARS/PAD CHARS constant AUS/PAD
-: CHECKPAD  ( caddr u ch -- f )  \ f = true if u chars = ch
+84 constant chars/pad      \ Minimum size of pad in chars
+chars/pad chars constant AUS/pad
+: checkpad  ( caddr u ch -- f )  \ f = true if u chars = ch
    swap 0
    ?do
-      over i CHARS + C@ over <>
-      if 2drop UNLOOP false exit then
+      over i chars + c@ over <>
+      if 2drop unloop false exit then
    loop  
    2drop true
 ;
 
-T{ PAD drop -> }T
-T{ 0 invert PAD C! -> }T
-T{ PAD C@ constant MAXCHAR -> }T
-T{ PAD CHARS/PAD 2DUP MAXCHAR FILL MAXCHAR CHECKPAD -> true }T
-T{ PAD CHARS/PAD 2DUP CHARS ERASE 0 CHECKPAD -> true }T
-T{ PAD CHARS/PAD 2DUP MAXCHAR FILL PAD 0 ERASE MAXCHAR CHECKPAD -> true }T
-T{ PAD 43 CHARS + 9 CHARS ERASE -> }T
-T{ PAD 43 MAXCHAR CHECKPAD -> true }T
-T{ PAD 43 CHARS + 9 0 CHECKPAD -> true }T
-T{ PAD 52 CHARS + CHARS/PAD 52 - MAXCHAR CHECKPAD -> true }T
+skip T{ pad drop -> }T
+skip T{ 0 invert pad C! -> }T
+skip T{ pad c@ constant MAXCHAR -> }T
+skip T{ pad chars/pad 2DUP MAXCHAR FILL MAXCHAR checkpad -> true }T
+skip T{ pad chars/pad 2DUP chars erase 0 checkpad -> true }T
+skip T{ pad chars/pad 2DUP MAXCHAR FILL pad 0 erase MAXCHAR checkpad -> true }T
+skip T{ pad 43 chars + 9 chars erase -> }T
+skip T{ pad 43 MAXCHAR checkpad -> true }T
+skip T{ pad 43 chars + 9 0 checkpad -> true }T
+skip T{ pad 52 chars + chars/pad 52 - MAXCHAR checkpad -> true }T
 
-\ Check that use of word and pictured numeric output do not corrupt PAD
+\ Check that use of word and pictured numeric output do not corrupt pad
 \ Minimum size of buffers for these are 33 chars and (2*n)+2 chars respectively
 \ where n is number of bits per cell
 
-PAD CHARS/PAD ERASE
-2 base !
-max-uint max-uint <# #S char 1 dup HOLD HOLD #> 2drop
-decimal
-bl word 12345678123456781234567812345678 drop
-T{ PAD CHARS/PAD 0 CHECKPAD -> true }T
+\ pad chars/pad erase
+\ 2 base !
+\ max-uint max-uint <# #S char 1 dup hold hold #> 2drop
+\ decimal
+\ bl word 12345678123456781234567812345678 drop
+skip T{ pad chars/pad 0 checkpad -> true }T
 
 \ -----------------------------------------------------------------------------
-testing PARSE
+testing parse
 
-T{ char | PARSE 1234| dup rot rot EVALUATE -> 4 1234 }T
-T{ char ^ PARSE  23 45 ^ dup rot rot EVALUATE -> 7 23 45 }T
-: PA1 [char] $ PARSE dup >r PAD swap CHARS MOVE PAD r> ;
-T{ PA1 3456
-   dup rot rot EVALUATE -> 4 3456 }T
-T{ char A PARSE A swap drop -> 0 }T
-T{ char Z PARSE
-   swap drop -> 0 }T
-T{ char " PARSE 4567 "dup rot rot EVALUATE -> 5 4567 }T
+skip T{ char | parse 1234| dup rot rot evaluate -> 4 1234 }T
+skip T{ char ^ parse  23 45 ^ dup rot rot evaluate -> 7 23 45 }T
+\ : PA1 [char] $ parse dup >r pad swap chars MOVE pad r> ;
+skip T{ PA1 3456
+skip    dup rot rot evaluate -> 4 3456 }T
+skip T{ char A parse A swap drop -> 0 }T
+skip T{ char Z parse
+skip    swap drop -> 0 }T
+skip T{ char " parse 4567 "dup rot rot evaluate -> 5 4567 }T
  
 \ -----------------------------------------------------------------------------
-testing PARSE-NAME  (Forth 2012)
-\ Adapted from the PARSE-NAME RfD tests
+testing parse-name  (Forth 2012)
+\ Adapted from the parse-name RfD tests
 
-T{ PARSE-NAME abcd  STR1  S= -> true }T        \ No leading spaces
-T{ PARSE-NAME      abcde STR2 S= -> true }T    \ Leading spaces
+skip T{ parse-name abcd  STR1  S= -> true }T        \ No leading spaces
+skip T{ parse-name      abcde STR2 S= -> true }T    \ Leading spaces
 
 \ Test empty parse area, new lines are necessary
-T{ PARSE-NAME
-  nip -> 0 }T
-\ Empty parse area with spaces after PARSE-NAME
-T{ PARSE-NAME         
-  nip -> 0 }T
+skip T{ parse-name
+skip  nip -> 0 }T
+\ Empty parse area with spaces after parse-name
+skip T{ parse-name         
+skip  nip -> 0 }T
 
-T{ : PARSE-NAME-TEST ( "name1" "name2" -- n )
-    PARSE-NAME PARSE-NAME S= ; -> }T
-T{ PARSE-NAME-TEST abcd abcd  -> true }T
-T{ PARSE-NAME-TEST abcd   abcd  -> true }T  \ Leading spaces
-T{ PARSE-NAME-TEST abcde abcdf -> false }T
-T{ PARSE-NAME-TEST abcdf abcde -> false }T
-T{ PARSE-NAME-TEST abcde abcde
-   -> true }T         \ Parse to end of line
-T{ PARSE-NAME-TEST abcde           abcde         
-   -> true }T         \ Leading and trailing spaces
+skip T{ : parse-name-test ( "name1" "name2" -- n )
+skip     parse-name parse-name S= ; -> }T
+skip T{ parse-name-test abcd abcd  -> true }T
+skip T{ parse-name-test abcd   abcd  -> true }T  \ Leading spaces
+skip T{ parse-name-test abcde abcdf -> false }T
+skip T{ parse-name-test abcdf abcde -> false }T
+skip T{ parse-name-test abcde abcde
+skip    -> true }T         \ Parse to end of line
+skip T{ parse-name-test abcde           abcde         
+skip    -> true }T         \ Leading and trailing spaces
 
 \ -----------------------------------------------------------------------------
-testing DEFER DEFEr@ DEFER! IS ACTION-OF (Forth 2012)
+testing defer defer@ defer! is action-of (Forth 2012)
 \ Adapted from the Forth 200X RfD tests
 
-T{ DEFER DEFER1 -> }T
-T{ : MY-DEFER DEFER ; -> }T
-T{ : IS-DEFER1 IS DEFER1 ; -> }T
-T{ : ACTION-DEFER1 ACTION-OF DEFER1 ; -> }T
-T{ : DEF! DEFER! ; -> }T
-T{ : DEF@ DEFEr@ ; -> }T
+skip T{ defer defer1 -> }T
+skip T{ : MY-defer defer ; -> }T
+skip T{ : is-defer1 is defer1 ; -> }T
+skip T{ : action-defer1 action-of defer1 ; -> }T
+skip T{ : DEF! defer! ; -> }T
+skip T{ : DEF@ defer@ ; -> }T
 
-T{ ' * ' DEFER1 DEFER! -> }T
-T{ 2 3 DEFER1 -> 6 }T
-T{ ' DEFER1 DEFEr@ -> ' * }T
-T{ ' DEFER1 DEF@ -> ' * }T
-T{ ACTION-OF DEFER1 -> ' * }T
-T{ ACTION-DEFER1 -> ' * }T
-T{ ' + IS DEFER1 -> }T
-T{ 1 2 DEFER1 -> 3 }T
-T{ ' DEFER1 DEFEr@ -> ' + }T
-T{ ' DEFER1 DEF@ -> ' + }T
-T{ ACTION-OF DEFER1 -> ' + }T
-T{ ACTION-DEFER1 -> ' + }T
-T{ ' - IS-DEFER1 -> }T
-T{ 1 2 DEFER1 -> -1 }T
-T{ ' DEFER1 DEFEr@ -> ' - }T
-T{ ' DEFER1 DEF@ -> ' - }T
-T{ ACTION-OF DEFER1 -> ' - }T
-T{ ACTION-DEFER1 -> ' - }T
+skip T{ ' * ' defer1 defer! -> }T
+skip T{ 2 3 defer1 -> 6 }T
+skip T{ ' defer1 defer@ -> ' * }T
+skip T{ ' defer1 DEF@ -> ' * }T
+skip T{ action-of defer1 -> ' * }T
+skip T{ action-defer1 -> ' * }T
+skip T{ ' + is defer1 -> }T
+skip T{ 1 2 defer1 -> 3 }T
+skip T{ ' defer1 defer@ -> ' + }T
+skip T{ ' defer1 DEF@ -> ' + }T
+skip T{ action-of defer1 -> ' + }T
+skip T{ action-defer1 -> ' + }T
+skip T{ ' - is-defer1 -> }T
+skip T{ 1 2 defer1 -> -1 }T
+skip T{ ' defer1 defer@ -> ' - }T
+skip T{ ' defer1 DEF@ -> ' - }T
+skip T{ action-of defer1 -> ' - }T
+skip T{ action-defer1 -> ' - }T
 
-T{ MY-DEFER DEFER2 -> }T
-T{ ' dup IS DEFER2 -> }T
-T{ 1 DEFER2 -> 1 1 }T
-
-\ -----------------------------------------------------------------------------
-testing HOLDS  (Forth 2012)
-
-: HTEST s" Testing HOLDs" ;
-: HTEST2 s" works" ;
-: HTEST3 s" Testing HOLDS works 123" ;
-T{ 0 0 <#  HTEST HOLDS #> HTEST S= -> true }T
-T{ 123 0 <# #S bl HOLD HTEST2 HOLDS bl HOLD HTEST HOLDS #>
-   HTEST3 S= -> true }T
-T{ : HLD HOLDS ; -> }T
-T{ 0 0 <#  HTEST HLD #> HTEST S= -> true }T
+skip T{ MY-defer defer2 -> }T
+skip T{ ' dup is defer2 -> }T
+skip T{ 1 defer2 -> 1 1 }T
 
 \ -----------------------------------------------------------------------------
-testing REFILL SOURCE-ID
-\ REFILL and SOURCE-ID from the user input device can't be tested from a file,
-\ can only be tested from a string via EVALUATE
+testing holds  (Forth 2012)
 
-T{ : RF1  s" REFILL" EVALUATE ; RF1 -> false }T
-T{ : SID1  s" SOURCE-ID" EVALUATE ; SID1 -> -1 }T
+: htest s" Testing holds" ;
+: htest2 s" works" ;
+: htest3 s" Testing holds works 123" ;
+skip T{ 0 0 <#  htest holds #> htest S= -> true }T
+skip T{ 123 0 <# #S bl hold htest2 holds bl hold htest holds #>
+skip    htest3 S= -> true }T
+skip T{ : HLD holds ; -> }T
+skip T{ 0 0 <#  htest HLD #> htest S= -> true }T
+
+\ -----------------------------------------------------------------------------
+testing refill source-id
+\ refill and source-id from the user input device can't be tested from a file,
+\ can only be tested from a string via evaluate
+
+skip T{ : RF1  s" refill" evaluate ; RF1 -> false }T
+skip T{ : SID1  s" source-id" evaluate ; SID1 -> -1 }T
 
 \ ------------------------------------------------------------------------------
-testing S\"  (Forth 2012 compilation mode)
+testing s\"  (Forth 2012 compilation mode)
 \ Extended the Forth 200X RfD tests
-\ Note this tests the Core Ext definition of S\" which has unedfined
-\ interpretation semantics. S\" in interpretation mode is tested in the tests on
+\ Note this tests the Core Ext definition of s\" which has unedfined
+\ interpretation semantics. s\" in interpretation mode is tested in the tests on
 \ the File-Access word set
 
-T{ : SSQ1 S\" abc" s" abc" S= ; -> }T  \ No escapes
-T{ SSQ1 -> true }T
-T{ : SSQ2 S\" " ; SSQ2 swap drop -> 0 }T    \ Empty string
+skip T{ : SSQ1 s\" abc" s" abc" S= ; -> }T  \ No escapes
+skip T{ SSQ1 -> true }T
+skip T{ : SSQ2 s\" " ; SSQ2 swap drop -> 0 }T    \ Empty string
 
-T{ : SSQ3 S\" \a\b\e\f\l\m\q\r\t\v\x0F0\x1Fa\xaBx\z\"\\" ; -> }T
-T{ SSQ3 swap drop          ->  20 }T    \ String length
-T{ SSQ3 drop            C@ ->   7 }T    \ \a   BEL  Bell
-T{ SSQ3 drop  1 CHARS + C@ ->   8 }T    \ \b   BS   Backspace
-T{ SSQ3 drop  2 CHARS + C@ ->  27 }T    \ \e   ESC  Escape
-T{ SSQ3 drop  3 CHARS + C@ ->  12 }T    \ \f   FF   Form feed
-T{ SSQ3 drop  4 CHARS + C@ ->  10 }T    \ \l   LF   Line feed
-T{ SSQ3 drop  5 CHARS + C@ ->  13 }T    \ \m        CR of CR/LF pair
-T{ SSQ3 drop  6 CHARS + C@ ->  10 }T    \           LF of CR/LF pair
-T{ SSQ3 drop  7 CHARS + C@ ->  34 }T    \ \q   "    Double Quote
-T{ SSQ3 drop  8 CHARS + C@ ->  13 }T    \ \r   CR   Carriage Return
-T{ SSQ3 drop  9 CHARS + C@ ->   9 }T    \ \t   TAB  Horizontal Tab
-T{ SSQ3 drop 10 CHARS + C@ ->  11 }T    \ \v   VT   Vertical Tab
-T{ SSQ3 drop 11 CHARS + C@ ->  15 }T    \ \x0F      Given Char
-T{ SSQ3 drop 12 CHARS + C@ ->  48 }T    \ 0    0    Digit follow on
-T{ SSQ3 drop 13 CHARS + C@ ->  31 }T    \ \x1F      Given Char
-T{ SSQ3 drop 14 CHARS + C@ ->  97 }T    \ a    a    Hex follow on
-T{ SSQ3 drop 15 CHARS + C@ -> 171 }T    \ \xaB      Insensitive Given Char
-T{ SSQ3 drop 16 CHARS + C@ -> 120 }T    \ x    x    Non hex follow on
-T{ SSQ3 drop 17 CHARS + C@ ->   0 }T    \ \z   NUL  No Character
-T{ SSQ3 drop 18 CHARS + C@ ->  34 }T    \ \"   "    Double Quote
-T{ SSQ3 drop 19 CHARS + C@ ->  92 }T    \ \\   \    Back Slash
+skip T{ : SSQ3 s\" \a\b\e\f\l\m\q\r\t\v\x0F0\x1Fa\xaBx\z\"\\" ; -> }T
+skip T{ SSQ3 swap drop          ->  20 }T    \ String length
+skip T{ SSQ3 drop            c@ ->   7 }T    \ \a   BEL  Bell
+skip T{ SSQ3 drop  1 chars + c@ ->   8 }T    \ \b   BS   Backspace
+skip T{ SSQ3 drop  2 chars + c@ ->  27 }T    \ \e   ESC  Escape
+skip T{ SSQ3 drop  3 chars + c@ ->  12 }T    \ \f   FF   Form feed
+skip T{ SSQ3 drop  4 chars + c@ ->  10 }T    \ \l   LF   Line feed
+skip T{ SSQ3 drop  5 chars + c@ ->  13 }T    \ \m        cr of cr/LF pair
+skip T{ SSQ3 drop  6 chars + c@ ->  10 }T    \           LF of cr/LF pair
+skip T{ SSQ3 drop  7 chars + c@ ->  34 }T    \ \q   "    Double Quote
+skip T{ SSQ3 drop  8 chars + c@ ->  13 }T    \ \r   cr   Carriage Return
+skip T{ SSQ3 drop  9 chars + c@ ->   9 }T    \ \t   TAB  Horizontal Tab
+skip T{ SSQ3 drop 10 chars + c@ ->  11 }T    \ \v   VT   Vertical Tab
+skip T{ SSQ3 drop 11 chars + c@ ->  15 }T    \ \x0F      Given Char
+skip T{ SSQ3 drop 12 chars + c@ ->  48 }T    \ 0    0    Digit follow on
+skip T{ SSQ3 drop 13 chars + c@ ->  31 }T    \ \x1F      Given Char
+skip T{ SSQ3 drop 14 chars + c@ ->  97 }T    \ a    a    Hex follow on
+skip T{ SSQ3 drop 15 chars + c@ -> 171 }T    \ \xaB      Insensitive Given Char
+skip T{ SSQ3 drop 16 chars + c@ -> 120 }T    \ x    x    Non hex follow on
+skip T{ SSQ3 drop 17 chars + c@ ->   0 }T    \ \z   NUL  No Character
+skip T{ SSQ3 drop 18 chars + c@ ->  34 }T    \ \"   "    Double Quote
+skip T{ SSQ3 drop 19 chars + c@ ->  92 }T    \ \\   \    Back Slash
 
 \ The above does not test \n as this is a system dependent value.
 \ Check it displays a new line
-CR .( The next test should display:)
-CR .( One line...)
-CR .( another line)
-T{ : SSQ4 S\" \nOne line...\nanotherLine\n" TYPE ; SSQ4 -> }T
+cr .( The next test should display:)
+cr .( One line...)
+cr .( another line)
+skip T{ : SSQ4 s\" \nOne line...\nanotherLine\n" TYPE ; SSQ4 -> }T
 
-\ Test bare escapable characters appear as themselves
-T{ : SSQ5 S\" abeflmnqrtvxz" s" abeflmnqrtvxz" S= ; SSQ5 -> true }T
+skip \ Test bare escapable characters appear as themselves
+skip T{ : SSQ5 s\" abeflmnqrtvxz" s" abeflmnqrtvxz" S= ; SSQ5 -> true }T
 
-T{ : SSQ6 S\" a\""2drop 1111 ; SSQ6 -> 1111 }T \ Parsing behaviour
+skip T{ : SSQ6 s\" a\""2drop 1111 ; SSQ6 -> 1111 }T \ Parsing behaviour
 
-T{ : SSQ7  S\" 111 : SSQ8 S\\\" 222\" EVALUATE ; SSQ8 333" EVALUATE ; -> }T
-T{ SSQ7 -> 111 222 333 }T
-T{ : SSQ9  S\" 11 : SSQ10 S\\\" \\x32\\x32\" EVALUATE ; SSQ10 33" EVALUATE ; -> }T
-T{ SSQ9 -> 11 22 33 }T
+skip T{ : SSQ7  s\" 111 : SSQ8 S\\\" 222\" evaluate ; SSQ8 333" evaluate ; -> }T
+skip T{ SSQ7 -> 111 222 333 }T
+skip T{ : SSQ9  s\" 11 : SSQ10 S\\\" \\x32\\x32\" evaluate ; SSQ10 33" evaluate ; -> }T
+skip T{ SSQ9 -> 11 22 33 }T
 
 \ -----------------------------------------------------------------------------
-CORE-EXT-ERRORS SET-ERROR-COUNT
+core-ext-errors set-error-count
 
-CR .( End of Core Extension word tests) CR
+cr .( End of Core Extension word tests) cr
 
 
