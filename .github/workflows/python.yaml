@@ -1,7 +1,7 @@
 name: python
 
 on:
-  push:
+  pull_request:
 jobs:
   runtests:
     runs-on: ubuntu-latest
