@@ -8,6 +8,9 @@
 
 include test/tester.fs
 include test/core.fs
-include test/coreplustest.fs
+include test/utilities.fs
+include test/errorreport.fs
+include test/coreexttest.fs
 
+report-errors
 report-and-exit

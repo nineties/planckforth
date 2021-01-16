@@ -543,8 +543,14 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
     ' (compile)
 ; immediate
 
+\ runtime: ( w -- )
+: compile, , ;
+
 \ ( -- xt )
 : :noname
+    align
+    here latest , &latest !
+    smudge-bit c,       \ length 0
     align
     here
     [ docol ] literal , \ compile docol
@@ -915,6 +921,22 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
 \ ( n "name" -- )
 : constant create , does> @ ;
 
+( === Value === )
+
+\ ( n "name" -- )
+: value create , does> @ ;
+
+\ ( n "name" -- )
+: to
+    word! find! >cfa >body
+    state @ if
+        [compile] literal
+        compile !
+    else
+        !
+    then
+; immediate
+
 ( === Throw and Catch === )
 
 \ 'xt catch' saves data stack pointer and a marker
@@ -1263,7 +1285,7 @@ decimal \ set default to decimal
             2drop exit
         then
         emit 1+ swap
-    repeat
+    repeat 2drop
 ;
 
 
@@ -1471,14 +1493,26 @@ do-stack 16 cells + do-sp !
     do-sp @ @
 ;
 
-\ compile: ( -- dest mark )
+\ compile: ( -- do: dest mark )
 : do
     compile >r  \ save start
     compile >r  \ save limit
     here >do do-mark >do
 ; immediate
 
-: leave ( -- orig mark )
+\ compile: ( -- ... )
+: ?do
+    compile 2dup
+    compile >r  \ save start
+    compile >r  \ save limit
+    compile <>
+    compile 0branch
+    0 ,
+    here >do do-mark >do
+    here cell- >do leave-mark >do
+; immediate
+
+: leave ( -- do: orig mark )
     compile branch
     here >do
     0 ,        \ fill dummy offset
@@ -2466,6 +2500,17 @@ need-defined (read)
     word throw included
 ;
 
+( === Forget === )
+
+\ Define a word "name". The word forgets itself and everything
+\ defined after when executed.
+: marker ( "name" -- )
+    create
+        latest name>link ,    \ save latest
+    does>
+        @ &latest !
+;
+
 ( === Primitive Instructions === )
 
 : insn:docol docol ;
@@ -2532,14 +2577,15 @@ need-defined (read)
 
         if else then unless begin until again while repeat
         recurse case of rangeof endof endcase
-        do loop +loop unloop leave i j k
+        do ?do loop +loop unloop leave i j k
 
         char [char] key emit spaces
         .s . .r u. u.r dec. hex. type typen
         ." s" bl '\n' cr space base decimal hex
         catch throw success
-        : ; [ ] immediate create >body :noname does> variable constant
-        ' ['] compile [compile] literal state
+        : ; [ ] immediate create >body :noname does>
+        variable constant value to
+        ' ['] compile compile, [compile] literal state
         + - * /mod / mod negate not and or xor invert within max min abs
         < > <= >= = <> 0< 0> 0<= 0>= 0= 0<> 1+ 1-
         u< u> u<= u>= lshift rshift 2* 2/
@@ -2548,7 +2594,7 @@ need-defined (read)
 
         ( \
         c@ c! c, @ ! ,
-        word find >cfa >dfa
+        word find >cfa >dfa marker
         bye execute exit here latest
     end-update-dictionary
 ; execute
