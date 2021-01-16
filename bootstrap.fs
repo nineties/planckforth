@@ -543,6 +543,9 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
     ' (compile)
 ; immediate
 
+\ runtime: ( w -- )
+: compile, , ;
+
 \ ( -- xt )
 : :noname
     align
@@ -2582,7 +2585,7 @@ need-defined (read)
         catch throw success
         : ; [ ] immediate create >body :noname does>
         variable constant value to
-        ' ['] compile [compile] literal state
+        ' ['] compile compile, [compile] literal state
         + - * /mod / mod negate not and or xor invert within max min abs
         < > <= >= = <> 0< 0> 0<= 0>= 0= 0<> 1+ 1-
         u< u> u<= u>= lshift rshift 2* 2/

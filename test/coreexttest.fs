@@ -433,17 +433,17 @@ T{ 25 RN2 execute -> 33 22 11 0 }T
 \ -----------------------------------------------------------------------------
 testing C"
 
-T{ : CQ1 C" 123" ; -> }T
-T{ CQ1 COUNT EVALUATE -> 123 }T
-T{ : CQ2 C" " ; -> }T
-T{ CQ2 COUNT EVALUATE -> }T
-T{ : CQ3 C" 2345"COUNT EVALUATE ; CQ3 -> 2345 }T
+skip T{ : CQ1 C" 123" ; -> }T
+skip T{ CQ1 COUNT EVALUATE -> 123 }T
+skip T{ : CQ2 C" " ; -> }T
+skip T{ CQ2 COUNT EVALUATE -> }T
+skip T{ : CQ3 C" 2345"COUNT EVALUATE ; CQ3 -> 2345 }T
 
 \ -----------------------------------------------------------------------------
-testing COMPILE,
+testing compile,
 
 :noname dup + ; constant dup+
-T{ : Q dup+ COMPILE, ; -> }T
+T{ : Q dup+ compile, ; -> }T
 T{ : AS1 [ Q ] ; -> }T
 T{ 123 AS1 -> 246 }T
 
