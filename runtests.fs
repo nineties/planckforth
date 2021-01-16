@@ -6,7 +6,8 @@
 
 ." Running PlanckForth test programs" cr
 
-include test/tester.fs
+include lib/tester.fs
+
 include test/core.fs
 include test/coreplustest.fs
 
