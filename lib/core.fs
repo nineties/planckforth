@@ -9,3 +9,13 @@ defined? roll [unless]
         dup 0<= if drop else swap >r 1- recurse r> swap then
     ;
 [then]
+
+
+\ Ignore test codes. lib/tester.fs will redefine this when
+\ running tests.
+: T{
+    begin
+        word throw
+        s" }T" streq if exit then
+    again
+;
