@@ -342,13 +342,13 @@ T{ 123 value VAL3 immediate VAL3 -> 123 }T
 T{ : VD3 VAL3 literal ; VD3 -> 123 }T
 
 \ -----------------------------------------------------------------------------
-testing CASE OF ENDOF ENDCASE
+testing case of endof endcase
 
-: CS1 CASE 1 OF 111 ENDOF
-           2 OF 222 ENDOF
-           3 OF 333 ENDOF
+: CS1 case 1 of 111 endof
+           2 of 222 endof
+           3 of 333 endof
            >r 999 r>
-      ENDCASE
+      endcase
 ;
 
 T{ 1 CS1 -> 111 }T
@@ -356,19 +356,19 @@ T{ 2 CS1 -> 222 }T
 T{ 3 CS1 -> 333 }T
 T{ 4 CS1 -> 999 }T
 
-\ Nested CASE's
+\ Nested case's
 
-: CS2 >r CASE -1 OF CASE r@ 1 OF 100 ENDOF
-                            2 OF 200 ENDOF
+: CS2 >r case -1 of case r@ 1 of 100 endof
+                            2 of 200 endof
                            >r -300 r>
-                    ENDCASE
-                 ENDOF
-              -2 OF CASE r@ 1 OF -99  ENDOF
+                    endcase
+                 endof
+              -2 of case r@ 1 of -99  endof
                             >r -199 r>
-                    ENDCASE
-                 ENDOF
+                    endcase
+                 endof
                  >r 299 r>
-         ENDCASE r> drop
+         endcase r> drop
 ;
 
 T{ -1 1 CS2 ->  100 }T
@@ -378,14 +378,14 @@ T{ -2 1 CS2 -> -99  }T
 T{ -2 2 CS2 -> -199 }T
 T{  0 2 CS2 ->  299 }T
 
-\ Boolean short circuiting using CASE
+\ Boolean short circuiting using case
 
 : CS3  ( N1 -- N2 )
-   CASE 1- false OF 11 ENDOF
-        1- false OF 22 ENDOF
-        1- false OF 33 ENDOF
+   case 1- false of 11 endof
+        1- false of 22 endof
+        1- false of 33 endof
         44 swap
-   ENDCASE
+   endcase
 ;
 
 T{ 1 CS3 -> 11 }T
@@ -393,12 +393,12 @@ T{ 2 CS3 -> 22 }T
 T{ 3 CS3 -> 33 }T
 T{ 9 CS3 -> 44 }T
 
-\ Empty CASE statements with/without default
+\ Empty case statements with/without default
 
-T{ : CS4 CASE ENDCASE ; 1 CS4 -> }T
-T{ : CS5 CASE 2 swap ENDCASE ; 1 CS5 -> 2 }T
-T{ : CS6 CASE 1 OF ENDOF 2 ENDCASE ; 1 CS6 -> }T
-T{ : CS7 CASE 3 OF ENDOF 2 ENDCASE ; 1 CS7 -> 1 }T
+T{ : CS4 case endcase ; 1 CS4 -> }T
+T{ : CS5 case 2 swap endcase ; 1 CS5 -> 2 }T
+T{ : CS6 case 1 of endof 2 endcase ; 1 CS6 -> }T
+T{ : CS7 case 3 of endof 2 endcase ; 1 CS7 -> 1 }T
 
 \ -----------------------------------------------------------------------------
 testing :NONAME RECURSE
