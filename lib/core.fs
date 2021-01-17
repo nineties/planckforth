@@ -19,3 +19,9 @@ defined? roll [unless]
         s" }T" streq if exit then
     again
 ;
+
+s" Invalid argument" exception constant INVALID-ARGUMENT
+
+: check-argument ( f  -- )
+    unless INVALID-ARGUMENT throw then
+;

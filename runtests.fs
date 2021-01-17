@@ -14,6 +14,7 @@ include test/errorreport.fs
 include test/coreexttest.fs
 
 include test/export.fs
+include lib/array.fs
 
 report-errors
 report-and-exit

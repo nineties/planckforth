@@ -2400,7 +2400,7 @@ BLOCK-SIZE remaining-size  !
 ;
 
 \ Bootstrapping version of free do nothing.
-: (free) ( addr -- ) ;
+: (free) ( addr -- ) drop ;
 
 ( === File I/O === )
 
