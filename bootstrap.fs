@@ -2399,6 +2399,9 @@ BLOCK-SIZE remaining-size  !
     then
 ;
 
+\ Bootstrapping version of free do nothing.
+: (free) ( addr -- ) ;
+
 ( === File I/O === )
 
 3 constant SYS-READ
@@ -2440,9 +2443,14 @@ BLOCK-SIZE remaining-size  !
 ( === Heap Memory === )
 
 need-defined (allocate)
+need-defined (free)
 
 : allocate ( size -- addr e )
     (allocate) dup 0<> if success else ALLOCATE-ERROR then
+;
+
+: free ( addr -- )
+    (free)
 ;
 
 \ allocate heap memory
@@ -2604,7 +2612,7 @@ need-defined (read)
         2rot -2rot 2tuck 2over 2nip 2swap 2dup 2drop 3dup 3drop depth
         rp0 rp@ rp! r> >r r@ rdrop rpick rdepth
 
-        allocate allot memcpy strlen streq strneq strcpy strcpy,
+        allocate free allot memcpy strlen streq strneq strcpy strcpy,
         cell cell+ cell- cells char+ char- chars align aligned +! -!
 
         if else then unless begin until again while repeat

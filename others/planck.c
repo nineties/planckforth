@@ -207,5 +207,6 @@ defcode("(allocate)", allocate) {
     push((cell) p);
     next();
 }
+defcode("(free)", free_) { free((void*) pop()); }
 
 #endif
