@@ -281,7 +281,10 @@ def allocate():
     addr = len(memory) * CELL
     memory.extend([0]*n)
     push(addr)
+def free():
+    pop()   # Bootstrap version do nothing
 add_simple_operator('(allocate)', allocate)
+add_simple_operator('(free)', free)
 
 start = read(HERE_CELL)
 comma(find('k'))
