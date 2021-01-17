@@ -2527,7 +2527,7 @@ need-defined (read)
 ;
 
 : }private
-    s"  private-marker" find! name>link @ &latest !
+    s"  private-marker" find! name>link &latest !
 ;
 
 : export
