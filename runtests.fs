@@ -13,5 +13,7 @@ include test/utilities.fs
 include test/errorreport.fs
 include test/coreexttest.fs
 
+include test/export.fs
+
 report-errors
 report-and-exit
