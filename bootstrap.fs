@@ -2511,6 +2511,38 @@ need-defined (read)
         @ &latest !
 ;
 
+( === Private and Export === )
+
+\ Words defined between private{ ... }private
+\ are invisible outside of this scope.
+\ You can export words using 'export'.
+\ : name .... ; export
+
+: private{
+    align
+    latest ,
+    here cell- &latest !
+    s"  private-marker" dup strlen
+    c, strcpy, align
+;
+
+: }private
+    s"  private-marker" find! name>link &latest !
+;
+
+: export
+    \ Move latest to the boottm of the dictionary.
+    latest
+    begin dup name>link while
+        name>link
+    repeat
+    latest
+    ( last latest )
+    dup name>link &latest !
+    0 over !
+    swap !
+;
+
 ( === Primitive Instructions === )
 
 : insn:docol docol ;
@@ -2553,7 +2585,7 @@ need-defined (read)
         include included source >in
         next-arg shift-args arg argv argc version runtime copyright
 
-        [if] [unless] [else] [then] defined?
+        [if] [unless] [else] [then] defined? private{ }private export
         open-file close-file write-file flush-file
         read-file key-file read-line
         R/W W/O R/O EOF
