@@ -222,7 +222,7 @@ ca i,
 cA i, 'h, '@, 'a, 'h, '!, 'e, l!
 
 \ 'E' ( c-addr1 c-addr2 -- flag ) STR=
-\ Compate null-terminated strings.
+\ Compare null-terminated strings.
 \ Return 1 if they are same 0 otherwise.
 cE i,
 \ <loop>
