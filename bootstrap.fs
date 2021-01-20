@@ -257,9 +257,10 @@ cs i, '#, 'L, k , '=, '~, 'L, k:k0-, '=, '|, 'e, l!
 
 \ 'W' ( "name" -- c-addr )
 \ Skip leading spaces (' ' and '\n'),
-\ Read name, then return its address and length.
+\ Read name, then return its address.
 \ The maximum length of the name is 63. The behavior is undefined
-\ when the name exceeds 63 characters,
+\ when the name exceeds 63 characters.
+\ The buffer will be terminated with '\0'.
 \ Note that it returns the address of statically allocated buffer,
 \ so the content will be overwritten each time 'w' executed.
 
@@ -2539,7 +2540,7 @@ need-defined (read)
 ;
 
 : export
-    \ Move latest to the boottm of the dictionary.
+    \ Move latest to the bottom of the dictionary.
     latest
     begin dup name>link while
         name>link
