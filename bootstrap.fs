@@ -210,7 +210,7 @@ cm i,
 'e, l!
 
 \ 'a' ( c-addr -- a-addr ) ALIGNED
-\ Round up to a nearlest multiple of CELL
+\ Round up to a nearest multiple of CELL
 ca i,
     'L, Ck1k0--, '+,    \ ( a+CELL-1 )
     'L, k0k0-C-,        \ ( a+CELL-1 ~(CELL-1) )
@@ -218,11 +218,11 @@ ca i,
 'e, l!
 
 \ 'A' ( -- ) ALIGN
-\ Round up 'here' to a nearlest multiple of CELL
+\ Round up 'here' to a nearest multiple of CELL
 cA i, 'h, '@, 'a, 'h, '!, 'e, l!
 
 \ 'E' ( c-addr1 c-addr2 -- flag ) STR=
-\ Compate null-terminated strings.
+\ Compare null-terminated strings.
 \ Return 1 if they are same 0 otherwise.
 cE i,
 \ <loop>
@@ -257,9 +257,10 @@ cs i, '#, 'L, k , '=, '~, 'L, k:k0-, '=, '|, 'e, l!
 
 \ 'W' ( "name" -- c-addr )
 \ Skip leading spaces (' ' and '\n'),
-\ Read name, then return its address and length.
+\ Read name, then return its address.
 \ The maximum length of the name is 63. The behavior is undefined
-\ when the name exceeds 63 characters,
+\ when the name exceeds 63 characters.
+\ The buffer will be terminated with '\0'.
 \ Note that it returns the address of statically allocated buffer,
 \ so the content will be overwritten each time 'w' executed.
 
@@ -2539,7 +2540,7 @@ need-defined (read)
 ;
 
 : export
-    \ Move latest to the boottm of the dictionary.
+    \ Move latest to the bottom of the dictionary.
     latest
     begin dup name>link while
         name>link
