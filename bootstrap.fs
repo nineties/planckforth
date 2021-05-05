@@ -56,9 +56,9 @@ l!
 \ '<' ( a b -- c )      c = (a < b)
 \ 'u' ( a b -- c )      c = (a unsigned< b)
 \ '=' ( a b -- c )      c = (a == b)
-\ '{' ( a b -- c )      c = a << b (logical)
-\ '}' ( a b -- c )      c = a >> b (logical)
-\ ')' ( a b -- c )      c = a >> b (arithmetic)
+\ '(' ( a b -- c )      c = a << b (logical)
+\ ')' ( a b -- c )      c = a >> b (logical)
+\ '%' ( a b -- c )      c = a >> b (arithmetic)
 \ 'v' ( -- a-addr u )   argv and argc
 \ 'V' ( -- c-addr )     Runtime information string
 
