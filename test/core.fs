@@ -809,6 +809,9 @@ skip T{ bl gs3 drop -> 0 }T            \ blank line return zero-length string
 \ T{ gs4 123 456
 \ -> }T
 
+testing sourcefilename
+T{ sourcefilename s" test/core.fs" streq -> <true> }T
+
 \ ------------------------------------------------------------------------
 testing <# # #s #> hold sign base >number hex decimal
 

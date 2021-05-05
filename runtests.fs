@@ -10,12 +10,10 @@ include lib/tester.fs
 
 include test/core.fs
 include test/utilities.fs
-include test/errorreport.fs
 include test/coreexttest.fs
 
 include test/export.fs
 include lib/array.fs
 include lib/bitscan.fs
 
-report-errors
 report-and-exit
