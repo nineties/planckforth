@@ -36,7 +36,7 @@ function generate-table {
 
 echo "# Environment"
 echo
-echo "- Pull Request: #$PRNUM"
+echo "- Commit: #$PRNUM"
 echo "- $CPU_MODEL"
 echo "- $MEM_SIZE"
 echo "- $UNAME"
