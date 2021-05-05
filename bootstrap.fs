@@ -1465,6 +1465,9 @@ decimal
 s" Not implemented" exception constant NOT-IMPLEMENTED
 : not-implemented NOT-IMPLEMENTED throw ;
 
+s" Not supported" exception constant NOT-SUPPORTED
+: not-supported NOT-SUPPORTED throw ;
+
 ( 31 bytes )
 s" Not reachable here. may be a bug" exception constant NOT-REACHABLE
 : not-reachable NOT-REACHABLE throw ;
