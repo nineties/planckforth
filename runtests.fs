@@ -15,6 +15,7 @@ include test/coreexttest.fs
 
 include test/export.fs
 include lib/array.fs
+include lib/bitscan.fs
 
 report-errors
 report-and-exit
