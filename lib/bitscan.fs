@@ -37,12 +37,29 @@ create bsf-modulo-131-table
     cells bsf-modulo-131-table + @
 ; export
 
-create msb-index-table
 
+create msb-table
+    -1 , 0 , 1 , 1 , 2 , 2 , 2 , 2 , 3 , 3 , 3 , 3 , 3 , 3 , 3 , 3 ,
+    4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 ,
+    5 , 5 , 5 , 5 , 5 , 5 , 5 , 5 , 5 , 5 , 5 , 5 , 5 , 5 , 5 , 5 ,
+    5 , 5 , 5 , 5 , 5 , 5 , 5 , 5 , 5 , 5 , 5 , 5 , 5 , 5 , 5 , 5 ,
+    6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 ,
+    6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 ,
+    6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 ,
+    6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 , 6 ,
+    7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 ,
+    7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 ,
+    7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 ,
+    7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 ,
+    7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 ,
+    7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 ,
+    7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 ,
+    7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 , 7 ,
 
 \ Find the index of the most significant 1 bit
 \ If u == 0, returns -1
 : bitscan-reverse ( u -- u )
+    dup 0xff u< if cells msb-table + @ exit then
 ; export
 
 }private
@@ -56,3 +73,12 @@ T{ 5 bitscan-forward -> 0 }T
 T{ -1 bitscan-forward -> 0 }T
 T{ max-int bitscan-forward -> 0 }T
 T{ min-int bitscan-forward -> cell 8 * 1- }T
+
+T{ 0 bitscan-reverse -> -1 }T
+T{ 1 bitscan-reverse -> 0 }T
+T{ 2 bitscan-reverse -> 1 }T
+T{ 3 bitscan-reverse -> 1 }T
+T{ 4 bitscan-reverse -> 2 }T
+T{ -1 bitscan-reverse -> cell 8 * 1- }T
+T{ max-int bitscan-reverse -> cell 8 * 2 - }T
+T{ min-int bitscan-reverse -> cell 8 * 1- }T
