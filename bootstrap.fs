@@ -2435,8 +2435,8 @@ BLOCK-SIZE remaining-size  !
 
 : need-defined ( "name" -- )
     word throw dup find unless
-        ." Implementation of " type ."  is missing." cr
-        ." Please implement it or use --gen <target> option." cr
+        ." Implementation of " type ."  for " runtime type ."  is missing." cr
+        ." Please implement it." cr
         UNDEFINED-WORD-ERROR throw
     then drop
 ;
