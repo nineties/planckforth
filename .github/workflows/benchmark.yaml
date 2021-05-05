@@ -11,7 +11,7 @@ jobs:
     - name: take benchmarks
       run: |
         mkdir -p document
-        ./benchmark/gendoc.sh ${{ github.event.number }} | tee document/Benchmarks.md
+        ./benchmark/gendoc.sh ${{ github.sha }} | tee document/Benchmarks.md
     - name: upload to wiki
       uses: SwiftDocOrg/github-wiki-publish-action@v1
       with:
