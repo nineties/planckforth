@@ -14,6 +14,9 @@ python: others/planck.py
 	cp others/planck.py planck
 	chmod +x planck
 
-.PHONY: clean
+.PHONY: clean test
 clean:
 	rm -f planck
+
+test: planck bootstrap.fs runtests.fs
+	./planck < bootstrap.fs runtests.fs
