@@ -36,7 +36,7 @@ function generate-table {
 
 echo "# Environment"
 echo
-echo "- Commit: $COMMIT"
+echo "- Commit: [[$COMMIT|https://github.com/nineties/planckforth/commit/$COMMIT]]"
 echo "- $CPU_MODEL"
 echo "- $MEM_SIZE"
 echo "- $UNAME"
