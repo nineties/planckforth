@@ -2500,7 +2500,14 @@ need-defined (read)
 ;
 
 : close-file ( file -- e )
-    file>fd @ (close) 0= if success else CLOSE-FILE-ERROR then
+    dup file>fd @ swap
+    ( fd file )
+    \ release heap objects
+    dup file>rbuf @ (free)
+    dup file>wbuf @ (free)
+    (free)
+    \ close file object
+    (close) 0= if success else CLOSE-FILE-ERROR then
 ;
 
 ( === File Include === )
