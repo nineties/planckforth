@@ -32,7 +32,9 @@ create bsf-modulo-131-table
 \ Find the index of the least significant 1 bit
 \ If u == 0, returns -1
 : bitscan-forward ( u -- u )
-    dup negate and 131 mod cells bsf-modulo-131-table + @
+    dup negate and \ LS1B isolation
+    131 mod \ perfect hashing
+    cells bsf-modulo-131-table + @
 ; export
 
 create msb-index-table
