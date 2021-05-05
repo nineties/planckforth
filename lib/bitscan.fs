@@ -60,6 +60,7 @@ create msb-table
 \ If u == 0, returns -1
 : bitscan-reverse ( u -- u )
     dup 0xff u< if cells msb-table + @ exit then
+    8 rshift recurse 8 +
 ; export
 
 }private
