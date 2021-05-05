@@ -1907,6 +1907,10 @@ variable inputstreams
 
 stdin_ push-inputstream
 
+: sourcefilename ( -- c-addr )
+    inputstreams @ input>file @ file>name
+;
+
 \ Replacing parser functions using input stream.
 
 variable source-buffer BUFSIZE allot
@@ -2594,7 +2598,7 @@ need-defined (read)
         insn:docol insn:exit insn:lit insn:litstring insn:branch insn:0branch
 
         words id. name>string name>link
-        include included source >in
+        include included source >in sourcefilename
         next-arg shift-args arg argv argc version runtime copyright
 
         [if] [unless] [else] [then] defined? private{ }private export
