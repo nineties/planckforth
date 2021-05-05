@@ -684,7 +684,6 @@ skip T{ : SSQ9  s\" 11 : SSQ10 S\\\" \\x32\\x32\" evaluate ; SSQ10 33" evaluate 
 skip T{ SSQ9 -> 11 22 33 }T
 
 \ -----------------------------------------------------------------------------
-core-ext-errors set-error-count
 
 cr .( End of Core Extension word tests) cr
 
