@@ -1,6 +1,6 @@
 #!/bin/bash
 
-COMMIT="$1"
+PRNUM="$1"
 TARGETS="i386-linux-handwritten c python"
 TIMEFORMAT='%U'
 CPU_MODEL=`cat /proc/cpuinfo | grep -m1 'model name' | cut -d: -f2 | sed "s/^ *//g"`
@@ -36,7 +36,7 @@ function generate-table {
 
 echo "# Environment"
 echo
-echo "- Commit: $COMMIT"
+echo "- Pull Request: #$PRNUM"
 echo "- $CPU_MODEL"
 echo "- $MEM_SIZE"
 echo "- $UNAME"
