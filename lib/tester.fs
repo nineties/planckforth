@@ -1,6 +1,9 @@
 \ planckforth -
 \ Copyright (C) 2021 nineties
 
+\ test/tester.fs and test codes are base on
+\ https://github.com/gerryjackson/forth2012-test-suite
+
 variable verbose
 \ true verbose !
 false verbose !
