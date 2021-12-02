@@ -2,6 +2,8 @@
 # Copyright (C) 2021 nineties
 
 default: i386-linux-handwritten
+
+planck: default
 	
 i386-linux-handwritten: planck.xxd
 	xxd -r -c 8 $< > planck
