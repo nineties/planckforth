@@ -45,7 +45,7 @@ $ ./planck < bootstrap.fs example/fib.fs
 # Running Tests
 
 ```
-$ ./planck < bootstrap.fs runtests.fs
+$ make test
 ```
 
 # Builtin Words
