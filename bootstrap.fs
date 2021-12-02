@@ -2512,11 +2512,49 @@ need-defined (read)
 
 ( === File Include === )
 
-: included ( c-addr -- )
+: loaded ( c-addr -- )
     R/O open-file throw
     push-inputstream
     ['] interpret-outer catch drop
     pop-inputstream close-file throw
+;
+
+: load ( "name" -- )
+    word throw loaded
+;
+
+struct
+    char% FILENAME-MAX * field included-list>path
+    cell% field included-list>next
+end-struct included-list%
+
+variable included-list
+0 included-list !
+
+: already-included? ( c-addr -- n )
+    included-list @
+    begin ?dup while
+        ( c-addr entry )
+        dup included-list>path
+        ( c-addr entry path )
+        2 pick streq if 2drop true exit then
+        included-list>next @
+    repeat
+    drop false
+;
+
+: push-included-list ( c-addr -- )
+    included-list% %allocate throw
+    ( c-addr entry )
+    tuck included-list>path FILENAME-MAX strncpy
+    included-list @ over included-list>next !
+    included-list !
+;
+
+: included ( c-addr -- )
+    dup already-included? if drop exit then
+    dup push-included-list
+    loaded
 ;
 
 : include ( "name" -- )
@@ -2605,7 +2643,7 @@ need-defined (read)
         insn:docol insn:exit insn:lit insn:litstring insn:branch insn:0branch
 
         words id. name>string name>link
-        include included source >in sourcefilename
+        load loaded include included source >in sourcefilename
         next-arg shift-args arg argv argc version runtime copyright
 
         [if] [unless] [else] [then] defined? private{ }private export
