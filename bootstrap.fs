@@ -1659,7 +1659,7 @@ do-stack 16 cells + do-sp !
 
 \ File
 struct
-    cell% field file>fd     \ file desctipro
+    cell% field file>fd     \ file descriptor
     cell% field file>read   ( c-addr u fd -- n )
     cell% field file>write  ( c-addr u fd -- n )
 
