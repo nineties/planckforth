@@ -16,7 +16,7 @@ defined? array-alloc-strategy [unless]
 [then]
 
 struct
-    ptr% field array>buf
+    cell% field array>buf
     int% field array>size
     int% field array>capa
 end-struct array%

@@ -15,22 +15,22 @@ create prime_numbers
     0 , 0 , 0 ,
 
 struct
-    ptr% field table>bucket
-    ptr% field table>hash       ( hash function )
-    ptr% field table>equal      ( equal function for keys )
-    ptr% field table>entries    ( list of entries )
+    cell% field table>bucket
+    cell% field table>hash       ( hash function )
+    cell% field table>equal      ( equal function for keys )
+    cell% field table>entries    ( list of entries )
     int% field table>size       ( number of entries )
 end-struct table%
 
 struct
-    ptr% field entry>key
-    ptr% field entry>value 
-    ptr% field entry>sibling    ( pointer to the next entry in bucket )
-    ptr% field entry>next       ( pointer to the next entry in entries )
+    cell% field entry>key
+    cell% field entry>value
+    cell% field entry>sibling    ( pointer to the next entry in bucket )
+    cell% field entry>next       ( pointer to the next entry in entries )
     int% field entry>hash       ( the hash value )
 end-struct entry%
 
-: make-table-with-size ( hash equal n -- tbl )
+: make-table-with-hint ( hash equal n -- tbl )
     bitscan-reverse cells prime_numbers + @ ( n to bucket size )
     make-array  ( allocate bucket )
 
@@ -41,6 +41,12 @@ end-struct entry%
     tuck table>hash !
     0 over table>entries !
     0 over table>size !
+; export
+
+10 constant DEFAULT_TABLE_SIZE_HINT
+
+: make-table ( hash equal -- tbl )
+    DEFAULT_TABLE_SIZE_HINT make-table-with-hint
 ; export
 
 }private
