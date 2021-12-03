@@ -41,7 +41,7 @@ end-struct entry%
     tuck table>hash !
     0 over table>entries !
     0 over table>size !
-; export
+;
 
 10 constant DEFAULT_TABLE_SIZE_HINT
 
@@ -49,4 +49,32 @@ end-struct entry%
     DEFAULT_TABLE_SIZE_HINT make-table-with-hint
 ; export
 
+: release-table ( tbl -- )
+    dup table>entries @
+    begin ?dup while
+        dup entry>next @
+        swap
+        free
+    repeat
+    dup table>bucket @ release-array
+    free
+; export
+
+( tables for major builtin types )
+: hash-next ( n1 n2 -- n3 )
+    + 6122117 * 1627577 +
+;
+
+: hash-int ( n -- n )
+    0 hash-next
+; export
+
+: make-int-table ( -- tbl )
+    ['] hash-int ['] = make-table
+; export
+
+." ===========" cr
+
 }private
+
+T{ make-int-table release-table -> }T
