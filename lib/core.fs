@@ -2,7 +2,7 @@
 \ Copyright (C) 2021 nineties
 
 defined? roll [unless]
-    : roll ( wn ... w1 n -- w1 wn ... w2 -- )
+    : roll ( wn ... w1 n -- w1 wn ... w2 )
         dup 0<= if drop else swap >r 1- recurse r> swap then
     ;
 [then]
