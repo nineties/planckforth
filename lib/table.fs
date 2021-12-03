@@ -65,21 +65,31 @@ end-struct entry%
     free
 ; export
 
-: table@ ( key tbl -- v )
-    2dup
-    2dup table>hash @ execute ( .. key tbl hashed-key )
-    over table>bucket @ array-size mod ( .. key tbl idx )
-    over table>bucket @ array@ ( .. key tbl entry )
-    swap table>equal @ -rot ( .. equal key entry )
+: table@-helper ( key tbl -- entry )
+    2dup table>hash @ execute ( key tbl hashed-key )
+    over table>bucket @ array-size mod ( key tbl idx )
+    over table>bucket @ array@ ( key tbl entry )
+    swap table>equal @ -rot ( equal key entry )
     begin ?dup while
         dup entry>key @
         2 pick 4 pick execute if
-            ( .. equal key entry )
-            entry>value @ 5 roll 2drop 2drop exit
+            ( equal key entry )
+            nip nip exit
         then
     repeat
-    2drop
-    KEY-NOT-FOUND throw
+    2drop 0
+;
+
+: table@ ( key tbl -- v )
+    2dup table@-helper ?dup if
+        entry>value @ nip nip
+    else
+        KEY-NOT-FOUND throw
+    then
+; export
+
+: ?table-in ( key tbl -- n )
+    table@-helper 0 <>
 ; export
 
 ( tables for major builtin types )
@@ -100,3 +110,4 @@ end-struct entry%
 T{ make-int-table constant A -> }T
 T{ A table-size -> 0 }T
 T{ 0 A ' table@ catch -> 0 A KEY-NOT-FOUND }T
+T{ 0 A ?table-in -> false }T
