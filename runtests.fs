@@ -15,5 +15,6 @@ include test/coreexttest.fs
 include test/export.fs
 include lib/array.fs
 include lib/bitscan.fs
+include lib/table.fs
 
 report-and-exit
