@@ -39,6 +39,11 @@ s" Index out of range" exception constant OUT-OF-RANGE export
     allocate-array
 ; export
 
+: release-array ( arr -- )
+    dup array>buf @ free
+    free
+; export
+
 : array-size ( arr -- n ) array>size @ ; export 
 
 : check-index ( i arr -- )
@@ -135,3 +140,4 @@ T{ 1 0 A array! -> }T
 T{ 0 A array@ -> 1 }T
 T{ 2 99 A array! -> }T
 T{ 99 A array@ -> 2 }T
+T{ A release-array -> }T
