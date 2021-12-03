@@ -28,8 +28,8 @@ s" Index out of range" exception constant OUT-OF-RANGE export
     array% %allocate throw
     ( n capa addr )
     over cells allocate throw over array>buf !
-    swap over array>capa !
-    swap over array>size !
+    tuck array>capa !
+    tuck array>size !
 ;
 
 : make-array ( n -- arr )

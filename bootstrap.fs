@@ -1893,7 +1893,7 @@ variable inputstreams
 
 : push-inputstream ( file -- )
     inputstream% %allot   \ addr
-    swap over input>file !
+    tuck input>file !
     0 over input>lineno !
     inputstreams @ over input>next !
     inputstreams !
