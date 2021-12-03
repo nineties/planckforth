@@ -8,6 +8,9 @@ include lib/array.fs
 
 private{
 
+s" Key not found" exception constant KEY-NOT-FOUND export
+
+
 create prime_numbers
     5 , 11 , 17 , 37 , 67 , 131 , 257 , 521 , 1031 ,
     2053 , 4099 , 8209 , 16411 , 32771 , 65537 , 131101 ,
@@ -29,6 +32,8 @@ struct
     cell% field entry>next       ( pointer to the next entry in entries )
     int% field entry>hash       ( the hash value )
 end-struct entry%
+
+: table-size ( tbl -- n ) table>size @ ; export
 
 : make-table-with-hint ( hash equal n -- tbl )
     bitscan-reverse cells prime_numbers + @ ( n to bucket size )
@@ -60,6 +65,23 @@ end-struct entry%
     free
 ; export
 
+: table@ ( key tbl -- v )
+    2dup
+    2dup table>hash @ execute ( .. key tbl hashed-key )
+    over table>bucket @ array-size mod ( .. key tbl idx )
+    over table>bucket @ array@ ( .. key tbl entry )
+    swap table>equal @ -rot ( .. equal key entry )
+    begin ?dup while
+        dup entry>key @
+        2 pick 4 pick execute if
+            ( .. equal key entry )
+            entry>value @ 5 roll 2drop 2drop exit
+        then
+    repeat
+    2drop
+    KEY-NOT-FOUND throw
+; export
+
 ( tables for major builtin types )
 : hash-next ( n1 n2 -- n3 )
     + 6122117 * 1627577 +
@@ -73,8 +95,8 @@ end-struct entry%
     ['] hash-int ['] = make-table
 ; export
 
-." ===========" cr
-
 }private
 
-T{ make-int-table release-table -> }T
+T{ make-int-table constant A -> }T
+T{ A table-size -> 0 }T
+T{ 0 A ' table@ catch -> 0 A KEY-NOT-FOUND }T
