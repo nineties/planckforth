@@ -13,6 +13,7 @@ include test/utilities.fs
 include test/coreexttest.fs
 
 include test/export.fs
+include lib/string.fs
 include lib/array.fs
 include lib/bitscan.fs
 include lib/table.fs

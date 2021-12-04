@@ -220,8 +220,14 @@ T{ A table-values cdr cdr car -> 3 }T
 T{ A release-table -> }T
 
 T{ make-string-table constant A -> }T
-T{ 0 s" zero" A table! -> }T
-T{ 1 s" one" A table! -> }T
+T{ s" zero" make-string constant ZERO -> }T
+T{ s" one" make-string constant ONE -> }T
+T{ 0 ZERO A table! -> }T
+T{ 1 ONE A table! -> }T
+T{ ZERO A table@ -> 0 }T
+T{ ONE A table@ -> 1 }T
 T{ s" zero" A table@ -> 0 }T
 T{ s" one" A table@ -> 1 }T
 T{ A release-table -> }T
+T{ ZERO release-string -> }T
+T{ ONE release-string -> }T
