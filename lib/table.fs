@@ -65,8 +65,7 @@ end-struct entry%
     free
 ; export
 
-: table@-helper ( key tbl -- entry )
-    2dup table>hash @ execute ( key tbl hashed-key )
+: find-entry ( key tbl hash -- entry )
     over table>bucket @ array-size mod ( key tbl idx )
     over table>bucket @ array@ ( key tbl entry )
     swap table>equal @ -rot ( equal key entry )
@@ -76,12 +75,15 @@ end-struct entry%
             ( equal key entry )
             nip nip exit
         then
+        entry>next @
     repeat
     2drop 0
 ;
 
-: table@ ( key tbl -- v )
-    2dup table@-helper ?dup if
+: table@ ( key tbl -- val )
+    2dup
+    2dup table>hash @ execute
+    find-entry ?dup if
         entry>value @ nip nip
     else
         KEY-NOT-FOUND throw
@@ -89,7 +91,50 @@ end-struct entry%
 ; export
 
 : ?table-in ( key tbl -- n )
-    table@-helper 0 <>
+    2dup table>hash @ execute
+    find-entry 0 <>
+; export
+
+: table! ( val key tbl -- )
+    2dup
+    2dup table>hash @ execute
+    dup >r find-entry r> swap
+    ( val key tbl hash entry )
+    ?dup if
+        ( `tbl` already has an entry for `key` )
+        nip nip nip
+        entry>value !
+    else
+        swap >r
+        ( val key hash , R:tbl )
+        entry% %allocate throw
+        tuck entry>hash !
+        tuck entry>key !
+        tuck entry>value !
+        0 over entry>sibling !
+        0 over entry>next !
+        r>
+        ( entry tbl )
+        \ Find corresponding bucket entry
+        over entry>hash @
+        over table>bucket @
+        tuck array-size mod
+        ( entry tbl bucket index )
+
+        \ Add new entry to the bucket
+        2dup swap array@
+        4 pick entry>sibling !
+        3 pick swap rot array!
+
+        \ Add the entry to the list of entries
+        ( entry tbl )
+        tuck table>entries @
+        over entry>next !
+        over table>entries !
+
+        \ Increment table>size
+        table>size 1 swap +!
+    then
 ; export
 
 ( tables for major builtin types )
@@ -111,3 +156,19 @@ T{ make-int-table constant A -> }T
 T{ A table-size -> 0 }T
 T{ 0 A ' table@ catch -> 0 A KEY-NOT-FOUND }T
 T{ 0 A ?table-in -> false }T
+T{ 1 0 A table! -> }T
+T{ 0 A ?table-in -> true }T
+T{ 0 A table@ -> 1 }T
+T{ A table-size -> 1 }T
+T{ 2 0 A table! -> }T
+T{ A table-size -> 1 }T
+T{ 3 1 A table! -> }T
+T{ A table-size -> 2 }T
+T{ 1 A table@ -> 3 }T
+T{ :noname 100 0 do i 1 + i A table! loop ; execute -> }T
+:noname
+    100 0 do
+        T{ i A table@ -> i 1 + }T
+    loop
+; execute
+T{ A table-size -> 100 }T
