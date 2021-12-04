@@ -171,10 +171,21 @@ end-struct entry%
 
 : hash-int ( n -- n )
     0 hash-next
-; export
+;
 
 : make-int-table ( -- tbl )
     ['] hash-int ['] = make-table
+; export
+
+: hash-string ( s -- n )
+    0 begin over c@ dup while
+        hash-next
+        swap 1+ swap
+    repeat drop nip
+;
+
+: make-string-table ( -- tbl )
+    ['] hash-string ['] streq make-table
 ; export
 
 }private
@@ -206,4 +217,11 @@ T{ A table-keys cdr cdr car -> 2 }T
 T{ A table-values car -> 1 }T
 T{ A table-values cdr car -> 2 }T
 T{ A table-values cdr cdr car -> 3 }T
+T{ A release-table -> }T
+
+T{ make-string-table constant A -> }T
+T{ 0 s" zero" A table! -> }T
+T{ 1 s" one" A table! -> }T
+T{ s" zero" A table@ -> 0 }T
+T{ s" one" A table@ -> 1 }T
 T{ A release-table -> }T
