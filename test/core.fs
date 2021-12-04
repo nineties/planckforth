@@ -1003,4 +1003,14 @@ T{ gdx -> 123 234 }T
 
 cr ." End of Core word set tests" cr
 
+\ ------------------------------------------------------------------------
+testing cons, car and cdr
+
+0 1 cons constant cons0
+
+T{ cons0 car -> 0 }T
+T{ cons0 cdr -> 1 }T
+
+cons0 free
+
 
