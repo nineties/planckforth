@@ -206,3 +206,4 @@ T{ A table-keys cdr cdr car -> 2 }T
 T{ A table-values car -> 1 }T
 T{ A table-values cdr car -> 2 }T
 T{ A table-values cdr cdr car -> 3 }T
+T{ A release-table -> }T
