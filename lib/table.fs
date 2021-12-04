@@ -33,8 +33,10 @@ struct
     int% field entry>hash       ( the hash value )
 end-struct entry%
 
+\ Number of elments in the table
 : table-size ( tbl -- n ) table>size @ ; export
 
+\ Make hashtable considering given size hint
 : make-table-with-hint ( hash equal n -- tbl )
     bitscan-reverse cells prime_numbers + @ ( n to bucket size )
     make-array  ( allocate bucket )
@@ -50,6 +52,9 @@ end-struct entry%
 
 10 constant DEFAULT_TABLE_SIZE_HINT
 
+\ Make hashtable. It takes two functions.
+\ hash ( w -- n ) : compute hash value of w
+\ equal ( w1 w2 -- n ) : compute equality of w1 and w2
 : make-table ( hash equal -- tbl )
     DEFAULT_TABLE_SIZE_HINT make-table-with-hint
 ; export
@@ -80,6 +85,8 @@ end-struct entry%
     2drop 0
 ;
 
+\ Lookup table entry. KEY-NOT-FOUND exception is raised
+\ when there is no corresponding entry.
 : table@ ( key tbl -- val )
     2dup
     2dup table>hash @ execute
@@ -90,11 +97,13 @@ end-struct entry%
     then
 ; export
 
+\ Returns true when the key is in the table
 : ?table-in ( key tbl -- n )
     2dup table>hash @ execute
     find-entry 0 <>
 ; export
 
+\ Store key-value pair to the table
 : table! ( val key tbl -- )
     2dup
     2dup table>hash @ execute
@@ -137,7 +146,25 @@ end-struct entry%
     then
 ; export
 
-( tables for major builtin types )
+\ Returns cons-list of keys
+: table-keys ( tbl -- list )
+    0 swap table>entries @
+    begin ?dup while
+        tuck entry>key @ swap cons swap
+        entry>next @
+    repeat
+; export
+
+\ Returns cons-list of values
+: table-values ( tbl -- list )
+    0 swap table>entries @
+    begin ?dup while
+        tuck entry>value @ swap cons swap
+        entry>next @
+    repeat
+; export
+
+( === tables for major builtin types === )
 : hash-next ( n1 n2 -- n3 )
     + 6122117 * 1627577 +
 ;
@@ -172,3 +199,10 @@ T{ :noname 100 0 do i 1 + i A table! loop ; execute -> }T
     loop
 ; execute
 T{ A table-size -> 100 }T
+
+T{ A table-keys car -> 0 }T
+T{ A table-keys cdr car -> 1 }T
+T{ A table-keys cdr cdr car -> 2 }T
+T{ A table-values car -> 1 }T
+T{ A table-values cdr car -> 2 }T
+T{ A table-values cdr cdr car -> 3 }T
