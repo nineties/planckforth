@@ -2401,7 +2401,7 @@ BLOCK-SIZE remaining-size  !
     dup remaining-size @ <= if
         ( u addr )
         next-addr @
-        swap dup next-addr +! remaining-size -!
+        swap aligned dup next-addr +! remaining-size -!
     else
         drop -1
     then
