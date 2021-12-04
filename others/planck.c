@@ -203,7 +203,7 @@ defcode("(write)", writefile) {
 }
 defcode("(allocate)", allocate) {
     int size = pop();
-    void *p = malloc(size);
+    void *p = calloc(size, 1);
     push((cell) p);
     next();
 }

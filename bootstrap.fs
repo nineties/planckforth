@@ -2397,6 +2397,8 @@ variable remaining-size
 block-addr @ next-addr !
 BLOCK-SIZE remaining-size  !
 
+\ Allocate u bytes of heap memory
+\ The region must be zero cleared.
 : (allocate) ( u -- addr )
     dup remaining-size @ <= if
         ( u addr )
