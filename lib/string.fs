@@ -3,13 +3,12 @@
 
 ( === String === )
 
-." HELLO " cr
 private{
 
 \ Heap-allocated string object
 \ p: null terminated string
 : make-string ( p -- str )
-    dup strlen 1 + allocate throw tuck strcpy .s
+    dup strlen 1 + allocate throw tuck strcpy
 ; export
 
 : release-string ( str -- ) free ; export
