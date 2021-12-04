@@ -3,8 +3,6 @@
 
 default: i386-linux-handwritten
 
-planck: default
-	
 i386-linux-handwritten: planck.xxd
 	xxd -r -c 8 $< > planck
 	chmod +x planck
