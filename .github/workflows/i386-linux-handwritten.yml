@@ -1,7 +1,8 @@
 name: i386-linux-handwritten
 
 on:
-  pull_request:
+  push:
+    branches: "main"
 jobs:
   runtests:
     runs-on: ubuntu-latest
