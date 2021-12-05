@@ -349,7 +349,7 @@ I \ Enter 2nd Stage
 
 \ === 2nd Stage Interpreter ===
 
-r C + R     \ Drop 1st stage interpreter from call stack
+} _     \ Drop 1st stage interpreter from call stack
 
 \ '\'' ( "name" -- xt )
 \ Redefine existing '\'' which uses 'k' and 'f'
