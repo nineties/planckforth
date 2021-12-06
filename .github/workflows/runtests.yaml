@@ -9,7 +9,7 @@ jobs:
   runtests:
     strategy:
       matrix:
-        impl: ['', 'c', 'python']
+        impl: ['i386-linux-handwritten', 'c', 'python']
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
