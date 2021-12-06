@@ -1,8 +1,12 @@
-name: C
+name: testing c
 
-on: [push, pull_request]
+on:
+  pull_request:
+    branches:
+      - main
+    paths-ignore: ['README.md', 'LICENSE', '.gitignore']
 jobs:
-  runtests:
+  runtests-c:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1

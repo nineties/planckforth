@@ -1,0 +1,16 @@
+name: testing i386-linux-handwritten
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths-ignore: ['README.md', 'LICENSE', '.gitignore']
+jobs:
+  runtests-i386-linux-handwritten:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: run tests
+      run: |
+        make i386-linux-handwritten
+        ./planck < bootstrap.fs runtests.fs
