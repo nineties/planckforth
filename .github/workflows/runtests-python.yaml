@@ -1,0 +1,16 @@
+name: testing python
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths-ignore: ['README.md', 'LICENSE', '.gitignore']
+jobs:
+  runtests-python:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: run tests
+      run: |
+        make python
+        ./planck < bootstrap.fs runtests.fs

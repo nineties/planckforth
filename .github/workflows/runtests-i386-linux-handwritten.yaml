@@ -1,4 +1,4 @@
-name: runtests
+name: testing i386-linux-handwritten
 
 on:
   pull_request:
@@ -6,14 +6,11 @@ on:
       - main
     paths-ignore: ['README.md', 'LICENSE', '.gitignore']
 jobs:
-  runtests:
-    strategy:
-      matrix:
-        impl: ['i386-linux-handwritten', 'c', 'python']
+  runtests-i386-linux-handwritten:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
     - name: run tests
       run: |
-        make ${{ matrix.impl }}
+        make i386-linux-handwritten
         ./planck < bootstrap.fs runtests.fs
