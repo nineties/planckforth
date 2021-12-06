@@ -33,7 +33,7 @@ ip = 0
 np = 0
 
 def aligned(n):
-    return (n + CELL - 1) & ~(CELL - 1)
+    return (n + CELL - 1) % CELL
 
 def align():
     write(HERE_CELL, aligned(read(HERE_CELL)))
