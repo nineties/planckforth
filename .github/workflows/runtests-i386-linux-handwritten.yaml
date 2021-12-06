@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - main
-    paths-ignore: ['README.md', 'LICENSE', '.gitignore']
 jobs:
   runtests-i386-linux-handwritten:
     runs-on: ubuntu-latest

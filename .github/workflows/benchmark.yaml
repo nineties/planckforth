@@ -3,6 +3,7 @@ name: benchmark
 on:
   push:
     branches: "main"
+    paths-ignore: ['README.md', 'LICENSE', '.gitignore']
 jobs:
   runbenchmarks:
     runs-on: ubuntu-latest
