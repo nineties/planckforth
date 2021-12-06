@@ -1,9 +1,9 @@
 name: runtests
 
 on:
-  push:
-    paths-ignore: ['README.md', 'LICENSE', '.gitignore']
   pull_request:
+    branches:
+      - main
     paths-ignore: ['README.md', 'LICENSE', '.gitignore']
 jobs:
   runtests:
