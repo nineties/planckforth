@@ -66,7 +66,7 @@ l!
 \ The following line is an example program of planckforth
 \ which prints "Hello World!\n"
 \ --
-\ kHtketkltkltkotk tkWtkotkrtkltkdtk!tk:k0-tQ
+\ kHtketkltkltkotk tkWtkotkrtkltkdtk!tk:k0-tk0k0-Q
 \ --
 \ This code repeats that 'k' reads a character and 't' prints it.
 \ Note that ':' (58) minus '0' (48) is '\n' (10).
