@@ -2,9 +2,9 @@ name: runtests
 
 on:
   push:
-    paths-ignore: &ignore ['README.md', 'LICENSE', '.gitignore']
+    paths-ignore: ['README.md', 'LICENSE', '.gitignore']
   pull_request:
-    paths-ignore: *ignore
+    paths-ignore: ['README.md', 'LICENSE', '.gitignore']
 jobs:
   runtests:
     strategy:
