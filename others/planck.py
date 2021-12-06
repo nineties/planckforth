@@ -19,6 +19,7 @@ MEMORY_SIZE = 0x10000
 
 memory = array.array('i', [0]*MEMORY_SIZE)
 CELL = memory.itemsize
+CELLm1 = CELL - 1
 CELL_SHIFT = CELL.bit_length() - 1
 
 STACK_SIZE = 0x100
@@ -32,8 +33,9 @@ rp = (MEMORY_SIZE - STACK_SIZE) * CELL
 ip = 0
 np = 0
 
+ALIGN_MASK = CELL - 1
 def aligned(n):
-    return (n + CELL - 1) % CELL
+    return (n + CELLm1) & ALIGN_MASK
 
 def align():
     write(HERE_CELL, aligned(read(HERE_CELL)))
