@@ -19,6 +19,8 @@ MEMORY_SIZE = 0x10000
 
 memory = array.array('i', [0]*MEMORY_SIZE)
 CELL = memory.itemsize
+CELL_SHIFT = CELL.bit_length() - 1
+
 STACK_SIZE = 0x100
 RSTACK_SIZE = 0x100
 
@@ -37,10 +39,10 @@ def align():
     write(HERE_CELL, aligned(read(HERE_CELL)))
 
 def read(addr):
-    return memory[addr//CELL]
+    return memory[addr >> CELL_SHIFT]
 
 def write(addr, v):
-    memory[addr//CELL] = ctypes.c_int(v).value
+    memory[addr >> CELL_SHIFT] = ctypes.c_int(v).value
 
 def comma(v):
     here = read(HERE_CELL)
@@ -48,13 +50,13 @@ def comma(v):
     write(HERE_CELL, here + CELL)
 
 def read_byte(addr):
-    i = addr // CELL
+    i = addr >> CELL_SHIFT
     m = (addr % CELL)*8
     v = memory[i]
     return ctypes.c_int8((v >> m) & 0xff).value # sign extension
 
 def write_byte(addr, c):
-    i = addr // CELL
+    i = addr >> CELL_SHIFT
     m = (addr % CELL)*8
     v = memory[i]
     memory[i] = (v & ~(0xff << m)) | (c&0xff) << m
@@ -277,7 +279,7 @@ add_simple_operator('(write)', writefile)
 add_simple_operator('(read)', readfile)
 def allocate():
     size = pop()
-    n = (size + CELL - 1) // CELL
+    n = (size + CELL - 1) >> CELL_SHIFT
     addr = len(memory) * CELL
     memory.extend([0]*n)
     push(addr)
