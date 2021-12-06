@@ -57,7 +57,7 @@ def read_byte(addr):
 
 def write_byte(addr, c):
     i = addr >> CELL_SHIFT
-    m = (addr % CELL)*8
+    m = (addr % CELL) * 8
     v = memory[i]
     memory[i] = (v & ~(0xff << m)) | (c&0xff) << m
 
