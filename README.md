@@ -98,9 +98,12 @@ $ make test
 
 | Implementation of runtime         | build             | test status |
 |:----------------------------------|:------------------|:------------|
-| Handwritten ELF binary for i386-linux | `make`            | [![i386-linux-handwritten](https://github.com/nineties/planckforth/workflows/i386-linux-handwritten/badge.svg)](https://github.com/nineties/planckforth/actions?query=workflow:i386-linux-handwritten) |
-| C                                 | `make c`          | [![C](https://github.com/nineties/planckforth/workflows/C/badge.svg)](https://github.com/nineties/planckforth/actions?query=workflow:C) |
-| Python 3.x                        | `make python`     | [![python](https://github.com/nineties/planckforth/workflows/python/badge.svg)](https://github.com/nineties/planckforth/actions?query=workflow:python) |
+| Handwritten ELF binary for i386-linux | `make`        | [![testing
+i386-linux-handwritten](https://github.com/nineties/planckforth/actions/workflows/runtests-i386-linux-handwritten.yaml/badge.svg)](https://github.com/nineties/planckforth/actions/workflows/runtests-i386-linux-handwritten.yaml) |
+| C                                 | `make c`          | [![testing
+c](https://github.com/nineties/planckforth/actions/workflows/runtests-c.yaml/badge.svg)](https://github.com/nineties/planckforth/actions/workflows/runtests-c.yaml) |
+| Python 3.x                        | `make python`     | [![testing
+python](https://github.com/nineties/planckforth/actions/workflows/runtests-python.yaml/badge.svg)](https://github.com/nineties/planckforth/actions/workflows/runtests-python.yaml) |
 
 # Benchmarks
 
