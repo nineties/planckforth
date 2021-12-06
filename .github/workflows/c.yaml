@@ -1,8 +1,6 @@
 name: C
 
-on:
-  push:
-    branches: "main"
+on: [push, pull_request]
 jobs:
   runtests:
     runs-on: ubuntu-latest
