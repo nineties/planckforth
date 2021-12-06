@@ -33,7 +33,7 @@ rp = (MEMORY_SIZE - STACK_SIZE) * CELL
 ip = 0
 np = 0
 
-ALIGN_MASK = CELL - 1
+ALIGN_MASK = ~(CELL - 1)
 def aligned(n):
     return (n + CELLm1) & ALIGN_MASK
 
