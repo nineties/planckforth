@@ -23,7 +23,7 @@ The hello world program at the beginning looks like this.
 
 ```
 $ ./planck
-kHtketkltkltkotk tkWtkotkrtkltkdtk!tk:k0-tk0k0Q
+kHtketkltkltkotk tkWtkotkrtkltkdtk!tk:k0-tk0k0-Q
 ```
 After bootstrapping by `bootstrap.fs`, it looks like this.
 
