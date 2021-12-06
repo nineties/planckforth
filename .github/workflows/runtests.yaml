@@ -1,12 +1,19 @@
-name: C
+name: runtests
 
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore: &ignore ['README.md', 'LICENSE', '.gitignore']
+  pull_request:
+    paths-ignore: *ignore
 jobs:
   runtests:
+    strategy:
+      matrix:
+        impl: ['', 'c', 'python']
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
     - name: run tests
       run: |
-        make c
+        make ${{ matrix.impl }}
         ./planck < bootstrap.fs runtests.fs
