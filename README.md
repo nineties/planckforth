@@ -32,7 +32,7 @@ $ ./planck < bootstrap.fs
 ." Hello World!" cr
 ```
 
-`bootstrap.fs` can also takes a file as an input program like this.
+`bootstrap.fs` can also take a file as an input program like this.
 
 ```
 $ cat example/fib.fs
