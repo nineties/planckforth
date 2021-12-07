@@ -1013,4 +1013,10 @@ T{ cons0 cdr -> 1 }T
 
 cons0 free
 
+\ ------------------------------------------------------------------------
+testing enum
 
+T{ 0 enum e0 enum e1 enum e2 drop -> }T
+T{ e0 -> 0 }T
+T{ e1 -> 1 }T
+T{ e2 -> 2 }T

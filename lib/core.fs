@@ -40,4 +40,18 @@ end-struct cons-cell%
 : car first @ ; export
 : cdr second @ ; export
 
+( === Enum === )
+
+\ 0
+\ enum A
+\ enum B
+\ drop
+
+\ 0 constant A
+\ 1 constant B
+
+: enum ( n "name" -- n )
+    dup constant 1+
+; export
+
 }private
