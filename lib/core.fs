@@ -16,8 +16,11 @@ s" Invalid argument" exception constant INVALID-ARGUMENT
     unless INVALID-ARGUMENT throw then
 ;
 
+( === Builtin Exceptions === )
+s" Index out of range" exception constant OUT-OF-RANGE export
+
 defined? roll [unless]
-    : roll ( w[n-1] ... w0 n -- w0 w[n-2] ... w0 w[n-1] )
+    : roll ( w[n-1] ... w0 n -- w[n-2] ... w0 w[n-1] )
         dup 0<= if drop else swap >r 1- recurse r> swap then
     ;
 [then]

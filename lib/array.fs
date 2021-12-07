@@ -5,7 +5,6 @@
 
 private{
 
-( === Allocation strategy === )
 defined? array-alloc-strategy [unless]
 
 \ Compute new capacity
@@ -20,8 +19,6 @@ struct
     int% field array>size
     int% field array>capa
 end-struct array%
-
-s" Index out of range" exception constant OUT-OF-RANGE export
 
 \ Allocate array with capacity
 : allocate-array ( n capa -- arr )
