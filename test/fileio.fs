@@ -9,7 +9,6 @@ T{
 }T
 T{ 32 allocate throw constant BUF -> }T
 T{ BUF 32 FILE0 read-file throw -> 27 }T
-T{ s" ABCDEFGHIJKLMNOPQRSTUVWXYZ
-" BUF 27 strneq -> true }T
+T{ s" ABCDEFGHIJKLMNOPQRSTUVWXYZ\n" BUF 27 strneq -> true }T
 T{ FILE0 close-file throw -> }T
 T{ BUF free -> }T

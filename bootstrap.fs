@@ -576,7 +576,16 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
 : 3     [ key 3 key 0 - ] literal ;
 : 4     [ key 4 key 0 - ] literal ;
 : 5     [ key 5 key 0 - ] literal ;
+: 6     [ key 6 key 0 - ] literal ;
+: 7     [ key 7 key 0 - ] literal ;
+: 8     [ key 8 key 0 - ] literal ;
+: 9     [ key 9 key 0 - ] literal ;
 : 10    [ key : key 0 - ] literal ;
+: 11    [ key ; key 0 - ] literal ;
+: 12    [ key < key 0 - ] literal ;
+: 13    [ key = key 0 - ] literal ;
+: 14    [ key > key 0 - ] literal ;
+: 15    [ key ? key 0 - ] literal ;
 : 16    [ key @ key 0 - ] literal ;
 : -1    [ key 0 key 1 - ] literal ;
 
@@ -1045,6 +1054,14 @@ decimal \ set default to decimal
 : '%' [char] % ;
 : '$' [char] $ ;
 : '\'' [char] ' ;
+: '\\' [char] \ ;
+: 'a'  [char] a ;
+: 'b'  [char] b ;
+: 't'  [char] t ;
+: 'n'  [char] n ;
+: 'v'  [char] v ;
+: 'f'  [char] f ;
+: 'r'  [char] r ;
 
 \ Display unsigned integer u2 with number base u1.
 : print-uint ( u1 u2 -- )
@@ -1298,6 +1315,22 @@ create s-buffer s-buffer-size allot
 \ because we can't write string literal yet.
 char 0 char B - constant STRING-OVERFLOW-ERROR \ -18
 
+\ Return ascii-code of corresponding escaped char
+\ e.g '\n' escaped-char -> 10
+: escaped-char ( n -- n )
+    case
+    '0' of 0 endof
+    'a' of 7 endof
+    'b' of 8 endof
+    't' of 9 endof
+    'n' of 10 endof
+    'v' of 11 endof
+    'f' of 12 endof
+    'r' of 13 endof
+    drop -1
+    endcase
+;
+
 \ Parse string delimited by "
 \ compile mode: the string is stored as operand of 'string' operator.
 \ immediate mode: the string is stored to temporary buffer.
@@ -1307,6 +1340,7 @@ char 0 char B - constant STRING-OVERFLOW-ERROR \ -18
         here 0 ,    \ save location of length and fill dummy
         0           \ length of the string + 1 (\0)
         begin key! dup '"' <> while
+            dup '\\' = if drop key! escaped-char then
             c,      \ store character
             1+      \ increment length
         repeat drop
@@ -1317,7 +1351,7 @@ char 0 char B - constant STRING-OVERFLOW-ERROR \ -18
     else
         s-buffer dup    \ save start address
         begin key! dup '"' <> while
-            ( buf pos c pos-buf )
+            dup '\\' = if drop key! escaped-char then
             over 3 pick - s-buffer-size 1- >= if
                 STRING-OVERFLOW-ERROR throw
             then
