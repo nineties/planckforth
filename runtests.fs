@@ -11,6 +11,7 @@ include lib/tester.fs
 include test/core.fs
 include test/utilities.fs
 include test/coreexttest.fs
+include test/fileio.fs
 
 include test/export.fs
 include lib/string.fs
