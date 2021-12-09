@@ -611,6 +611,9 @@ testing char [char] [ ] bl s"
 T{ bl -> 20 }T
 T{ char X -> 58 }T
 T{ char HELLO -> 48 }T
+T{ '\n' -> 0xa }T
+T{ '\0' -> 0 }T
+T{ 'a' -> 61 }T
 T{ : gc1 [char] X ; -> }T
 T{ : gc2 [char] HELLO ; -> }T
 T{ gc1 -> 58 }T

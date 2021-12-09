@@ -1165,6 +1165,23 @@ decimal \ set default to decimal
     then
 ;
 
+\ Return ascii-code of corresponding escaped char
+\ e.g '\n' escaped-char -> 10
+: escaped-char ( n -- n )
+    case
+    '0' of 0 endof
+    'a' of 7 endof
+    'b' of 8 endof
+    't' of 9 endof
+    'n' of 10 endof
+    'v' of 11 endof
+    'f' of 12 endof
+    'r' of 13 endof
+    '\\' of '\\' endof
+    drop -1
+    endcase
+;
+
 \ Parse string as number.
 \ This function interprets prefixes that specifies number base.
 : >number ( c-addr -- n f )
@@ -1205,7 +1222,11 @@ decimal \ set default to decimal
         dup c@ unless
             drop 0 false exit
         then
-        dup c@ swap 1+
+        dup c@ '\\' = if
+            1+ dup c@ escaped-char swap 1+
+        else
+            dup c@ swap 1+
+        then
         c@ case
         0 of true exit endof
         '\'' of true exit endof
@@ -1314,23 +1335,6 @@ create s-buffer s-buffer-size allot
 \ Will define the error message corresponds to this error later
 \ because we can't write string literal yet.
 char 0 char B - constant STRING-OVERFLOW-ERROR \ -18
-
-\ Return ascii-code of corresponding escaped char
-\ e.g '\n' escaped-char -> 10
-: escaped-char ( n -- n )
-    case
-    '0' of 0 endof
-    'a' of 7 endof
-    'b' of 8 endof
-    't' of 9 endof
-    'n' of 10 endof
-    'v' of 11 endof
-    'f' of 12 endof
-    'r' of 13 endof
-    '\\' of '\\' endof
-    drop -1
-    endcase
-;
 
 \ Parse string delimited by "
 \ compile mode: the string is stored as operand of 'string' operator.
