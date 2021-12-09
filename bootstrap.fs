@@ -1327,6 +1327,7 @@ char 0 char B - constant STRING-OVERFLOW-ERROR \ -18
     'v' of 11 endof
     'f' of 12 endof
     'r' of 13 endof
+    '\\' of '\\' endof
     drop -1
     endcase
 ;
