@@ -614,6 +614,9 @@ T{ char HELLO -> 48 }T
 T{ '\n' -> 0xa }T
 T{ '\0' -> 0 }T
 T{ 'a' -> 61 }T
+T{ '"' -> 22 }T
+T{ '\"' -> 22 }T
+T{ '\'' -> 27 }T
 T{ : gc1 [char] X ; -> }T
 T{ : gc2 [char] HELLO ; -> }T
 T{ gc1 -> 58 }T

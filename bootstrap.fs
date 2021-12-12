@@ -1177,6 +1177,8 @@ decimal \ set default to decimal
     'v' of 11 endof
     'f' of 12 endof
     'r' of 13 endof
+    [char] ' of [char] ' endof
+    [char] " of [char] " endof
     '\\' of '\\' endof
     drop -1
     endcase
