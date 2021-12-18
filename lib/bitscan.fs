@@ -72,8 +72,6 @@ T{ 3 bitscan-forward -> 0 }T
 T{ 4 bitscan-forward -> 2 }T
 T{ 5 bitscan-forward -> 0 }T
 T{ -1 bitscan-forward -> 0 }T
-T{ max-int bitscan-forward -> 0 }T
-T{ min-int bitscan-forward -> cell 8 * 1- }T
 
 T{ 0 bitscan-reverse -> -1 }T
 T{ 1 bitscan-reverse -> 0 }T
@@ -81,5 +79,3 @@ T{ 2 bitscan-reverse -> 1 }T
 T{ 3 bitscan-reverse -> 1 }T
 T{ 4 bitscan-reverse -> 2 }T
 T{ -1 bitscan-reverse -> cell 8 * 1- }T
-T{ max-int bitscan-reverse -> cell 8 * 2 - }T
-T{ min-int bitscan-reverse -> cell 8 * 1- }T
