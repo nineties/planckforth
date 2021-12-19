@@ -2718,6 +2718,7 @@ variable included-list
         char [char] key emit spaces
         .s . .r u. u.r dec. hex. type typen
         ." s" bl '\n' cr space base decimal hex
+        print-int print-uint
         catch throw success
         : ; [ ] immediate create >body :noname does>
         variable constant value to
