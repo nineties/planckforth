@@ -1729,7 +1729,7 @@ end-struct file%
 \ wbuf          wbeg  wend
 
 : write-buffer-content ( file -- c-addr u )
-    dup file>wbeg @ swap file>wbuf tuck -
+    dup file>wbeg @ swap file>wbuf @ tuck -
 ;
 
 : empty-write-buffer ( file -- )
@@ -1783,7 +1783,8 @@ end-struct file%
         dup 0< if 2drop FLUSH-FILE-ERROR exit then
         ( file buf u n )
         2dup < if not-reachable then
-        succ-write-buffer
+        tuck - >r + r>
+        ( file buf+n u-n )
     again
 ;
 
@@ -1792,16 +1793,18 @@ end-struct file%
     dup writable? unless WRITE-FILE-ERROR exit then
     over 0<= if 3drop WRITE-FILE-ERROR exit then
 
-    dup write-buffer-content BUFSIZE swap - ( space )
-    2 pick ( space u )
-    <= if
-        ( c-addr u file )
-        \ enough space, copy data
-        2 pick over file>wbeg @ 3 pick memcpy
+    dup write-buffer-content BUFSIZE swap - ( buf space )
+    3 pick
+    ( c-addr u file buf space u )
+    >= if
+        \ enogu space, copy u-bytes from c-addr to buf
+        ( c-addr u file buf )
+        3 pick swap 3 pick memcpy
         \ increment wbeg
         swap succ-write-buffer drop success exit
     then
-    ( c-addr u file )
+    ( c-addr u file buf )
+    not-implemented
     dup flush-file throw
 
     over BUFSIZE <= if
