@@ -1691,9 +1691,9 @@ do-stack 16 cells + do-sp !
 -1 constant EOF
 
 \ file access methods (fam)
-0x00 constant R/O  \ read-only
-0x41 constant W/O  \ write-only
-0x42 constant R/W  \ read-write
+0x000 constant R/O  \ read-only
+0x241 constant W/O  \ write-only
+0x242 constant R/W  \ read-write
 
 1024 constant BUFSIZE
 128 constant FILENAME-MAX
