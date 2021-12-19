@@ -2464,7 +2464,7 @@ BLOCK-SIZE remaining-size  !
 6 constant SYS-CLOSE
 
 : (open) ( c-addr fam -- fd )
-    swap SYS-OPEN syscall2
+    %110100100 .s -rot swap SYS-OPEN syscall3
 ;
 
 : (close) ( obj -- n )
