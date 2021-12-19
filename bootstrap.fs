@@ -1793,13 +1793,13 @@ end-struct file%
     dup writable? unless WRITE-FILE-ERROR exit then
     over 0<= if 3drop WRITE-FILE-ERROR exit then
 
-    dup write-buffer-content BUFSIZE swap - ( buf space )
-    3 pick
-    ( c-addr u file buf space u )
+    dup write-buffer-content nip BUFSIZE swap - ( space )
+    2 pick
+    ( c-addr u file space u )
     >= if
         \ enogu space, copy u-bytes from c-addr to buf
-        ( c-addr u file buf )
-        3 pick swap 3 pick memcpy
+        ( c-addr u file )
+        2 pick over file>wbeg @ 3 pick memcpy
         \ increment wbeg
         swap succ-write-buffer drop success exit
     then
@@ -2464,7 +2464,7 @@ BLOCK-SIZE remaining-size  !
 6 constant SYS-CLOSE
 
 : (open) ( c-addr fam -- fd )
-    %110100100 .s -rot swap SYS-OPEN syscall3
+    %110100100 -rot swap SYS-OPEN syscall3
 ;
 
 : (close) ( obj -- n )
@@ -2477,7 +2477,7 @@ BLOCK-SIZE remaining-size  !
 
 : (write) ( c-addr u1 fd -- n )
     >r swap r>              \ ( u1 u1 c-addr fd )
-    SYS-WRITE syscall3      \ ( u1 u2 )
+    SYS-WRITE syscall3      \ ( u2 )
 ;
 
 [then] \ End of environment dependent code
