@@ -2710,7 +2710,8 @@ variable included-list
         STRING-OVERFLOW-ERROR UNDEFINED-WORD-ERROR
         exception
 
-        %allocate %allot char% cell% byte% ptr% int% field struct end-struct
+        %allocate %allot char% cell% byte% ptr% int% i32% u32% i16% u16%
+        field struct end-struct
         sp0 sp@ sp! dup ?dup drop swap over tuck pick nip rot -rot
         2rot -2rot 2tuck 2over 2nip 2swap 2dup 2drop 3dup 3drop depth
         rp0 rp@ rp! r> >r r@ rdrop rpick rdepth
