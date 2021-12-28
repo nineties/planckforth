@@ -41,7 +41,6 @@ def align():
     write(HERE_CELL, aligned(read(HERE_CELL)))
 
 def read(addr):
-    print(addr, addr >> CELL_SHIFT)
     return memory[addr >> CELL_SHIFT]
 
 def write(addr, v):
