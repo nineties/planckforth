@@ -178,7 +178,7 @@ defbinary("%", sar, >>, intptr_t)
 defcode("(open)", openfile) {
     int flags = pop();
     char *name = (char*) pop();
-    int fd = open(name, flags);
+    int fd = open(name, flags, 0644);
     push(fd);
     next();
 }
