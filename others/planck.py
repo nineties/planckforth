@@ -17,7 +17,7 @@ VERSION = "{}:{}".format(RUNTIME_NAME, COPYRIGHT)
 
 MEMORY_SIZE = 0x10000
 
-memory = array.array('i', [0]*MEMORY_SIZE)
+memory = array.array('l', [0]*MEMORY_SIZE)
 CELL = memory.itemsize
 CELLm1 = CELL - 1
 CELL_SHIFT = CELL.bit_length() - 1
@@ -41,10 +41,11 @@ def align():
     write(HERE_CELL, aligned(read(HERE_CELL)))
 
 def read(addr):
+    print(addr, addr >> CELL_SHIFT)
     return memory[addr >> CELL_SHIFT]
 
 def write(addr, v):
-    memory[addr >> CELL_SHIFT] = ctypes.c_int(v).value
+    memory[addr >> CELL_SHIFT] = ctypes.c_long(v).value
 
 def comma(v):
     here = read(HERE_CELL)
