@@ -2513,8 +2513,8 @@ need-defined (free)
 
 \ allocate heap memory
 : %allocate ( align size -- addr e )
-    over + allocate ?dup unless
-        swap 1- invert and success
+    over 1- + allocate ?dup unless
+        swap 1- tuck + swap invert and success
     then
 ;
 
