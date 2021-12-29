@@ -15,53 +15,45 @@ COPYRIGHT = "Copyright (c) 2021 Koichi Nakamura <koichi@idein.jp>"
 
 VERSION = "{}:{}".format(RUNTIME_NAME, COPYRIGHT)
 
-MEMORY_SIZE = 0x10000
+MEMORY_SIZE = 0x40000
 
-memory = array.array('I', [0]*MEMORY_SIZE)
-CELL = memory.itemsize
-CELLm1 = CELL - 1
-CELL_SHIFT = CELL.bit_length() - 1
+memory = bytearray(MEMORY_SIZE)
+CELL = 4
 
-STACK_SIZE = 0x100
-RSTACK_SIZE = 0x100
+STACK_SIZE = 0x400
+RSTACK_SIZE = 0x400
 
 HERE_CELL = 0
 LATEST_CELL = CELL
 
-sp = MEMORY_SIZE * CELL
-rp = (MEMORY_SIZE - STACK_SIZE) * CELL
+sp = MEMORY_SIZE
+rp = MEMORY_SIZE - STACK_SIZE
 ip = 0
 np = 0
 
 ALIGN_MASK = ~(CELL - 1)
 def aligned(n):
-    return (n + CELLm1) & ALIGN_MASK
+    return (n + CELL - 1) & ALIGN_MASK
 
 def align():
     write(HERE_CELL, aligned(read(HERE_CELL)))
 
-def read(addr):
-    return memory[addr >> CELL_SHIFT]
+def read(addr, signed=False):
+    return int.from_bytes(memory[addr:addr+CELL], 'little', signed=signed)
 
 def write(addr, v):
-    memory[addr >> CELL_SHIFT] = ctypes.c_uint(v).value
+    memory[addr:addr+CELL] = ctypes.c_uint32(v).value.to_bytes(CELL, 'little')
 
-def comma(v):
+def comma(v, signed=False):
     here = read(HERE_CELL)
     write(here, v)
     write(HERE_CELL, here + CELL)
 
 def read_byte(addr):
-    i = addr >> CELL_SHIFT
-    m = (addr % CELL)*8
-    v = memory[i]
-    return ctypes.c_uint8((v >> m) & 0xff).value # sign extension
+    return memory[addr]
 
 def write_byte(addr, c):
-    i = addr >> CELL_SHIFT
-    m = (addr % CELL) * 8
-    v = memory[i]
-    memory[i] = (v & ~(0xff << m)) | (c&0xff) << m
+    memory[addr] = c
 
 def comma_byte(v):
     here = read(HERE_CELL)
@@ -111,7 +103,7 @@ def push(v):
 
 def pop():
     global sp
-    v = ctypes.c_int(read(sp)).value
+    v = read(sp, signed=True)
     sp += CELL
     return v
 
@@ -122,7 +114,7 @@ def rpush(v):
 
 def rpop():
     global rp
-    v = ctypes.c_int(read(rp)).value
+    v = read(rp, signed=True)
     rp += CELL
     return v
 
@@ -170,7 +162,7 @@ write(LATEST_CELL, 0)
 # Store command line arguments
 argv_addrs = []
 for arg in sys.argv:
-    argv_addrs.append(ctypes.c_int(read(HERE_CELL)).value)
+    argv_addrs.append(read(HERE_CELL))
     comma_string(arg)
 align()
 ARGV_ADDR = read(HERE_CELL)
@@ -198,11 +190,11 @@ def key():
         exit(0)
 add_simple_operator('k', key)
 add_simple_operator('t', lambda: sys.stdout.write(chr(pop())))
-add_operator('j', lambda ip,np: next(np + ctypes.c_int(read(np)).value))
-add_operator('J', lambda ip,np: next(np + (CELL if pop() else ctypes.c_int(read(np)).value)))
+add_operator('j', lambda ip,np: next(np + read(np, signed=True)))
+add_operator('J', lambda ip,np: next(np + (CELL if pop() else read(np, signed=True))))
 add_simple_operator('f', lambda: push(find(chr(pop()))))
 add_operator('x', lambda ip,np: (pop(), np))
-add_simple_operator('@', lambda: push(ctypes.c_int(read(pop())).value))
+add_simple_operator('@', lambda: push(read(pop(), signed=True)))
 
 # NB: Python evaluates expressions from left to right
 # https://docs.python.org/3/reference/expressions.html#evaluation-order
@@ -222,7 +214,7 @@ add_simple_operator('R', set_rp)
 add_simple_operator('i', lambda: push(DOCOL_ID))
 add_operator('e', lambda ip,np: next(rpop()))
 def lit(ip, np):
-    push(ctypes.c_int(read(np)).value)
+    push(read(np, signed=True))
     return next(np + CELL)
 add_operator('L', lit)
 def litstring(ip, np):
@@ -281,9 +273,8 @@ add_simple_operator('(write)', writefile)
 add_simple_operator('(read)', readfile)
 def allocate():
     size = pop()
-    n = (size + CELL - 1) >> CELL_SHIFT
-    addr = len(memory) * CELL
-    memory.extend([0]*n)
+    addr = len(memory)
+    memory.extend([0]*size)
     push(addr)
 def free():
     pop()   # Bootstrap version do nothing
