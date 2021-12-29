@@ -6,9 +6,9 @@
 import os
 import sys
 import operator
-import ctypes
+from ctypes import c_uint32
 import platform
-from struct import pack, unpack
+from struct import pack_into, unpack_from
 
 RUNTIME_NAME = "Python {}".format(platform.python_version())
 COPYRIGHT = "Copyright (c) 2021 Koichi Nakamura <koichi@idein.jp>"
@@ -39,13 +39,13 @@ def align():
     write(HERE_CELL, aligned(read(HERE_CELL)))
 
 def readi(addr):
-    return unpack('<i', memory[addr:addr+CELL])[0]
+    return unpack_from('<i', memory, addr)[0]
 
 def read(addr):
-    return unpack('<I', memory[addr:addr+CELL])[0]
+    return unpack_from('<I', memory, addr)[0]
 
 def write(addr, v):
-    memory[addr:addr+CELL] = pack('<I', ctypes.c_uint32(v).value)
+    pack_into('<I', memory, addr, c_uint32(v).value)
 
 def comma(v, signed=False):
     here = read(HERE_CELL)
@@ -148,8 +148,8 @@ def add_simple_operator(name, func):
 
 def add_uint_operator(name, op):
     def func():
-        b = ctypes.c_uint(pop()).value
-        a = ctypes.c_uint(pop()).value
+        b = c_uint32(pop()).value
+        a = c_uint32(pop()).value
         push(op(a, b))
     return add_simple_operator(name, func)
 def add_int_operator(name, op):
@@ -225,8 +225,8 @@ def litstring(ip, np):
     return next(np + CELL + read(np))
 add_operator('S', litstring)
 def divmod():
-    b = ctypes.c_uint(pop()).value
-    a = ctypes.c_uint(pop()).value
+    b = c_uint32(pop()).value
+    a = c_uint32(pop()).value
     push(a%b)
     push(a//b)
 add_simple_operator('/', divmod)
