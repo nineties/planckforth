@@ -6,9 +6,9 @@
 import os
 import sys
 import operator
-import array
 import ctypes
 import platform
+from struct import pack, unpack
 
 RUNTIME_NAME = "Python {}".format(platform.python_version())
 COPYRIGHT = "Copyright (c) 2021 Koichi Nakamura <koichi@idein.jp>"
@@ -38,11 +38,14 @@ def aligned(n):
 def align():
     write(HERE_CELL, aligned(read(HERE_CELL)))
 
-def read(addr, signed=False):
-    return int.from_bytes(memory[addr:addr+CELL], 'little', signed=signed)
+def readi(addr):
+    return unpack('<i', memory[addr:addr+CELL])[0]
+
+def read(addr):
+    return unpack('<I', memory[addr:addr+CELL])[0]
 
 def write(addr, v):
-    memory[addr:addr+CELL] = ctypes.c_uint32(v).value.to_bytes(CELL, 'little')
+    memory[addr:addr+CELL] = pack('<I', ctypes.c_uint32(v).value)
 
 def comma(v, signed=False):
     here = read(HERE_CELL)
@@ -103,7 +106,7 @@ def push(v):
 
 def pop():
     global sp
-    v = read(sp, signed=True)
+    v = readi(sp)
     sp += CELL
     return v
 
@@ -114,7 +117,7 @@ def rpush(v):
 
 def rpop():
     global rp
-    v = read(rp, signed=True)
+    v = readi(rp)
     rp += CELL
     return v
 
@@ -190,11 +193,11 @@ def key():
         exit(0)
 add_simple_operator('k', key)
 add_simple_operator('t', lambda: sys.stdout.write(chr(pop())))
-add_operator('j', lambda ip,np: next(np + read(np, signed=True)))
-add_operator('J', lambda ip,np: next(np + (CELL if pop() else read(np, signed=True))))
+add_operator('j', lambda ip,np: next(np + readi(np)))
+add_operator('J', lambda ip,np: next(np + (CELL if pop() else readi(np))))
 add_simple_operator('f', lambda: push(find(chr(pop()))))
 add_operator('x', lambda ip,np: (pop(), np))
-add_simple_operator('@', lambda: push(read(pop(), signed=True)))
+add_simple_operator('@', lambda: push(readi(pop())))
 
 # NB: Python evaluates expressions from left to right
 # https://docs.python.org/3/reference/expressions.html#evaluation-order
@@ -214,7 +217,7 @@ add_simple_operator('R', set_rp)
 add_simple_operator('i', lambda: push(DOCOL_ID))
 add_operator('e', lambda ip,np: next(rpop()))
 def lit(ip, np):
-    push(read(np, signed=True))
+    push(readi(np))
     return next(np + CELL)
 add_operator('L', lit)
 def litstring(ip, np):
