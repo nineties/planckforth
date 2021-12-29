@@ -17,7 +17,7 @@ VERSION = "{}:{}".format(RUNTIME_NAME, COPYRIGHT)
 
 MEMORY_SIZE = 0x10000
 
-memory = array.array('l', [0]*MEMORY_SIZE)
+memory = array.array('I', [0]*MEMORY_SIZE)
 CELL = memory.itemsize
 CELLm1 = CELL - 1
 CELL_SHIFT = CELL.bit_length() - 1
@@ -44,7 +44,7 @@ def read(addr):
     return memory[addr >> CELL_SHIFT]
 
 def write(addr, v):
-    memory[addr >> CELL_SHIFT] = ctypes.c_long(v).value
+    memory[addr >> CELL_SHIFT] = ctypes.c_uint(v).value
 
 def comma(v):
     here = read(HERE_CELL)
@@ -55,7 +55,7 @@ def read_byte(addr):
     i = addr >> CELL_SHIFT
     m = (addr % CELL)*8
     v = memory[i]
-    return ctypes.c_int8((v >> m) & 0xff).value # sign extension
+    return ctypes.c_uint8((v >> m) & 0xff).value # sign extension
 
 def write_byte(addr, c):
     i = addr >> CELL_SHIFT
@@ -111,7 +111,7 @@ def push(v):
 
 def pop():
     global sp
-    v = read(sp)
+    v = ctypes.c_int(read(sp)).value
     sp += CELL
     return v
 
@@ -122,7 +122,7 @@ def rpush(v):
 
 def rpop():
     global rp
-    v = read(rp)
+    v = ctypes.c_int(read(rp)).value
     rp += CELL
     return v
 
@@ -170,7 +170,7 @@ write(LATEST_CELL, 0)
 # Store command line arguments
 argv_addrs = []
 for arg in sys.argv:
-    argv_addrs.append(read(HERE_CELL))
+    argv_addrs.append(ctypes.c_int(read(HERE_CELL)).value)
     comma_string(arg)
 align()
 ARGV_ADDR = read(HERE_CELL)
@@ -198,11 +198,11 @@ def key():
         exit(0)
 add_simple_operator('k', key)
 add_simple_operator('t', lambda: sys.stdout.write(chr(pop())))
-add_operator('j', lambda ip,np: next(np + read(np)))
-add_operator('J', lambda ip,np: next(np + (CELL if pop() else read(np))))
+add_operator('j', lambda ip,np: next(np + ctypes.c_int(read(np)).value))
+add_operator('J', lambda ip,np: next(np + (CELL if pop() else ctypes.c_int(read(np)).value)))
 add_simple_operator('f', lambda: push(find(chr(pop()))))
 add_operator('x', lambda ip,np: (pop(), np))
-add_simple_operator('@', lambda: push(read(pop())))
+add_simple_operator('@', lambda: push(ctypes.c_int(read(pop())).value))
 
 # NB: Python evaluates expressions from left to right
 # https://docs.python.org/3/reference/expressions.html#evaluation-order
@@ -222,7 +222,7 @@ add_simple_operator('R', set_rp)
 add_simple_operator('i', lambda: push(DOCOL_ID))
 add_operator('e', lambda ip,np: next(rpop()))
 def lit(ip, np):
-    push(read(np))
+    push(ctypes.c_int(read(np)).value)
     return next(np + CELL)
 add_operator('L', lit)
 def litstring(ip, np):
