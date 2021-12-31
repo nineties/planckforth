@@ -2740,7 +2740,7 @@ variable included-list
         ( \
         c@ c! c, @ ! ,
         word find >cfa >dfa marker
-        bye execute exit here latest
+        quit bye execute exit here latest
     end-update-dictionary
 ; execute
 
