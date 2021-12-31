@@ -204,11 +204,8 @@ T{ 3 1 A table! -> }T
 T{ A table-size -> 2 }T
 T{ 1 A table@ -> 3 }T
 T{ :noname 100 0 do i 1 + i A table! loop ; execute -> }T
-:noname
-    100 0 do
-        T{ i A table@ -> i 1 + }T
-    loop
-; execute
+T{ 0 A table@ -> 1 }T
+T{ 99 A table@ -> 100 }T
 T{ A table-size -> 100 }T
 
 T{ A table-keys car -> 0 }T
