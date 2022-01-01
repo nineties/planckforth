@@ -2716,7 +2716,7 @@ variable included-list
         2rot -2rot 2tuck 2over 2nip 2swap 2dup 2drop 3dup 3drop depth
         rp0 rp@ rp! r> >r r@ rdrop rpick rdepth
 
-        allocate free allot memcpy strlen streq strneq strcpy strcpy,
+        allocate free allot memcpy strlen streq strneq strcpy strncpy,
         cell cell+ cell- cells char+ char- chars align aligned +! -!
 
         if else then unless begin until again while repeat
