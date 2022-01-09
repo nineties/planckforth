@@ -616,7 +616,8 @@ allot-cell : &find! [ ' L , , ] ; \ ( c-addr -- nt ) Throw exception at error
 : nip   swap drop ;                 \ ( a b -- b )
 : over  >r dup r> swap ;            \ ( a b -- a b a )
 : tuck  dup -rot ;                  \ ( a b -- b a b )
-: pick  cells sp@ + cell + @ ;      \ ( wu ... x0 u -- xu ... x0 xu )
+: pick  cells sp@ + cell + @ ;      \ ( xu ... x0 u -- xu ... x0 xu )
+
 
 : 2drop drop drop ;                 \ ( a b -- )
 : 3drop 2drop drop ;                \ ( a b c -- )
@@ -2733,7 +2734,7 @@ variable included-list
         ' ['] compile compile, [compile] literal state
         + - * /mod / mod negate not and or xor invert within max min abs
         < > <= >= = <> 0< 0> 0<= 0>= 0= 0<> 1+ 1-
-        u< u> u<= u>= lshift rshift 2* 2/
+        u< u> u<= u>= lshift rshift arshift 2* 2/
 
         true false
 
