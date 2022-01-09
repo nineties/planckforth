@@ -2733,7 +2733,7 @@ variable included-list
         ' ['] compile compile, [compile] literal state
         + - * /mod / mod negate not and or xor invert within max min abs
         < > <= >= = <> 0< 0> 0<= 0>= 0= 0<> 1+ 1-
-        u< u> u<= u>= lshift rshift 2* 2/
+        u< u> u<= u>= lshift rshift arshift 2* 2/
 
         true false
 
