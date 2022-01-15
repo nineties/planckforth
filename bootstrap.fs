@@ -2527,7 +2527,7 @@ need-defined (write)
 need-defined (read)
 
 : open-file ( c-addr fam -- file e )
-    2dup (open) dup -1 = if
+    2dup (open) dup 0< if
         ( c-addr fam fd )
         3drop 0 OPEN-FILE-ERROR exit
     then
