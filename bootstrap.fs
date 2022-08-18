@@ -1633,7 +1633,7 @@ do-stack 16 cells + do-sp !
 : rdepth    rp0 rp@ - cell / ;
 
 : .s ( -- )
-    sp0 sp@ - cell- cell /  ( depth of the stack )
+    depth
     '<' emit 0 u.r '>' emit space
     sp@ sp0 ( beg end )
     begin 2dup < while
