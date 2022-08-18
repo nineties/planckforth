@@ -62,7 +62,7 @@ create actual-results 20 cells allot
     else
         '.' emit
     then
-    strlen >in !  \ sking this line
+    strlen >in !  \ skip this line
 ;
 
 : skip

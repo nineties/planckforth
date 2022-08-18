@@ -262,10 +262,10 @@ cs i, '#, 'L, k , '=, '~, 'L, k:k0-, '=, '|, 'e, l!
 \ when the name exceeds 63 characters.
 \ The buffer will be terminated with '\0'.
 \ Note that it returns the address of statically allocated buffer,
-\ so the content will be overwritten each time 'w' executed.
+\ so the content will be overwritten each time 'W' executed.
 
 \ Allocate buffer of 63+1 bytes or more,
-\ push the address for compilation of 'w'
+\ push the address for compilation of 'W'
 h@ # kpk0-+ h! A
 cW~
 i,
@@ -431,7 +431,7 @@ set-immediate \
 
 \ Add new names to builtin primities.
 \ Instead of defining as a new FORTH word like shown below,
-\ the aliases ared created by copying their code-pointer.
+\ the aliases are created by copying their code-pointer.
 \ : new-name old-name ;
 \ Primitive operators which manipulate program counter and return stack
 \ can not be defined as a FORTH word.
@@ -1019,7 +1019,7 @@ create exception-marker
 ( === Printing Numbers === )
 
 \ Skip reading spaces, read characters and returns first character
-: char      ( <spces>ccc -- c ) word! c@ ;
+: char      ( <spaces>ccc -- c ) word! c@ ;
 
 \ compile-time version of char
 : [char]    ( compile: <spaces>ccc -- ; runtime: --- c )
@@ -1028,7 +1028,7 @@ create exception-marker
 ; immediate
 
 
-: '\n' [ key : key 0 - ] literal ; \ neline (10)
+: '\n' [ key : key 0 - ] literal ; \ newline (10)
 : bl   [ key P key 0 - ] literal ; \ space (32)
 : '"'  [char] "" ;
 
@@ -1590,7 +1590,7 @@ do-stack 16 cells + do-sp !
     compile rdrop
 ; immediate
 
-\ This code is take from Gforth
+\ This code is taken from Gforth
 : crossed-boundary? ( d n i )
     swap -      ( d i-n )
     2dup +      ( d i-n i+d-n )
@@ -1628,7 +1628,7 @@ do-stack 16 cells + do-sp !
 ( === Dump of data stack === )
 
 \ ( -- n )
-\ Number of elemtns in the stack
+\ Number of elements in the stack
 : depth     sp0 sp@ - cell- cell / ;
 : rdepth    rp0 rp@ - cell / ;
 
@@ -1660,7 +1660,7 @@ do-stack 16 cells + do-sp !
 ;
 
 \ struct ... end-struct new-word
-\ defines new-word as a operator
+\ defines new-word as an operator
 \ that returns alignment and size of the struct.
 \ new-word: ( -- align size )
 : end-struct ( offset "name" -- )
@@ -2688,7 +2688,7 @@ variable included-list
     again
 ; immediate
 
-\ rebuilt dictionary
+\ rebuild dictionary
 :noname
     update-dictionary
         insn:docol insn:exit insn:lit insn:litstring insn:branch insn:0branch
